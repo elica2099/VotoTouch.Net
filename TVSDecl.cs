@@ -178,16 +178,16 @@ namespace VotoTouch
         public string StrUp_DescrLista;
     }
 
-    public struct TVotiDaSalvare     // non serve, si inegra con cls Azionisti
-    {
-        public int NumVotaz_1;
-        public int AScheda_2;
-        public int NVoti_3;
-        public int AIDBadge_4;
-        public int ProgDelega_5;
-        public int IdCarica_6;
-        public int IDazion;
-    }
+    //public struct TVotiDaSalvare     // non serve, si inegra con cls Azionisti
+    //{
+    //    public int NumVotaz_1;
+    //    public int AScheda_2;
+    //    public int NVoti_3;
+    //    public int AIDBadge_4;
+    //    public int ProgDelega_5;
+    //    public int IdCarica_6;
+    //    public int IDazion;
+    //}
 
     //public struct TAzionista
     //{

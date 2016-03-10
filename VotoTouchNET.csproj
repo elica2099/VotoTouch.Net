@@ -133,6 +133,9 @@
     <Compile Include="FMain.Designer.cs">
       <DependentUpon>FMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FMain_EventiTouchscreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FMain_LetturaBadge.cs">
       <SubType>Form</SubType>
     </Compile>

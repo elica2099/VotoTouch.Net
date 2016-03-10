@@ -26,6 +26,9 @@ namespace VotoTouch
         // TODO: METTERE I VOTI DENTRO TListAzionista e togliere le strutture voti
         // dati del voto 
         public int IDVotaz { get; set; }
+        // voti
+        public ArrayList VotiEspressi;
+
         //public int IDScheda;
         //public int NVoti;
         //public int IDCarica;
@@ -33,6 +36,7 @@ namespace VotoTouch
         public TAzionista()
         {
             HaVotato = TListaAzionisti.VOTATO_NO;
+            VotiEspressi = new ArrayList();
         }
 
         public void CopyFrom(ref TAzionista cp)
@@ -119,6 +123,11 @@ namespace VotoTouch
         public int DammiTotaleDirittiRimanenti()
         {
             return _Azionisti.Count(a => a.HaVotato == VOTATO_NO);
+        }
+
+        public bool IsVotazioneFinita()
+        {
+            return _Azionisti.Count(a => a.HaVotato == VOTATO_NO) == 0;
         }
 
         public bool HaDirittiDiVotoMultipli()
@@ -254,26 +263,18 @@ namespace VotoTouch
         //  Gestione dei voti, sono demandati a azionisti (bisognerà cambiarlo in diritti di voto)
         // --------------------------------------------------------------------------
 
-        public bool SetVotoNormale_VotoCorrente(int AVoto)
+        public bool ConfermaVoti_VotoCorrente(ref ArrayList AVotiDaSalvare)
         {
-
-            return true;
-        }
-
-        public bool SetVotoMultiCandidato_VotoCorrente(ref ArrayList AVotiDaSalvare)
-        {
-
-            return true;
-        }
-
-        public bool ConfermaVoti_VotoCorrente()
-        {
-
-            return true;
-        }
-
-        public bool AnnullaVoti_VotoCorrente()
-        {
+            // salvo i voti nell'array dell'azionista
+            foreach (TAzionista a in ListaDiritti_VotoCorrente)
+            {
+                // carico i voti sull'array
+                foreach (TVotoEspresso v in AVotiDaSalvare)
+                {
+                    a.VotiEspressi.Add(v);
+                }
+                a.HaVotato = VOTATO_SESSIONE;
+            }
 
             return true;
         }

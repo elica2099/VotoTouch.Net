@@ -191,7 +191,7 @@ namespace VotoTouch
                             // resetto alcune variabili
                             //VotoCorrente = Votazioni.DammiPrimaVotazione();
                             //CurrVoteIDX = 0;                    // resetto alla 1° votazione
-                            FVotiDaSalvare.Clear();             // cancello i voti
+                            //FVotiDaSalvare.Clear();             // cancello i voti
                             IsVotazioneDifferenziata = false;                   // dico che è un voto normale
                             CancellaTempVotiCorrenti();         // cancello i voti temporanei
                             //CurrIdAzionDelega = 0;              // la prima delega
