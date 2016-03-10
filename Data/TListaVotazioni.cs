@@ -571,7 +571,6 @@ namespace VotoTouch
                     qryStd.CommandText = "SELECT * from VS_Liste_Totem with (NOLOCK) " +
                                          "where NumVotaz = @IDVoto and Attivo = 1 ";
                     // ecco, in funzione del tipo di voto
-                    // TODO: CaricaListeDaDatabase TOGLIERE ORDINAMENTO!!!!
                     switch (votaz.TipoVoto)
                     {
                         // se è lista ordino per l'id

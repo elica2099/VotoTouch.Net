@@ -100,7 +100,7 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvVotoStart:
-                    IsStartingVoto = true;
+                    //IsStartingVoto = true;
                     oVotoTouch.CalcolaTouchSpecial(Stato, Azionisti.HaDirittiDiVotoMultipli());
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
@@ -117,12 +117,12 @@ namespace VotoTouch
                     // tutti i voti sulla prima e nessuno sulla seconda votazione.
                     // lo vedo caricando di volta in volta l'azionista che non ha diritti di voto espressi (havotato = false)
 
-                    // segnalo all'oggetto Azionista che è partito il voto
-                    if (IsStartingVoto)
-                    {
-                        IsStartingVoto = false;
-                        Azionisti.InizioProceduraVotazione(IsVotazioneDifferenziata);                        
-                    }
+                    //// segnalo all'oggetto Azionista che è partito il voto
+                    //if (IsStartingVoto)
+                    //{
+                    //    IsStartingVoto = false;
+                    //    Azionisti.InizioProceduraVotazione(IsVotazioneDifferenziata);                        
+                    //}
                     // ok, ora estraggo l'azionista o il gruppo di azionisti (se non è differenziato) che devono votare
                     // in Azionisti.AzionistiInVotoCorrente ho l'elenco dei diritti
                     Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata);
@@ -138,22 +138,13 @@ namespace VotoTouch
                     // ora metto in quadro l'immagine, che deve essere presa da un file composto da
                     oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
                     // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
-                    lbNomeDisgiunto.Text = Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
+                    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
+                    lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
+                    int dir_riman = IsVotazioneDifferenziata
+                                        ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
+                                        : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
+                    lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
                     lbDirittiDiVoto.Visible = true;
-                    lbDirittiDiVoto.Text = Azionisti.DammiCountDirittiDiVoto_VotoCorrente().ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
-
-                    // se il voto è differenziato
-                    //if (IsVotazioneDifferenziata || DatiUsr.utente_voti == 1)
-                    //{
-                    //    // ??????????????????????????????????????????????
-                    //    if (TotCfg.SalvaLinkVoto) lbNomeDisgiunto.Visible = true;
-                    //    // TODO: e se CurrIdAzionDelega è >= di FAzionisti.count ??
-                    //    c = (TAzionista)FAzionisti[CurrIdAzionDelega];
-                    //    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + c.RaSo;    // "Si sta votando per:\n"
-                    //    if (IsVotazioneDifferenziata)
-                    //        lbDisgiuntoRimangono.Visible = true;
-                    //    lbDirittiDiVoto.Text = utente_voti_bak.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");   //" Diritti di voto"
-                    //}
                     break;
 
                 case TAppStato.ssvVotoConferma:
@@ -162,7 +153,9 @@ namespace VotoTouch
                     MettiComponentiConferma();
                     // ora metto in quadro l'immagine, che deve essere presa da un file composto da
                     oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + VSDecl.IMG_voto_c);
-                    // Differenziato
+                    lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() == 1);
+
+                // Differenziato
                     //if (IsVotazioneDifferenziata || DatiUsr.utente_voti == 1)
                     //{
                     //    if (TotCfg.SalvaLinkVoto) lbNomeDisgiunto.Visible = true;

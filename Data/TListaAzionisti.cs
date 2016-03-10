@@ -23,15 +23,10 @@ namespace VotoTouch
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
         
-        // TODO: METTERE I VOTI DENTRO TListAzionista e togliere le strutture voti
         // dati del voto 
         public int IDVotaz { get; set; }
         // voti
         public ArrayList VotiEspressi;
-
-        //public int IDScheda;
-        //public int NVoti;
-        //public int IDCarica;
 
         public TAzionista()
         {
@@ -68,6 +63,7 @@ namespace VotoTouch
 
         // oggetto voto corrente
         protected List<TAzionista> ListaDiritti_VotoCorrente;
+        protected int IDVotazione_VotoCorrente;
         // Oggetto titolare che contene il titolare del badge
         public TAzionista Titolare_Badge { get; set; }
 
@@ -85,6 +81,7 @@ namespace VotoTouch
             Titolare_Badge = new TAzionista();
 
             ListaDiritti_VotoCorrente = new List<TAzionista>();
+            IDVotazione_VotoCorrente = -1;
 
             // load the query
             qry_DammiDirittiDiVoto_Deleganti = DBDati.getModelsQueryProcedure("DammiDirittiDiVoto_Deleganti.sql");
@@ -163,13 +160,13 @@ namespace VotoTouch
 
         #region Gestione della procedura di votazione
 
-        public void InizioProceduraVotazione(bool ADifferenziato)
-        {
-            // segnala che è l'inizio della procedura di votazione, vediamo a cosa serve
+        //public void InizioProceduraVotazione(bool ADifferenziato)
+        //{
+        //    // segnala che è l'inizio della procedura di votazione, vediamo a cosa serve
 
-            // resetta i diritti di voto
-            ListaDiritti_VotoCorrente.Clear();
-        }
+        //    // resetta i diritti di voto
+        //    ListaDiritti_VotoCorrente.Clear();
+        //}
 
         public bool EstraiAzionisti_VotoCorrente(bool ADifferenziato)
         {
@@ -209,6 +206,9 @@ namespace VotoTouch
                     }
                 }
 
+                // setto l'idvotazionecorrente
+                IDVotazione_VotoCorrente = DammiIDVotazione_VotoCorrente();
+
                 // ritorno se 
                 return (ListaDiritti_VotoCorrente.Count > 0);
             }
@@ -222,8 +222,20 @@ namespace VotoTouch
         {
             // conta i diritti di voto relativi agli azionisti in votazione (lista sopra) 
             if (ListaDiritti_VotoCorrente != null)
+            {
                 return ListaDiritti_VotoCorrente.Count(a => a.HaVotato == VOTATO_NO);
-            else
+            }
+            else 
+                return 0;
+        }
+
+        public int DammiTotaleDirittiRimanenti_VotoCorrente()
+        {
+            if (ListaDiritti_VotoCorrente != null)
+            {
+                return DammiTotaleDirittiRimanentiPerIDVotazione(IDVotazione_VotoCorrente);
+            }
+            else 
                 return 0;
         }
 
@@ -234,10 +246,10 @@ namespace VotoTouch
             if (ListaDiritti_VotoCorrente != null && ListaDiritti_VotoCorrente.Count > 0)
             {
                 TAzionista c = ListaDiritti_VotoCorrente.First();
-                return  c != null ? c.IDVotaz : 0;
+                return  c != null ? c.IDVotaz : -1;
             }
             else
-                return 0;
+                return -1;
         }
 
         public string DammiNomeAzionistaInVoto_VotoCorrente(bool AIsVotazioneDifferenziata)
@@ -268,12 +280,29 @@ namespace VotoTouch
             // salvo i voti nell'array dell'azionista
             foreach (TAzionista a in ListaDiritti_VotoCorrente)
             {
+                // resetto i voti, non si sa mai che possano essere doppi
+                a.VotiEspressi.Clear();
                 // carico i voti sull'array
                 foreach (TVotoEspresso v in AVotiDaSalvare)
                 {
                     a.VotiEspressi.Add(v);
                 }
                 a.HaVotato = VOTATO_SESSIONE;
+            }
+
+            return true;
+        }
+
+        public bool ConfermaVotiDaInterruzione(TVotoEspresso vz)
+        {
+            foreach (TAzionista a in _Azionisti)
+            {
+                if (a.HaVotato == VOTATO_NO)
+                {
+                    a.VotiEspressi.Clear();
+                    a.VotiEspressi.Add(vz);
+                    a.HaVotato = VOTATO_SESSIONE;
+                }
             }
 
             return true;

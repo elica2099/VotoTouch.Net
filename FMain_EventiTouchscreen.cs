@@ -64,9 +64,8 @@ namespace VotoTouch
 
         public void onPremutoVotoValido(object source, int VParam, bool ZParam)
         {
-            // TODO: UNificare votiespressi con collection
             // TODO: Usare IdScheda invece di indice in VParam
-            // TODO: SAlvare voti in Azionisti
+            // TODO: Serve che TVotoEspresso abbia Str_ListaElenco o StrUp_DescrLista ? solo per i multi, risparmiamo spazio
 
             // ok, questo evento arriva quando, nella selezione del voto, è stata
             // premuna una zona valida
@@ -102,7 +101,6 @@ namespace VotoTouch
                 //VotoEspressoCarica = 0;
                 VotoEspressoStr = "";
                 VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
-
                 VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
@@ -132,12 +130,14 @@ namespace VotoTouch
                 if (voti[i] >= 0 && voti[i] < ct)
                 {
                     a = (TNewLista)Votazioni.VotoCorrente.Liste[voti[i]];
-                    vt = new TVotoEspresso();
-                    vt.NumVotaz = a.NumVotaz;
-                    vt.TipoCarica = a.TipoCarica;
-                    vt.VotoExp_IDScheda = a.IDScheda;
-                    vt.Str_ListaElenco = a.ListaElenco;
-                    vt.StrUp_DescrLista = a.DescrLista;
+                    vt = new TVotoEspresso
+                        {
+                            NumVotaz = a.NumVotaz,
+                            TipoCarica = a.TipoCarica,
+                            VotoExp_IDScheda = a.IDScheda,
+                            Str_ListaElenco = a.ListaElenco,
+                            StrUp_DescrLista = a.DescrLista
+                        };
                     FVotiExpr.Add(vt);
                 }
             }
@@ -154,15 +154,13 @@ namespace VotoTouch
 
         public void onPremutoSchedaBianca(object source, int VParam)
         {
-            TVotoEspresso VExp;
-
             // scheda bianca
             VotoEspresso = VSDecl.VOTO_SCHEDABIANCA;
             //VotoEspressoCarica = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
             // nuova versione array
-            VExp = new TVotoEspresso
+            TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
@@ -178,15 +176,13 @@ namespace VotoTouch
 
         public void onPremutoNonVoto(object source, int VParam)
         {
-            TVotoEspresso VExp;
-
             // NonVotante (caso BPM)
             VotoEspresso = VSDecl.VOTO_NONVOTO;
             //VotoEspressoCarica = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
             // nuova versione array
-            VExp = new TVotoEspresso
+            TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
                     VotoExp_IDScheda = VSDecl.VOTO_NONVOTO,
@@ -221,10 +217,7 @@ namespace VotoTouch
             Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
 
             // cambio stato
-            if (Azionisti.IsVotazioneFinita())
-                Stato = TAppStato.ssvSalvaVoto;             // finito, salvo i voti e poi chiudo
-            else
-                Stato = TAppStato.ssvVoto;
+            Stato = Azionisti.IsVotazioneFinita() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
             // cambio
             CambiaStato();
 

@@ -85,7 +85,7 @@ namespace VotoTouch
         //public ArrayList FAzionisti;        // Collection di clsAzionisti
 
         public bool IsVotazioneDifferenziata = false;
-	    public bool IsStartingVoto = false;             // potrebbe non servire
+	    //public bool IsStartingVoto = false;             // potrebbe non servire
 
          // cpontrollo degli eventi di voto
 	    private bool AperturaVotoEsterno;
@@ -824,11 +824,36 @@ namespace VotoTouch
 
 		private int MettiSchedeDaInterruzione()
 		{
-            int i, z, NVotaz, NSKSalvate;
-            //TVotiDaSalvare v;
-            TAzionista c;
+            // prima di tutto vedo se è attivato SalvaVotoNonConfermato
+            // se sono nello stato di conferma, confermo il voto espresso e poi metto le altre schede
+            if (Stato == TAppStato.ssvVotoConferma && TotCfg.SalvaVotoNonConfermato) 
+                Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
 
-            // TODO: DA RIVEDERE TOTALMENTE Possibile BACO MettiSchedeBiancheDaInterruzione MULTIVOTAZIONI
+            // Dopodichè segnalo ad azionisti di riempire le votazioni con schede bianche, ma solo  
+            // in funzione di AbilitaDirittiNonVoglioVotare:
+            //      false - mi comporto normalmente, salvo i non votati con IDSchedaUscitaForzata
+            //      true  - non faccio nulla, verranno come non votati e saranno disponibili alla nuova votazione
+
+            if (!TotCfg.AbilitaDirittiNonVoglioVotare)
+            {
+                TVotoEspresso vz = new TVotoEspresso
+                    {
+                        NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                        VotoExp_IDScheda = TotCfg.IDSchedaUscitaForzata,
+                        TipoCarica = 0,
+                        Str_ListaElenco = "",
+                        StrUp_DescrLista = ""
+                    };
+
+                Azionisti.ConfermaVotiDaInterruzione(vz);
+            }
+
+
+
+            //int i, z, NVotaz, NSKSalvate;
+            ////TVotiDaSalvare v;
+            //TAzionista c;
+
             
             // procedura chiamata dall'interruzione 999999 durante il voto
             // oppure al salvataggio se il n. di sk è minore x qualche motivo
@@ -1086,6 +1111,8 @@ namespace VotoTouch
 	
 		private void TornaInizio()
 		{
+            //TODO: TornaInizio da verificare
+
 			// dall'inizio
 		    //VotoCorrente = Votazioni.DammiPrimaVotazione();
 			//CurrVoteIDX = 0;

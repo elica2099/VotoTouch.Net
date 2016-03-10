@@ -33,8 +33,6 @@ namespace VotoTouch
         public bool cda;
         // per la multivotazione
         public int Multi;
-
-        // TODO: mettere il costruttore 
     }
 
     //Dichiaro il delegate
@@ -252,7 +250,6 @@ namespace VotoTouch
         public int old_CalcolaTouch(object sender, TAppStato Stato, TNewVotazione FVotaz, bool Differ)
         {
             // DR12 OK
-            // TODO: Usare IdScheda invece di indice in expr
             // in funzione del tipo di stato della macchina a stati, del tipo di votazione
             // creo le aree sensibili dello schermo
             

@@ -186,7 +186,7 @@ namespace VotoTouch
                     // separo così mi evito un controllo in più
                     if (Controllato)
                     {
-                        if (DammiUtente())
+                        if (Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni))
                         {
                             // resetto alcune variabili
                             //VotoCorrente = Votazioni.DammiPrimaVotazione();
@@ -200,7 +200,6 @@ namespace VotoTouch
                                 " Diritti di Voto Max: " + Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString());
 
                             Stato = TAppStato.ssvVotoStart;
-
                             CambiaStato();
                         }
                         else  // if (DammiUtente())

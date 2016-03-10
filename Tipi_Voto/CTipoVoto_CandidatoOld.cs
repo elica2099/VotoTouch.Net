@@ -325,7 +325,6 @@ namespace VotoTouch
                 }
             }
 
-            //// TODO: FATTO PER ETRURIA
             //// ok, ora una cosa strana, il seleziona tuttiCDA, in alcuni casi servere un tasto che
             //// selezioni tutti come se fosse un multi candidato
             //// se nella votazione è presente il seleziona TuttoCDA
