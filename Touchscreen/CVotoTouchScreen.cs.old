@@ -1,0 +1,1814 @@
+using System;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Media;
+
+
+namespace VotoSegreto
+{
+    // eventi di pressione scheda
+    public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
+        steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
+        steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti};
+
+    // struttura zone dello schermo
+    public struct TTZone
+    {
+        public int id;
+
+        public int x;   
+        public int y;
+        public int r;       // right
+        public int b;       // bottom
+        public int expr;
+        public TTEvento ev;
+        public string Text;
+        public int pag;     // importante, gli item con pag=0 vengono sempre visualizzati/considerati
+        public bool cda;
+        // per la multivotazione
+        public int Multi;
+
+        // TODO: mettere il costruttore 
+    }
+
+    //Dichiaro il delegate
+    public delegate void testEventHandler(object source, string messaggio);
+
+    public delegate void ehPremutoVotaNormale(object source, int VParam);
+    public delegate void ehPremutoVotaDifferenziato(object source, int VParam);
+    public delegate void ehPremutoConferma(object source, int VParam);
+    public delegate void ehPremutoAnnulla(object source, int VParam);
+    public delegate void ehPremutoVotoValido(object source, int VParam, bool ZParam);
+    public delegate void ehPremutoInvalido(object source, int VParam);
+    public delegate void ehPremutoTab(object source, int VParam);
+    // sk bianca + non voto (v. 3.1)
+    public delegate void ehPremutoSchedaBianca(object source, int VParam);
+    public delegate void ehPremutoNonVoto(object source, int VParam);
+    // multivotazione (v. 3.2)
+    public delegate void ehPremutoMultiAvanti(object source, int VParam, ref List<int> voti);
+    public delegate void ehPremutoMulti(object source, int VParam);
+
+    public delegate void ehTouchWatchDog(object source, int VParam);
+
+    /// <summary>
+	/// Summary description for CVotoTouchScreen.
+	/// </summary>
+	public class CVotoTouchScreen
+	{
+
+        public const int TIMER_TOUCH_INTERVAL = 500;
+        public const int TIMER_TOUCHWATCH_INTERVAL = 1000;
+        
+        public const float Nqx = 100;
+        public const float Nqy = 100;
+
+        public const float HRETT_CANDIDATO = 6F; //67px;
+
+
+        //  gli elenchi di eventi
+        public event testEventHandler testEvento;
+
+        public event ehPremutoVotaNormale PremutoVotaNormale;
+        public event ehPremutoVotaDifferenziato PremutoVotaDifferenziato;
+        public event ehPremutoConferma PremutoConferma;
+        public event ehPremutoAnnulla PremutoAnnulla;
+        public event ehPremutoVotoValido PremutoVotoValido;
+        public event ehPremutoInvalido PremutoInvalido;
+        public event ehPremutoTab PremutoTab;
+        // sk bianca + non voto (v. 3.1)
+        public event ehPremutoSchedaBianca PremutoSchedaBianca;
+        public event ehPremutoNonVoto PremutoNonVoto;
+        // multivotazione (v. 3.2)
+        public event ehPremutoMultiAvanti PremutoMultiAvanti;
+        public event ehPremutoMulti PremutoMulti;               // serve per il repaint
+
+        public event ehTouchWatchDog TouchWatchDog;
+
+        public bool PaintTouchOnScreen;
+        public Rectangle FFormRect;
+        private ArrayList Tz;
+
+        public Bitmap btnBmpCand;
+        public Bitmap btnBmpCandArancio; 
+        public Bitmap btnBmpCandSing;
+        public Bitmap btnBmpCandSelez;
+        public Bitmap btnBmpTab;
+        public Bitmap btnBmpTabSelez;
+        public Bitmap btnBmpCDASelez;
+
+        // Gestione delle Multivotazioni
+        public int NumMulti;
+
+        // Gestione delle Pagine
+        public int CurrPag;
+
+        // i ritardi/watchdog del touch
+        private Timer timTouch;
+        private Timer timTouchWatchDog;
+        private bool TouchEnabled;
+        private int TouchWatch;
+
+		public CVotoTouchScreen()
+		{
+            // DR11 OK
+            // inizializzo
+            FFormRect = new Rectangle();
+
+            Tz = new ArrayList();
+
+            PaintTouchOnScreen = false;
+
+            // ora mi creo il bottone in bmp
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream;
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.bottonetrasp_ok.png");
+            btnBmpCandSing = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.btn_alternativo.png");
+            btnBmpCand = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.btn_alternativo_selez_2.png");
+            btnBmpCandSelez = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.tab.png");
+            btnBmpTab = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.tab_rev.png");
+            btnBmpTabSelez = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.bottone_selezCDA.png");
+            btnBmpCDASelez = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoSegreto.Resources.bottone_arancio.png");
+            btnBmpCandArancio = new Bitmap(myStream);
+
+            // gestione delle pagine
+            CurrPag = 1;
+
+            // la variabile che indica quanti candidati si possono toccare
+            NumMulti = 0;
+
+            // ritardo del touch
+            TouchEnabled = true;
+            TouchWatch = 0;
+            // ora i timer
+            timTouch = new Timer();
+            timTouch.Enabled = false;
+            timTouch.Interval = TIMER_TOUCH_INTERVAL;
+            timTouch.Tick += timTouch_Tick;
+
+            timTouchWatchDog = new Timer();
+            timTouchWatchDog.Enabled = false;
+            timTouchWatchDog.Interval = TIMER_TOUCHWATCH_INTERVAL;
+            timTouchWatchDog.Tick += timTouchWatchDog_Tick;
+
+		}
+
+        // --------------------------------------------------------------
+        //  CALCOLO DEL RESIZE
+        // --------------------------------------------------------------
+
+        public int CalcolaTouch(object sender, TAppStato Stato, ref TParVotazione FVotaz, bool Differ)
+        {
+            // DR12 OK
+            // TODO: Usare IdScheda invece di indice in expr
+            // in funzione del tipo di stato della macchina a stati, del tipo di votazione
+            // creo le aree sensibili dello schermo
+            TTZone a;
+
+            // cancello comunque la collection
+            Tz.Clear();
+            // setto la variabile multi
+            NumMulti = 0;
+
+            // switcho in funzione dello stato
+            switch (Stato)
+            {
+                case TAppStato.ssvBadge:
+                    // non fare nulla
+                    break;
+
+                case TAppStato.ssvVotoStart:
+                    if (Differ)
+                    {
+                        // differenziato tasto grande
+                        a = new TTZone();
+                        GetZone(ref a, 9, 45, 57, 90); a.expr = 0; a.pag = 0; a.Multi = 0;
+                        a.Text = ""; a.ev = TTEvento.steVotaNormale;
+                        Tz.Add(a);
+                        // differenziato tasto piccolo
+                        a = new TTZone();
+                        GetZone(ref a, 62, 52, 93, 90); a.expr = 1; a.pag = 0; a.Multi = 0;
+                        a.Text = ""; a.ev = TTEvento.steVotaDiffer;
+                        Tz.Add(a);
+                    }
+                    else
+                    {
+                        // normale, tutto lo schermo
+                        a = new TTZone();
+                        GetZone(ref a, 2, 2, 98, 98); a.expr = 0; a.pag = 0; a.Multi = 0;
+                        a.Text = ""; a.ev = TTEvento.steVotaNormale;
+                        Tz.Add(a);
+                    }
+                    break;
+
+                case TAppStato.ssvVoto:
+
+                    // In funzione del tipo di votazione metto i componenti
+                    // VOTAZIONE DI LISTA
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_LISTA)
+                    {
+                        // c'è una routine che calcola la votazione di lista
+                        CalcolaTouchLista(Stato, ref FVotaz, Differ);
+                    }   //if  FVotaz.TipoVoto == VOTO_LISTA
+
+                    // VOTAZIONE DI CANDIDATO MULTI PAGINA
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_CANDIDATO)
+                    {
+                        // metto i rettangoli del candidato a singola pagina
+                        NewCalcolaTouchCandidatoPagina(Stato, ref FVotaz, Differ);
+                        // ora devo mettere i tabs
+                        CalcolaTouchTabsPagina(Stato, ref FVotaz);
+                    }
+
+                    // VOTAZIONE DI MULTICANDIDATO MULTI PAGINA
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                    {
+                        // setto la variabile multi
+                        NumMulti = FVotaz.MaxScelte;
+                        // metto i rettangoli del candidato a singola pagina
+                        NewCalcolaTouchCandidatoPagina(Stato, ref FVotaz, Differ);
+                        // ora devo mettere i tabs
+                        CalcolaTouchTabsPagina(Stato, ref FVotaz);
+                    }
+
+                    //***** OBSOLETO *****//
+                    // VOTAZIONE DI CANDIDATO SINGOLA PAGINA 
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_CANDIDATO_SING)
+                    {
+                        // metto i rettangoli del candidato a singola pagina
+                        CalcolaTouchCandidatoSingola(Stato, ref FVotaz, Differ);
+                    }
+
+                    break;
+
+                // conferma del voto
+                case TAppStato.ssvVotoConferma:
+                     // Bottone Annulla
+                     a = new TTZone();
+                     GetZone(ref a, 4, 60, 45, 90); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                     a.Text = ""; a.ev = TTEvento.steAnnulla;
+                     Tz.Add(a);
+                     // Bottone Conferma
+                     a = new TTZone();
+                     GetZone(ref a, 55, 60, 96, 90); a.expr = 1; a.pag = 0; a.Multi = 0;  
+                     a.Text = ""; a.ev = TTEvento.steConferma;
+                     Tz.Add(a);
+
+                     // da vedere: conferma anche se schiaccia il candidato
+                     a = new TTZone();
+                     GetZone(ref a, 12, 16, 88, 52); a.expr = 1; a.pag = 0; a.Multi = 0;  
+                     a.Text = ""; a.ev = TTEvento.steConferma;
+                     Tz.Add(a);
+
+                     break;
+                
+                // salvataggio/fine del voto
+                case TAppStato.ssvVotoFinito:
+                case TAppStato.ssvSalvaVoto:
+                     // non fare nulla
+                     break;
+
+
+                default:
+                    // non fare nulla
+                    break;
+
+            }
+
+            return 0;
+        }
+
+        // --------------------------------------------------------------
+        //  CALCOLO DEL TOUCH LISTE
+        // --------------------------------------------------------------
+        
+        #region CALCOLO DEL TOUCH LISTE
+
+        public void CalcolaTouchLista(TAppStato AStato, ref TParVotazione AFVotaz, bool ADiffer)
+        {
+            // DR12 OK
+            TTZone a;
+            
+            // ok, in funzione dell liste e della votazione faccio
+            if (AFVotaz.NListe == 1)
+            {
+                a = new TTZone();
+                GetZone(ref a, 16, 24, 85, 66); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // 2 Liste
+            if (AFVotaz.NListe == 2)
+            {
+                // 1° Lista
+                a = new TTZone();
+                GetZone(ref a, 9, 24, 43, 68); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 2° Lista
+                a = new TTZone();
+                GetZone(ref a, 56, 24, 90, 68); a.expr = 1; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // 3 Liste
+            if (AFVotaz.NListe == 3)
+            {
+                // 1° Lista
+                a = new TTZone();
+                GetZone(ref a, 3, 24, 31, 68); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 2° Lista
+                a = new TTZone();
+                GetZone(ref a, 36, 24, 63, 68); a.expr = 1; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 3° Lista
+                a = new TTZone();
+                GetZone(ref a, 68, 24, 96, 68); a.expr = 2; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // 4 Liste
+            if (AFVotaz.NListe == 4)
+            {
+                // 1° Lista
+                a = new TTZone();
+                GetZone(ref a, 5, 23, 45, 43); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 2° Lista
+                a = new TTZone();
+                GetZone(ref a, 54, 23, 94, 43); a.expr = 1; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 3° Lista
+                a = new TTZone();
+                GetZone(ref a, 5, 48, 45, 68); a.expr = 2; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 4° Lista
+                a = new TTZone();
+                GetZone(ref a, 54, 48, 94, 68); a.expr = 3; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // 5 Liste
+            if (AFVotaz.NListe == 5)
+            {
+                // 1° Lista
+                a = new TTZone();
+                GetZone(ref a, 2, 23, 30, 43); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 2° Lista
+                a = new TTZone();
+                GetZone(ref a, 34, 23, 65, 43); a.expr = 1; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 3° Lista
+                a = new TTZone();
+                GetZone(ref a, 69, 23, 98, 43); a.expr = 2; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // seconda riga
+                // 4° Lista
+                a = new TTZone();
+                GetZone(ref a, 17, 48, 45, 68); a.expr = 3; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 5° Lista
+                a = new TTZone();
+                GetZone(ref a, 54, 48, 82, 68); a.expr = 4; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // 6 Liste
+            if (AFVotaz.NListe == 6)
+            {
+                // 1° Lista
+                a = new TTZone();
+                GetZone(ref a, 2, 23, 30, 43); a.expr = 0; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 2° Lista
+                a = new TTZone();
+                GetZone(ref a, 34, 23, 65, 43); a.expr = 1; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 3° Lista
+                a = new TTZone();
+                GetZone(ref a, 69, 23, 98, 43); a.expr = 2; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // seconda riga
+                // 4° Lista
+                a = new TTZone();
+                GetZone(ref a, 2, 48, 30, 68); a.expr = 3; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 5° Lista
+                a = new TTZone();
+                GetZone(ref a, 34, 48, 65, 68); a.expr = 4; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+                // 6° Lista
+                a = new TTZone();
+                GetZone(ref a, 69, 48, 98, 68); a.expr = 5; a.pag = 0; a.Multi = 0; 
+                a.Text = ""; a.ev = TTEvento.steVotoValido;
+                Tz.Add(a);
+            }
+            // Ok, ora la scheda bianca
+            if (AFVotaz.SkBianca)
+            {
+                a = new TTZone();
+                // se c'è anche non voto devo spostarla
+                if (!AFVotaz.SkNonVoto) 
+                    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
+                else
+                    GetZone(ref a, 10, 72, 44, 90); //la sposto a sinistra
+                a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; a.Multi = 0; 
+                Tz.Add(a);
+            }
+            // il non voto, se presente (caso BPM)
+            if (AFVotaz.SkNonVoto)
+            {
+                a = new TTZone();
+                // se c'è anche SkBianca devo spostarla
+                if (!AFVotaz.SkBianca)
+                    GetZone(ref a, 32, 72, 67, 90); // non la sposto, sta in centro
+                else
+                    GetZone(ref a, 55, 72, 89, 90); //la sposto a destra
+                a.expr = VSDecl.VOTO_NONVOTO;
+                a.Text = ""; a.ev = TTEvento.steSkNonVoto; a.pag = 0; a.Multi = 0;
+                Tz.Add(a);
+            }
+        }
+
+        #endregion
+
+        // --------------------------------------------------------------
+        //  CALCOLO DEL TOUCH CANDIDATO/MULTICANDIDATO PAGINA NUOVO
+        // --------------------------------------------------------------
+
+        #region calcolo candidato/multicandidato touch nuovo
+
+        public void NewCalcolaTouchCandidatoPagina(TAppStato AStato, ref TParVotazione AFVotaz, bool ADiffer)
+        {
+            // DR12 OK
+            TTZone a;
+            TListe li;
+            int z, PosPresCda, PosCandAlt;
+            TTEvento evento;
+
+            // in funzione della votazione seleziono l'evento corrispondente al tocco del voto
+            // se è Multicandidato, l'evento sarà solo locale e setterà un flag nella collection, 
+            // altrimenti richiamerà il voto valido all'esterno
+            if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                evento = TTEvento.steMultiValido;
+            else
+                evento = TTEvento.steVotoValido;
+
+            PosPresCda = 1;
+            PosCandAlt = 1;
+
+            // ok, ciclo lungo i candidati per metterli nell'area giusta
+            for (z = 0; z < AFVotaz.NListe; z++)
+            {
+                li = (TListe)AFVotaz.Liste[z];
+
+                // Devo testare se il candidato è presentato dal cda
+                if (li.PresentatodaCDA)
+                {
+                    // ok, è presentato, va nell'area in alto
+                    a = new TTZone();
+                    GetNew_CandidatoCdaZone(ref a, PosPresCda, AFVotaz.NPresentatoCDA, AFVotaz.AreaVoto);
+                    a.expr = z; a.ev = evento;
+                    a.Text = li.DescrLista;
+                    a.Multi = 0; a.cda = true;
+                    a.pag = 0;
+                    Tz.Add(a);
+                    PosPresCda++;
+                }
+                else
+                {
+                    // una voltra controllavo la pagina corrente /if (li.Pag == CurrPag) ora non si usa più
+                    // perché aggiungo tutti i candidati e 
+                    // non è presentato, va nell'area in basso
+                    a = new TTZone();
+                    GetNew_CandidatoAltPaginaZone(ref a, PosCandAlt, AFVotaz.AreaVoto);
+                    a.expr = z; a.ev = evento;
+                    a.Text = li.DescrLista;
+                    a.Multi = 0; a.cda = false;
+                    a.pag = li.Pag;
+                    Tz.Add(a);
+                    PosCandAlt++;
+                    // aggiunta successiva
+                    if (PosCandAlt > AFVotaz.AreaVoto.CandidatiPerPagina)
+                        PosCandAlt = 1;
+                }
+            }
+            // Ok, ora la scheda bianca e il non voto
+            if (AFVotaz.SkBianca && !AFVotaz.SkNonVoto)
+            {
+                // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+                a = new TTZone();
+                // cambio la posizione nel caso ho Avanti
+                if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                    GetZone(ref a, 12, 81, 44, 91);
+                else
+                    GetZone(ref a, 23, 79, 78, 92);
+                a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                a.pag = 0;
+                a.cda = false;
+                a.Multi = 0;
+                a.Text = "";
+                a.ev = TTEvento.steSkBianca;
+                Tz.Add(a);
+            }
+            else
+            {
+                // Ok, ora la scheda bianca
+                if (AFVotaz.SkBianca)
+                {
+                    a = new TTZone();
+                    // se c'è anche non voto devo spostarla
+                    if (!AFVotaz.SkNonVoto)
+                        GetZone(ref a, 32, 76, 67, 90); // non la sposto sta in centro
+                    else
+                        GetZone(ref a, 10, 76, 44, 90); //la sposto a sinistra
+                    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                    a.Text = "";
+                    a.ev = TTEvento.steSkBianca;
+                    a.pag = 0;
+                    a.Multi = 0;
+                    Tz.Add(a);
+                }
+                // il non voto, se presente (caso BPM)
+                if (AFVotaz.SkNonVoto)
+                {
+                    a = new TTZone();
+                    // se c'è anche SkBianca devo spostarla
+                    if (!AFVotaz.SkBianca)
+                        GetZone(ref a, 32, 76, 67, 90); // non la sposto, sta in centro
+                    else
+                        GetZone(ref a, 55, 76, 89, 90); //la sposto a destra
+                    a.expr = VSDecl.VOTO_NONVOTO;
+                    a.Text = "";
+                    a.ev = TTEvento.steSkNonVoto;
+                    a.pag = 0;
+                    a.Multi = 0;
+                    Tz.Add(a);
+                }
+            }
+            // Attenzione, nel caso la votazione sia di tipo Multicandidato, devo Aggiungere un tasto
+            // "Avanti" o "Conferma" per continuare ed è possibile che ci sia un tasto SelezionaTuttiCDA
+            if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            {
+                // devo aggiungere il tasto con evento           
+                a = new TTZone();
+                GetZone(ref a, 64, 81, 97, 91); a.expr = VSDecl.VOTO_MULTIAVANTI;
+                a.Text = ""; a.ev = TTEvento.steMultiAvanti; a.pag = 0; a.cda = false; a.Multi = 0;
+                Tz.Add(a);
+
+                // se nella votazione è presente il seleziona TuttoCDA
+                if (AFVotaz.SelezionaTuttiCDA && AFVotaz.NPresentatoCDA > 0)
+                {
+                    // devo mettere il tasto
+                    a = new TTZone();
+                    //int y;
+                    // devo fare attenzione a quante righe ha il cda e spostare il tasto
+                    if (AFVotaz.NPresentatoCDA <= 3)
+                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda()+2),
+                            AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 8));
+                    else
+                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda() - 4),
+                            AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 3));
+                    a.expr = 999; a.cda = false;
+                    a.Text = ""; a.ev = TTEvento.steMultiSelezTuttiCDA; a.pag = 0;
+                    Tz.Add(a);               
+                }            
+            }
+        }
+
+        private void GetNew_CandidatoCdaZone(ref TTZone a, int APosPresCda, int ATotPresCda, TAreaVotazione Area)
+        {
+            // ho una zona di voto che è in Area, ho il totale di quanti sono, ela posizione 
+            float x, y, r, b, ax, ar;
+            int nct, nrt, npc, npr;
+            
+            // PER ETRURIA
+            // se ho un candidato solo, come nel 99% dei casi di voto singolo, metto 
+            //if (ATotPresCda == 1)
+            //{
+            //    ax = Area.XCda +16;
+            //    y = Area.YCda;
+            //    ar = Area.RCda() -16;
+            //    b = Area.BCda() +1;
+
+            //    GetZone(ref a, (int)ax, (int)y, (int)ar, (int)b);
+            //    return;
+            //}
+
+
+            // definisco il n. di colonne totali / per il numero totale di cda
+            int[] ncolt = new int[] { 0, 1, 2, 3, 2, 3, 3 };
+            nct = ncolt[ATotPresCda];
+            // definisco il n. di righe totali
+            if (ATotPresCda <= 3) nrt = 1; else nrt = 2;
+            // stabilisco la posizione reale del rett, in che colonna è, in funzione di APosPresCda
+            // c'è un correttivo, perchè nel caso di 4 cvandidati non vado su tre file, ma su due
+            int[] nposc = new int[] { 0, 1, 2, 3, 1, 2, 3 };
+            npc = nposc[APosPresCda];
+            if (ATotPresCda == 4 && APosPresCda == 3) npc = 1;
+            if (ATotPresCda == 4 && APosPresCda == 4) npc = 2;
+            // stabilisco la posizione nella riga
+            int[] nposr = new int[] { 0, 1, 1, 1, 2, 2, 2 };
+            npr = nposr[APosPresCda];
+            if (ATotPresCda == 4 && APosPresCda == 3) npr = 2;
+            if (ATotPresCda == 4 && APosPresCda == 4) npr = 2;
+
+            // calcolo il rettangolo globale
+            x = Area.XCda + ((Area.WCda / nct) * (npc - 1));
+            y = Area.YCda + ((Area.HCda / nrt) * (npr - 1));
+            r = x + (Area.WCda / nct);
+            b = y + (Area.HCda / nrt);
+            // devo ora calcolarmi il vero rettangolo interno
+            if (npr == 1)
+                b = y + HRETT_CANDIDATO;
+            else
+                y = b - HRETT_CANDIDATO;
+            // devo centrare i rettangoli
+            float[] dimr = new float[] { 0, 38, 34, 29 };
+            ax = x + ((r - x - dimr[nct]) / 2);
+            ar = r - ((r - x - dimr[nct]) / 2);
+
+            GetZone(ref a, (int)ax, (int)y, (int)ar, (int)b);
+        }
+
+        private void GetNew_CandidatoAltPaginaZone(ref TTZone a, int APosCandAlt, TAreaVotazione Area)
+        {
+            // ho il n. di candidati per pagina in Area.CandidatiPerPagina
+            
+            float x, y, r, b, ax, ar;
+            int nct, nrt, npc, npr;
+
+            // definisco il n. di colonne totali in funzione del numero di candidati
+            if (Area.CandidatiPerPagina == 1) nct = 1; else nct = 2;
+            // definisco il n. di righe totali
+            int[] nrowt = new int[] { 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5 };
+            nrt = nrowt[Area.CandidatiPerPagina];
+            // posizione del rettangolo sulla riga
+            int[] nposc = new int[] { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 };
+            npc = nposc[APosCandAlt];
+
+            // posizione sulla riga
+            npr = nrowt[APosCandAlt];
+
+            // calcolo il rettangolo globale
+            x = Area.XAlt + ((Area.WAlt / nct) * (npc - 1));
+            y = Area.YAlt + ((Area.HAlt / nrt) * (npr - 1));
+            r = x + (Area.WAlt / nct);
+            b = y + (Area.HAlt / nrt);
+            // devo ora calcolarmi il vero rettangolo interno
+            b = y + HRETT_CANDIDATO;
+            // devo centrare i rettangoli
+            float[] dimr = new float[] { 0, 38, 34, 28 };
+            ax = x + ((r - x - dimr[nct]) / 2);
+            ar = r - ((r - x - dimr[nct]) / 2);
+            GetZone(ref a, (int)ax, (int)y, (int)ar, (int)b);
+        }
+
+        // --------------------------------------------------------------
+        //  CALCOLO DEL TOUCH TABS
+        // --------------------------------------------------------------
+
+        public void CalcolaTouchTabsPagina(TAppStato AStato, ref TParVotazione AFVotaz)
+        {
+            // DR12 OK
+            // se non ho bisogno di tab è inutile, tanto vale uscire
+            if (!AFVotaz.AreaVoto.NeedTabs) return;
+
+            // mette i tabs che ci sono in funzione delle pagine contenute in Pagina
+            int i, ncol, acol, arow;
+            TIndiceListe il;
+            int x, y, ax, ay, w, h;
+            TTZone a;
+
+            // x:995 y:320 w:295 h:600
+            x = 77;
+            y = AFVotaz.AreaVoto.YAlt; // 31;
+            h = 5; // altezza dei tabs fissa
+            // bisogna stabilire quante colonne ci sono
+            ncol = ((AFVotaz.Pagine.Count - 1) / 8) + 1;
+            w = 24 / ncol;
+
+            acol = 0;
+            arow = 0;
+            // parto da 1 perche la pagina 0 è quella dei candidati cda
+            for (i = 1; i < AFVotaz.Pagine.Count; i++)
+            {
+                il = (TIndiceListe)AFVotaz.Pagine[i];
+                // ok, ora inserisco in funzione della posizione
+                a = new TTZone();
+                ax = x + (w * acol);
+                ay = y + (6 * arow);
+
+                GetZone(ref a, ax, ay, ax + w - 1, ay + h);
+
+                a.expr = il.pag; a.ev = TTEvento.steTabs;
+                a.Text = il.indice.ToLower();
+                a.Multi = 0; a.pag = 0; 
+                Tz.Add(a);
+
+                arow++;
+                if (arow >= 8)
+                {
+                    arow = 0;
+                    acol++;
+                }
+            }
+        }
+
+#endregion
+
+        // --------------------------------------------------------------
+        //  CALCOLO DEL TOUCH CANDIDATO PAGINA VECCHIO
+        // --------------------------------------------------------------
+        #region CALCOLO DEL TOUCH CANDIDATO PAGINA VECCHIO
+
+        public void CalcolaTouchCandidatoPagina(TAppStato AStato, ref TParVotazione AFVotaz, bool ADiffer)
+        {
+            // DR11 OK
+            TTZone a;
+            TListe li;
+            int z, PosPresCda, PosCandAlt;
+            TTEvento evento;
+
+            // in funzione della votazione seleziono l'evento corrispondente al tocco del voto
+            // se è Multicandidato, l'evento sarà solo locale e setterà un flag nella collection, 
+            // altrimenti richiamerà il voto valido all'esterno
+            //if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            //    evento = TTEvento.steMultiValido;
+            //else
+            evento = TTEvento.steVotoValido;
+
+            PosPresCda = 1;
+            PosCandAlt = 1;
+            // ok, ciclo lungo i candidati per metterli nell'area giusta
+            for (z = 0; z < AFVotaz.NListe; z++)
+            {
+                li = (TListe)AFVotaz.Liste[z];
+
+                // Devo testare se il candidato è presentato dal cda
+                if (li.PresentatodaCDA)
+                {
+                    // ok, è presentato, va nell'area in alto
+                    a = new TTZone();
+                    GetCandidatoCdaZone(ref a, PosPresCda, AFVotaz.NPresentatoCDA);
+                    a.expr = z; a.ev = evento;
+                    a.Text = li.DescrLista;
+                    a.Multi = 0; a.pag = 0; 
+                    Tz.Add(a);
+                    PosPresCda++;
+                }
+                else
+                {
+                    // controllo che sia nella pagina corrente
+                    //if (li.Pag == CurrPag)
+                    //{
+                        // non è presentato, va nell'area in basso
+                        a = new TTZone();
+                        GetCandidatoAltPaginaZone(ref a, PosCandAlt); //, AFVotaz.NPresentatoCDA);
+                        a.expr = z; a.ev = evento;
+                        a.Text = li.DescrLista;
+                        a.Multi = 0; a.pag = li.Pag;
+                        Tz.Add(a);
+                        PosCandAlt++;
+                        // aggiunta successiva
+                        if (PosCandAlt > AFVotaz.AreaVoto.CandidatiPerPagina)
+                            PosCandAlt = 1;
+                    //}
+                }
+            }
+            // Ok, ora la scheda bianca e il non voto
+            if (AFVotaz.SkBianca)
+            {
+                // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+                a = new TTZone();
+                // cambio la posizione nel caso ho Avanti
+                if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                    GetZone(ref a, 25, 81, 65, 91);
+                else
+                    GetZone(ref a, 30, 81, 70, 91);                
+                a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; 
+                Tz.Add(a);
+            }
+
+            // Attenzione, nel caso la votazione sia di tipo Multicandidato, devo Aggiungere un tasto
+            // "Avanti" o "Conferma" per continuare
+            if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            {
+                // devo aggiungere il tasto con evento           
+                a = new TTZone();
+                GetZone(ref a, 68, 81, 99, 91); a.expr = VSDecl.VOTO_MULTIAVANTI;
+                a.Text = ""; a.ev = TTEvento.steMultiAvanti; a.pag = 0; 
+                Tz.Add(a);
+            }
+        }
+
+        // ------------------ CANDIDATO CDA ----------------------------
+
+        private void GetCandidatoCdaZone(ref TTZone a, int APosPresCda, int ATotPresCda)
+        {
+            float x, y, r, b;
+
+            // qua setto la posizione del candidato, in funzione del totale
+            // NOTA: In questa versione sono possibili fino a 3 Candidati presentati dal CDA
+            // l'area disponibile in base 1280x1024 è:
+            // x:540 y:180 w:614 h:76 la larghezza del rettangolo è 400x3 600x2 800x1
+            float yy = 48 / (ATotPresCda);
+            float ms = (yy - GetDimensioneCda(ATotPresCda)) / 2;
+            x = 42 + ms + (yy * (APosPresCda - 1));
+
+            y = 18;
+            r = x + GetDimensioneCda(ATotPresCda);
+            b = 25;
+            GetZone(ref a, (int)x, (int)y, (int)r, (int)b);
+
+        }
+
+        private float GetDimensioneCda(int ATotPresCda)
+        {
+            float[] zz = new float[] { 0, 46, 34, 31, 20, 17 };
+            return zz[ATotPresCda];
+        }
+
+        // ------------------ CANDIDATO ALTERNATIVO PAGINE ----------------------------
+
+        private void GetCandidatoAltPaginaZone(ref TTZone a, int APosCandAlt) //, int ATotPresCda)
+        {
+            // so che ho il max di CANDIDATI_PER_PAGINA per pagina, quindi in funzione
+            // della posizione li metto
+            float x, y, r, b;
+
+            //calcolo che ne ho max 5 in colonna, su 2 colonne
+            // innanzitutto quante colonne ho?
+            int col = 2;  // fisse
+            // calcolo le colonne
+            float yy = 74 / (col);
+            float ms = (yy - GetDimensioneCda(col)) / 2;
+            // ora devo calcolarmi la posizione sulla colonna
+            x = 1 + ms + (yy * ((GetColonneAltPagina(APosCandAlt)) - 1));
+            // devo calcolarmi la y
+            y = 33 + ((GetYAltPag(APosCandAlt) * 10) - 2);
+            r = x + GetDimensioneCda(col);
+            b = y + 7;
+            GetZone(ref a, (int)x, (int)y, (int)r, (int)b);
+        }
+
+        private int GetColonneAltPagina(int ATotCandAlt)
+        {
+            int[] zz = new int[] { 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2 };
+            return zz[ATotCandAlt];
+        }
+
+        private float GetYAltPag(int ATotCandAlt)
+        {
+            int[] zz = new int[] { 0, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4 };
+            return zz[ATotCandAlt];
+        }
+        
+        #endregion
+        
+        // --------------------------------------------------------------
+        //  CALCOLO DEL TOUCH CANDIDATO SINGOLA PAGINA
+        // --------------------------------------------------------------
+        #region CALCOLO DEL TOUCH CANDIDATO SINGOLA PAGINA
+
+        public void CalcolaTouchCandidatoSingola(TAppStato AStato, ref TParVotazione AFVotaz, bool ADiffer)
+        {
+            TTZone a;
+            TListe li;
+            int z, PosPresCda, PosCandAlt, TotCandAlt;
+
+            string nomeEtruria = "";
+
+            PosPresCda = 1;
+            PosCandAlt = 1;
+            TotCandAlt = AFVotaz.NListe - AFVotaz.NPresentatoCDA;
+
+            // ok qua ci sono dua modi di intendere il voto
+
+            // MODO UNO, non ci sono candidati CDA, quindi posso mettere fino ad un massimo di 21 candidati per pagina
+            if (AFVotaz.NPresentatoCDA == 0)
+            {
+
+                for (z = 0; z < AFVotaz.NListe; z++)
+                {
+                    li = (TListe) AFVotaz.Liste[z];
+                    // non è presentato, va nell'area in basso
+                    a = new TTZone();
+                    GetCandidatoAltSingolaPagina21(ref a, PosCandAlt, TotCandAlt, AFVotaz.NPresentatoCDA);
+                    a.expr = z;
+                    a.ev = TTEvento.steVotoValido;
+                    a.Text = li.DescrLista;
+                    a.cda = false;
+                    a.Multi = 0;
+                    a.pag = 0;
+                    Tz.Add(a);
+                    PosCandAlt++;                               
+                }
+            }
+            else
+            {
+                // MODO DUE, ci sono candidati CDA
+
+                // ok, ciclo lungo i candidati per metterli nell'area giusta
+                for (z = 0; z < AFVotaz.NListe; z++)
+                {
+                    li = (TListe) AFVotaz.Liste[z];
+
+                    // Devo testare se il candidato è presentato dal cda
+                    if (li.PresentatodaCDA)
+                    {
+                        // ok, è presentato, va nell'area in alto
+                        a = new TTZone();
+                        GetCandidatoCdaSingolaZone(ref a, PosPresCda, AFVotaz.NPresentatoCDA, AFVotaz.SelezionaTuttiCDA);
+                        a.expr = z;
+                        a.ev = TTEvento.steVotoValido;
+                        a.Text = li.DescrLista;
+                        a.Multi = 0;
+                        a.pag = 0;
+                        a.cda = true;
+                        Tz.Add(a);
+                        PosPresCda++;
+
+                        nomeEtruria += li.DescrLista + "      ";
+                    }
+                    else
+                    {
+                        // non è presentato, va nell'area in basso
+                        a = new TTZone();
+                        GetCandidatoAltSingolaZone(ref a, PosCandAlt, TotCandAlt, AFVotaz.NPresentatoCDA);
+                        a.expr = z;
+                        a.ev = TTEvento.steVotoValido;
+                        a.Text = li.DescrLista;
+                        a.cda = false;
+                        a.Multi = 0;
+                        a.pag = 0;
+                        Tz.Add(a);
+                        PosCandAlt++;
+                    }
+                    //lbVersion.Items.Add("        Lista: " + a.IDLista.ToString() + ", IdSk: " +
+                    //    a.IDScheda.ToString() + ", " + a.DescrLista + ", cda: " + a.PresentatodaCDA.ToString());
+                }
+            }
+            // Ok, ora la scheda bianca e il non voto
+            //    if (AFVotaz.SkBianca)
+            //    {
+            //        // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+            //        a = new TTZone();
+            //        GetZone(ref a, 30, 81, 70, 91); a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //        a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; 
+            //        Tz.Add(a);
+            //    }
+            // Ok, ora la scheda bianca e il non voto
+            if (AFVotaz.SkBianca && !AFVotaz.SkNonVoto)
+            {
+                // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+                a = new TTZone();
+                GetZone(ref a, 23, 79, 78, 92);
+                a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                a.pag = 0;
+                a.cda = false;
+                a.Multi = 0;
+                a.Text = "";
+                a.ev = TTEvento.steSkBianca;
+                Tz.Add(a);
+            }
+            else
+            {
+                // Ok, ora la scheda bianca
+                if (AFVotaz.SkBianca)
+                {
+                    a = new TTZone();
+                    // se c'è anche non voto devo spostarla
+                    if (!AFVotaz.SkNonVoto)
+                        GetZone(ref a, 32, 76, 67, 90); // non la sposto sta in centro
+                    else
+                        GetZone(ref a, 10, 82, 44, 95); //la sposto a sinistra
+                    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                    a.Text = "";
+                    a.ev = TTEvento.steSkBianca;
+                    a.pag = 0;
+                    a.Multi = 0;
+                    Tz.Add(a);
+                }
+                // il non voto, se presente (caso BPM)
+                if (AFVotaz.SkNonVoto)
+                {
+                    a = new TTZone();
+                    // se c'è anche SkBianca devo spostarla
+                    if (!AFVotaz.SkBianca)
+                        GetZone(ref a, 32, 82, 67, 95); // non la sposto, sta in centro
+                    else
+                        GetZone(ref a, 55, 82, 89, 95); //la sposto a destra
+                    a.expr = VSDecl.VOTO_NONVOTO;
+                    a.Text = "";
+                    a.ev = TTEvento.steSkNonVoto;
+                    a.pag = 0;
+                    a.Multi = 0;
+                    Tz.Add(a);
+                }
+            }
+
+            //// TODO: FATTO PER ETRURIA
+            //// ok, ora una cosa strana, il seleziona tuttiCDA, in alcuni casi servere un tasto che
+            //// selezioni tutti come se fosse un multi candidato
+            //// se nella votazione è presente il seleziona TuttoCDA
+            //if (AFVotaz.SelezionaTuttiCDA && AFVotaz.NPresentatoCDA > 0)
+            //{
+            //    // devo mettere il tasto
+            //    a = new TTZone();
+            //    //int y;
+            //    // devo fare attenzione a quante righe ha il cda e spostare il tasto
+            //    GetZone(ref a, 27, 26, 73, 35);
+
+            //    //if (AFVotaz.NPresentatoCDA <= 3)
+            //    //    GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda() + 2),
+            //    //        AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 8));
+            //    //else
+            //    //    GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda() - 4),
+            //    //        AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 3));
+            //    //a.expr = 999; a.cda = false;
+            //    a.expr = VSDecl.VOTO_ETRURIA;
+            //    a.pag = 0;
+            //    a.Text = nomeEtruria;
+            //    a.Multi = 0;
+            //    a.ev = TTEvento.steVotoValido; a.pag = 0;
+            //    Tz.Add(a);
+            //}            
+
+
+        }
+
+        // ------------------ CANDIDATO CDA SINGOLA ----------------------------
+
+        private void GetCandidatoCdaSingolaZone(ref TTZone a, int APosPresCda, int ATotPresCda, bool IsActiveVotaTutti)
+        {
+            float x, y, r, b;
+
+            // LAYOUT VERTICALE
+            // innanzitutto quante colonne ho?
+            int col = GetColonneCandSingola(ATotPresCda);
+            // calcolo le colonne
+            float yy = 97 / (col);
+            float ms = (yy - GetDimensioneCdaSingola(col)) / 2;
+            // ora devo calcolarmi la posizione sulla colonna
+            x = 2 + ms + (yy * ((GetColonneCandSingola(APosPresCda)) - 1));
+
+            int starty = 26;
+            if (IsActiveVotaTutti)
+                starty = 42;
+
+            y = starty + ((GetYAlt(APosPresCda) * 13) - 2);
+            r = x + GetDimensioneCdaSingola(col);
+            b = y + 9;
+            GetZone(ref a, (int)x, (int)y, (int)r, (int)b);
+
+            //return;
+            //// LAYOUT ORIZZONTALE
+            //// qua setto la posizione del candidato, in funzione del totale
+            //// NOTA: In questa versione sono possibili fino a 3 Candidati presentati dal CDA
+            //// l'area disponibile in base 1280x1024 è:
+            //// x:540 y:180 w:614 h:76 la larghezza del rettangolo è 400x3 600x2 800x1
+            //float yy = 48 / (ATotPresCda);
+            //float ms = (yy - GetDimensioneCdaSingola(ATotPresCda)) / 2;
+            //x = 42 + ms + (yy * (APosPresCda - 1));
+
+            //y = 18;
+            //r = x + GetDimensioneCdaSingola(ATotPresCda);
+            //b = 25;
+            //GetZone(ref a, (int)x, (int)y, (int)r, (int)b);
+
+        }
+
+        private float GetDimensioneCdaSingola(int ATotPresCda)
+        {
+            float[] zz = new float[] { 0, 46, 34, 29, 20, 17 };
+            return zz[ATotPresCda];
+        }
+
+        // ------------------ CANDIDATO ALTERNATIVO SINGOLA ----------------------------
+
+        private void GetCandidatoAltSingolaZone(ref TTZone a, int APosCandAlt, int ATotCandAlt, int ANPresentatoCDA)
+        {
+            // qui è più difficile, perchè bisogna dividere in colonne
+            float x, y, r, b;
+
+            //calcolo che ne ho max 3 in colonna, posso poi veder x 4
+            // innanzitutto quante colonne ho?
+            int col = GetColonneCandSingola(ATotCandAlt);
+            // calcolo le colonne
+            float yy = 97 / (col);
+            float ms = (yy - GetDimensioneCdaSingola(col)) / 2;
+            // ora devo calcolarmi la posizione sulla colonna
+            x = 2 + ms + (yy * ((GetColonneCandSingola(APosCandAlt)) - 1));
+            // devo calcolarmi la y
+            int starty = 21;
+            if (ANPresentatoCDA > 0 && ANPresentatoCDA <= 3)
+                starty = 33;
+            if (ANPresentatoCDA > 3 && ANPresentatoCDA <= 6)
+                starty = 46;
+
+            y = starty + ((GetYAlt(APosCandAlt) * 11) - 2);
+            r = x + GetDimensioneCdaSingola(col);
+            b = y + 8;
+            GetZone(ref a, (int)x, (int)y, (int)r, (int)b);
+        }
+
+        private int GetColonneCandSingola(int ATotCandAlt)
+        {
+            //int[] zz = new int[] { 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
+            int[] zz = new int[] { 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3 };
+            return zz[ATotCandAlt];
+        }
+
+        private float GetYAlt(int ATotCandAlt)
+        {
+            int[] zz = new int[] { 0, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4 };
+            //int[] zz = new int[] { 0, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2 };
+            return zz[ATotCandAlt];
+        }
+
+        private float GetDimensioneSingola(int ATotPresCda)
+        {
+            float[] zz = new float[] { 0, 46, 34, 29, 20, 17 };
+            return zz[ATotPresCda];
+        }
+
+        // ------------------ Singola pagina di 21 candidati ----------------------------
+
+        private void GetCandidatoAltSingolaPagina21(ref TTZone a, int APosCandAlt, int ATotCandAlt, int ANPresentatoCDA)
+        {
+            // qui è più difficile, perchè bisogna dividere in colonne
+            float x, y, r, b;
+
+            //calcolo che ne ho max 3 in colonna, posso poi veder x 4
+            // innanzitutto quante colonne ho?
+            int col = GetTotColonneCandSingolaPagina21(ATotCandAlt);
+            // calcolo le colonne
+            float yy = 97 / (col);
+            float ms = (yy - GetDimensioneSingolaPagina21(col)) / 2;
+            // ora devo calcolarmi la posizione sulla colonna
+            x = 2 + ms + (yy * ((GetColonneCandSingolaPagina21(APosCandAlt, ATotCandAlt)) - 1));
+            // devo calcolarmi la y
+            int starty = 15;
+            //if (ANPresentatoCDA > 0 && ANPresentatoCDA <= 3)
+            //    starty = 33;
+            //if (ANPresentatoCDA > 3 && ANPresentatoCDA <= 6)
+            //    starty = 46;
+
+            float heig = (float)7.3;
+            float dist = (float)9.5;
+            y = starty + ((GetYAltPagina21(APosCandAlt, ATotCandAlt) * dist) - 2);
+            r = x + GetDimensioneSingolaPagina21(col);
+            b = y + heig;
+            GetZoneFloat(ref a, x, y, r, b);
+        }
+
+        private int GetTotColonneCandSingolaPagina21(int ATotCandAlt)
+        {            
+            int[] zz = new int[] { 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
+            return zz[ATotCandAlt];
+        }
+
+        private int GetColonneCandSingolaPagina21(int AposCand,  int ATotCandAlt)
+        {
+            if (ATotCandAlt == 19)
+            {
+                int[] zz = new int[]  {0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3};
+                return zz[AposCand];
+            }
+            else
+            {
+                int[] zzz = new int[] { 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3 };
+                return zzz[ATotCandAlt];
+            }
+                
+        }
+
+        private float GetYAltPagina21(int AposCandAlt, int ATotCandAlt)
+        {
+            if (ATotCandAlt == 19)
+            {
+                int[] zz = new int[] {0, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6};
+                return zz[AposCandAlt];
+            }
+            else
+            {
+                int[] zz = new int[] { 0, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6 };
+                return zz[AposCandAlt];
+            }
+        }
+
+        private float GetDimensioneSingolaPagina21(int ATotPresCda)
+        {
+            //float[] zz = new float[] { 0, 46, 34, 29, 20, 17 };
+            //return zz[ATotPresCda];
+            return 30;
+        }
+
+        #endregion
+        // --------------------------------------------------------------
+        //  UTILITA DI RICALCOLO SCHERMO
+        // --------------------------------------------------------------
+
+        #region UTILITA DI RICALCOLO SCHERMO
+
+        private int GetX(int n)
+        {
+            return (int)(FFormRect.Width / Nqx) * n;
+        }
+
+        private int GetY(int n)
+        {
+            return (int)(FFormRect.Height / Nqy) * n;
+        }
+
+        private void GetZone(ref TTZone a, int qx, int qy, int qr, int qb)
+        {
+            float x, y, r, b;
+            // prendo le unità di misura
+            x = (FFormRect.Width / Nqx) * qx;
+            y = (FFormRect.Height / Nqy) * qy;
+            r = (FFormRect.Width / Nqx) * qr;
+            b = (FFormRect.Height / Nqy) * qb;
+            a.x = (int)x;
+            a.y = (int)y;
+            a.r = (int)r;
+            a.b = (int)b;
+        }
+
+        private void GetZoneFloat(ref TTZone a, float qx, float qy, float qr, float qb)
+        {
+            float x, y, r, b;
+            // prendo le unità di misura
+            x = (FFormRect.Width / Nqx) * qx;
+            y = (FFormRect.Height / Nqy) * qy;
+            r = (FFormRect.Width / Nqx) * qr;
+            b = (FFormRect.Height / Nqy) * qb;
+            a.x = (int)x;
+            a.y = (int)y;
+            a.r = (int)r;
+            a.b = (int)b;
+        }        
+
+        #endregion
+
+        // --------------------------------------------------------------
+        //  Touch
+        // --------------------------------------------------------------
+
+        #region Touch Eventi
+
+        // metodo chiamato al tocco dello schermo
+        public int TastoPremuto(object sender, System.Windows.Forms.MouseEventArgs e, TAppStato Stato)
+        {
+            // DR12 OK
+            // prima di tutto testo se TouchEnabled è false, se lo è, vuol dire che non è ancora
+            // passato l'intervallo di sicurezza per evitare doppi click
+            timTouchWatchDog.Enabled = false;
+            timTouchWatchDog.Enabled = true;
+            if (!TouchEnabled)
+            {
+                // lancia evento watchdog
+                if (TouchWatchDog != null) { TouchWatchDog(this, 0); }
+                // poi ritorna
+                return 0;
+            }
+            // ****************************************************************************
+            // Alla fine di tutto per evitarmi fastidiosi farfallii, ho deciso di fare delle
+            // cosiddette zone sensibili a seconda dello stato, queste sono aree della form
+            // che in quella particolare videata "corrispondono" ad un tasto
+            // 
+            // Questa è la classe che li tratta
+            // ****************************************************************************
+            TTZone a;
+            int Trovato = -1;
+
+            // dunque, ciclo lungo la collection attiva per vedere se le coordinate corrispondono
+            for (int i = 0; i < Tz.Count; i++)
+            {
+                a = (TTZone)Tz[i];
+
+                if ((e.X >= a.x) && (e.X <= a.r) && (e.Y >= a.y) && (e.Y <= a.b))
+                {
+                    // serve per le multivotazioni
+                    if (a.pag == CurrPag || a.pag == 0)
+                    {
+                        Trovato = i;
+                        break;
+                    }
+                }
+
+            }
+            // ok, lancio l'evento
+            if (Trovato >= 0)
+            {
+                a = (TTZone)Tz[Trovato];
+
+                switch (a.ev)
+                {
+                    case TTEvento.steVotaNormale:
+                        // manda l'evento
+                        if (PremutoVotaNormale != null) { PremutoVotaNormale(this, 0); }
+                        break;
+
+                    case TTEvento.steVotaDiffer:
+                        // manda l'evento
+                        if (PremutoVotaDifferenziato != null) { PremutoVotaDifferenziato(this, 0); }
+                        break;
+
+                    case TTEvento.steConferma:
+                        // Manda l'evento
+                        if (PremutoConferma != null) { PremutoConferma(this, 0); }
+                        break;
+
+                    case TTEvento.steAnnulla:
+                        // Manda l'evento di annulla
+                        if (PremutoAnnulla != null) { PremutoAnnulla(this, 0); }
+                        break;
+
+                    case TTEvento.steVotoValido:
+                        // manda l'evento di voto valido
+                        if (PremutoVotoValido != null) { PremutoVotoValido(this, a.expr, false ); }
+                        break;
+
+                    case TTEvento.steMultiValido:
+                        // manda l'evento in locale per settare il flag del multicandidato premuto sulla collection
+                        ElementoMulti(Trovato);
+                        // manda l'evento di Paint alla finestra principale
+                        if (PremutoMulti != null) { PremutoMulti(this, a.expr); }
+                        break;
+
+                    case TTEvento.steMultiSelezTuttiCDA:
+                        // in questo evento si selezionano tutti i cda, deselezionando il resto
+                        SelezionaTuttiCDA();
+                        // manda l'evento di Paint alla finestra principale
+                        if (PremutoMulti != null) { PremutoMulti(this, a.expr); }
+                        break;
+
+
+                    case TTEvento.steMultiAvanti:
+                        // ricostruisco chi è stato votato, per trasmetterlo alla routine sopra
+                        List<int> votis = new List<int>();
+                        TTZone b;
+                        int nvt = 0;
+                        for (int i = 0; i < Tz.Count; i++)
+                        {
+                            b = (TTZone)Tz[i];
+                            if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
+                            {
+                                votis.Add(b.expr);
+                                nvt++;
+                            }
+                        }
+                        // attenzione, se non ho voti, cioè nvt = 0 devo considerare sk bianca
+                        if (nvt > 0)
+                        {
+                            // manda l'evento di Avanti nel caso di Multivotazioni
+                            if (PremutoMultiAvanti != null) { PremutoMultiAvanti(this, a.expr, ref votis); }
+                        }
+                        else
+                        {
+                            // manda l'evento di SkBianca
+                            if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, VSDecl.VOTO_SCHEDABIANCA); }
+                        }
+                        votis.Clear();
+                        votis = null;
+                        break;
+
+                    //case TTEvento.steSelezTuttiCDAAvanti:
+                    //    // in questo evento votano autpmaticamente tutti i cda
+                    //    List<int> votiCDA = new List<int>();
+                    //    TTZone bz;
+                    //    int nvtz = 0;
+                    //    for (int i = 0; i < Tz.Count; i++)
+                    //    {
+                    //        bz = (TTZone)Tz[i];
+                    //        if (bz.cda)
+                    //        {
+                    //            votiCDA.Add(bz.expr);
+                    //            nvtz++;
+                    //        }
+                    //    }
+                    //    // attenzione, se non ho voti, cioè nvt = 0 devo considerare sk bianca
+                    //    if (nvtz > 0)
+                    //    {
+                    //        // manda l'evento di Avanti nel caso di Multivotazioni
+                    //        if (PremutoMultiAvanti != null) { PremutoMultiAvanti(this, a.expr, ref votiCDA); }
+                    //    }
+                    //    else
+                    //    {
+                    //        // manda l'evento di SkBianca
+                    //        if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, VSDecl.VOTO_SCHEDABIANCA); }
+                    //    }
+                    //    votiCDA.Clear();
+                    //    votiCDA = null;
+                    //    break;
+
+                    case TTEvento.steSkBianca:
+                        // manda l'evento di scheda bianca
+                        if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, a.expr); }
+                        break;
+
+                    case TTEvento.steSkNonVoto:
+                        // manda l'evento di scheda bianca
+                        if (PremutoNonVoto != null) { PremutoNonVoto(this, a.expr); }
+                        break;
+
+                    case TTEvento.steTabs:
+                        // manda l'evento di tab premuto per cambiare pagina
+                        CurrPag = a.expr; 
+                        
+                        if (PremutoTab != null) { PremutoTab(this, a.expr); }
+                        break;
+
+                    default:
+                        if (PremutoInvalido != null) { PremutoInvalido(this, 0); }
+                        break;
+
+                }
+                // qua parte il ritardo del timer
+                TouchEnabled = false;
+                timTouch.Enabled = true;
+            }
+            else
+            {
+                if (PremutoInvalido != null) { PremutoInvalido(this, 0); }
+            }
+
+
+            return 0;
+        }
+
+        private void ElementoMulti(int Trovato)
+        {
+            // questa routine serve per settare/resettare l'elemento selezionato nelle multivotazioni.
+            TTZone a, b;
+            // se TTZone.Multi <> 0, lo mette a 0
+            // se TTZone.Multi == 0 conta le Multi di ogni botttone attivo e verifica se sono già arrivate al massimo
+            // nel cui caso non fa nulla, altrimenti mette le  TTZone.Multi = 1 o nella versione successiva, la subvotazione
+            // vedi caso BPM con più subvoti nella stessa pagina
+            a = (TTZone)Tz[Trovato];
+
+            // se è maggiore di 0 faccio che metterlo a 0
+            if (a.Multi > 0)
+            {
+                a.Multi = 0;
+            }
+            else
+            {
+                // devo contare quante sono selezionate
+                int fount = 0;
+                for (int i = 0; i < Tz.Count; i++)
+                {
+                    b = (TTZone)Tz[i];
+                    if (b.ev == TTEvento.steMultiValido)
+                        if (b.Multi > 0) fount++;
+                }
+                // ok, ora se è minore di NumMulti metto il campo a 1
+                if (fount < NumMulti)
+                    a.Multi = 1;
+                else
+                    SystemSounds.Beep.Play();
+            }
+            // ok lo rimetto a posto
+            Tz[Trovato] = a;
+        }
+
+        private void SelezionaTuttiCDA()
+        {
+            // questa routine serve per settare/resettare l'elemento selezionato nelle multivotazioni.
+            TTZone b;
+
+            for (int i = 0; i < Tz.Count; i++)
+            {
+                b = (TTZone)Tz[i];
+                if (b.ev == TTEvento.steMultiValido)
+                {
+                    if (b.Multi > 0 && !b.cda)
+                        b.Multi = 0;
+                    if (b.cda) b.Multi = 1;
+                    Tz[i] = b;
+                }
+            }
+        }
+
+        // --------------------------------------------------------------
+        //  timer del touch
+        // --------------------------------------------------------------
+
+        private void timTouch_Tick(object sender, EventArgs e)
+        {
+            TouchEnabled = true;
+            timTouch.Enabled = false;
+        }
+
+        private void timTouchWatchDog_Tick(object sender, EventArgs e)
+        {
+            // DR11 Ok
+            if (!TouchEnabled)
+            {
+                TouchWatch++;
+            }
+            if (TouchWatch >= 2)
+            {
+                TouchEnabled = true;
+                TouchWatch = 0;
+                // lancia evento watchdog
+                if (TouchWatchDog != null) { TouchWatchDog(this, 1); }
+            }
+        }
+        
+        #endregion
+
+        // --------------------------------------------------------------
+        //  PAINTING DELLE ZONE TOUCH
+        // --------------------------------------------------------------
+
+        #region  PAINTING DELLE ZONE TOUCH
+
+        public void PaintTouch(object sender, PaintEventArgs e)
+        {
+            return;
+            // DR11 Ok
+            // ok questo metodo viene chiamato da paint della finestra principale 
+            // per evidenziare le zone sensibili del tocco
+            if (PaintTouchOnScreen)
+            {
+                TTZone a;
+                Graphics g = e.Graphics;
+                Pen p = new Pen(Color.DarkGray);
+                p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
+
+                for (int i = 0; i < Tz.Count; i++)
+                {
+                    a = (TTZone)Tz[i];
+                    if (a.pag == 0 || a.pag == CurrPag)
+                        g.DrawRectangle(p, a.x, a.y, (a.r - a.x), (a.b - a.y)); 
+                }
+
+            }
+        }
+
+        public void PaintButtonCandidatoPagina(object sender, PaintEventArgs e, bool Multi)
+        {
+            // DR12 OK
+            // ok questo metodo viene chiamato da paint della finestra principale 
+            // per disegnare i bottoni dei candidati
+            TTZone a;
+            Graphics g = e.Graphics;
+            string ss;
+
+            Pen blackPen = new Pen(Color.Black, 1);
+            Pen graypen = new Pen(Color.Gray, 2);
+
+            Font myFont = new System.Drawing.Font("Arial", 25, FontStyle.Regular);
+            Font myFont2 = new System.Drawing.Font("Arial", 20, FontStyle.Regular);
+            Font myFont3 = new System.Drawing.Font("Arial", 10, FontStyle.Italic | FontStyle.Bold);
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+            stringFormat.Trimming = StringTrimming.EllipsisCharacter;
+            stringFormat.FormatFlags = StringFormatFlags.NoWrap;
+
+            SolidBrush whiteBrush = new SolidBrush(Color.White);
+
+            for (int i = 0; i < Tz.Count; i++)
+            {
+                a = (TTZone)Tz[i];
+                // se è maggiore di 0 vuol dire che è un oggetto da stampare
+                if (a.expr >= 0)
+                {
+                    Rectangle r = new Rectangle(a.x, a.y, (a.r - a.x), (a.b - a.y));
+                    r = Rectangle.Inflate(r, 5, 5);
+                    
+                    // in funzione dell'evento faccio ( ci possono essere tasti speciali )
+                    switch (a.ev)
+                    {
+                        // controllo se sono tabs
+                        case TTEvento.steTabs:
+                            // se è selezionata allora la metto al contrario
+                            if (a.expr == CurrPag)
+                            {
+                                e.Graphics.DrawImage(btnBmpTabSelez, r);
+                                e.Graphics.DrawString(a.Text, myFont2, Brushes.White,
+                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                            }
+                            else
+                            {
+                                e.Graphics.DrawImage(btnBmpTab, r);
+                                e.Graphics.DrawString(a.Text, myFont2, Brushes.DarkSlateGray,
+                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                            }
+                            break;
+
+                        // Tasto Seleziona tutti
+                        case TTEvento.steMultiSelezTuttiCDA:
+                            e.Graphics.DrawImage(btnBmpCDASelez, r);
+                            break;
+
+                        // tutto il resto
+                        default:
+                            // stampa solo quelli in pagina 0 o nella pagina corrente
+                            if (a.pag == 0 || a.pag == CurrPag)
+                            {
+                                // disegnomil bottone facendo attenzione al multicandidato
+                                if (!Multi)
+                                {
+                                    e.Graphics.DrawImage(btnBmpCand, r);
+                                }
+                                else
+                                {
+                                    if (a.Multi == 0)
+                                        e.Graphics.DrawImage(btnBmpCand, r);
+                                    else
+                                        e.Graphics.DrawImage(btnBmpCandSelez, r);
+                                }
+                                // ok, prima di disegnare il nome devo controllare la mpresenza della data
+                                // di nascita < >
+                                if (a.Text.Contains("(") && a.Text.Contains(")"))
+                                {
+                                    // devo dividere la stringa, per convenzione la divido a partire da
+                                    // la posizione le carattere "<"
+                                    stringFormat.Alignment = StringAlignment.Far;
+                                    ss = a.Text.Substring(a.Text.IndexOf('('),
+                                          a.Text.Length - a.Text.IndexOf('('));
+                                    a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
+                                    e.Graphics.DrawString(ss, myFont3, Brushes.DarkSlateGray,
+                                        new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20), stringFormat);
+                                    stringFormat.Alignment = StringAlignment.Center;
+                                }
+                                // disegno il nome
+                                e.Graphics.DrawString(a.Text, myFont, Brushes.DarkSlateGray,
+                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4), stringFormat);
+
+                            }  // if (a.pag == CurrPag || a.pag == 0)
+                            break;
+
+                    }
+
+
+                //    if (a.ev == TTEvento.steTabs)
+                //    {
+                //        // se è selezionata allora la metto al contrario
+                //        if (a.expr == CurrPag)
+                //        {
+                //            e.Graphics.DrawImage(btnBmpTabSelez, r);
+                //            e.Graphics.DrawString(a.Text, myFont2, Brushes.White,
+                //                    new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                //        }
+                //        else
+                //        {
+                //            e.Graphics.DrawImage(btnBmpTab, r);
+                //            e.Graphics.DrawString(a.Text, myFont2, Brushes.DarkSlateGray,
+                //                    new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        // stampa solo quelli in pagina 0 o nella pagina corrente
+                //        if (a.pag == 0 || a.pag == CurrPag)
+                //        {
+                //            // disegnomil bottone facendo attenzione al multicandidato
+                //            if (!Multi)
+                //            {
+                //                e.Graphics.DrawImage(btnBmpCand, r);
+                //            }
+                //            else
+                //            {
+                //                if (a.Multi == 0)
+                //                    e.Graphics.DrawImage(btnBmpCand, r);
+                //                else
+                //                    e.Graphics.DrawImage(btnBmpCandSelez, r);
+                //            }
+                //            // ok, prima di disegnare il nome devo controllare la mpresenza della data
+                //            // di nascita < >
+                //            if (a.Text.Contains("(") && a.Text.Contains(")"))
+                //            {
+                //                // devo dividere la stringa, per convenzione la divido a partire da
+                //                // la posizione le carattere "<"
+                //                stringFormat.Alignment = StringAlignment.Far;
+                //                ss = a.Text.Substring(a.Text.IndexOf('('),
+                //                      a.Text.Length - a.Text.IndexOf('('));
+                //                a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
+                //                e.Graphics.DrawString(ss, myFont3, Brushes.DarkSlateGray,
+                //                    new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20), stringFormat);
+                //                stringFormat.Alignment = StringAlignment.Center;
+                //            }
+                //            // disegno il nome
+                //            e.Graphics.DrawString(a.Text, myFont, Brushes.DarkSlateGray,
+                //                    new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4), stringFormat);
+                        
+                //        }  // if (a.pag == CurrPag || a.pag == 0)
+                //    }  // if (a.ev == TTEvento.steTabs)
+                
+                }  //  if (a.expr >= 0)
+            }  // for (int i = 0; i < Tz.Count; i++)
+        }
+
+        public void PaintButtonCandidatoSingola(object sender, PaintEventArgs e)
+        {
+            // OBSOLETO
+            // ok questo metodo viene chiamato da paint della finestra principale 
+            // per disegnare i bottoni dei candidati
+            TTZone a;
+            Graphics g = e.Graphics;
+            int ls;
+
+            Pen blackPen = new Pen(Color.Black, 1);
+            Pen graypen = new Pen(Color.Gray, 2);
+
+            Font myFont24 = new System.Drawing.Font("Arial", 24, FontStyle.Regular);
+            Font myFont26 = new System.Drawing.Font("Arial", 26, FontStyle.Regular);
+            Font myFont28 = new System.Drawing.Font("Arial", 28, FontStyle.Regular);
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+
+            SolidBrush whiteBrush = new SolidBrush(Color.White);
+ 
+            for (int i = 0; i < Tz.Count; i++)
+            {
+                a = (TTZone)Tz[i];
+                if (a.expr >= 0)
+                {
+                    Rectangle r = new Rectangle(a.x, a.y, (a.r - a.x), (a.b - a.y));
+                    r = Rectangle.Inflate(r, 5, 5);
+
+                    // todo: da rivedere etruria
+                    if (a.expr == VSDecl.VOTO_ETRURIA)
+                    {
+                        e.Graphics.DrawImage(btnBmpCandArancio, r);
+                        e.Graphics.DrawString("Seleziona Proposte C.d.A.", myFont28, Brushes.DarkSlateGray,
+                                              new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                    }
+                    else
+                    {
+                        // todo: modifica per BPM giugno2013
+                        e.Graphics.DrawImage(btnBmpCand, r);                                                
+                        //e.Graphics.DrawImage(btnBmpCandSing, r);
+
+                        // now check the length of the string
+                        ls = a.Text.Length;
+
+                        if (ls <= 16)
+                            e.Graphics.DrawString(a.Text, myFont28, Brushes.DarkSlateGray,
+                                              new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                        else
+                        {
+                            if (ls <= 20)
+                                e.Graphics.DrawString(a.Text, myFont26, Brushes.DarkSlateGray,
+                                                  new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                            else
+                                e.Graphics.DrawString(a.Text, myFont24, Brushes.DarkSlateGray,
+                                                  new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                        }
+                    }
+                }
+
+            }  // for (int i = 0; i < Tz.Count; i++)
+        }
+
+        #endregion  
+        
+        // --------------------------------------------------------------
+        //  PROPRIETA' 
+        // --------------------------------------------------------------
+
+
+
+	}
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="VotoSegreto">
+</Property><Property Name="Solution File" Value="C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\VotoSegreto.sln">
+</Property><Property Name="User Options File" Value="C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\VotoSegreto.suo">
+</Property><Property Name="Date" Value="martedì 23 marzo 2010">
+</Property><Property Name="Time" Value="16.23">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="VotoSegreto.sln" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\VotoSegreto.sln">
+</Event><Event ErrorLevel="0" Project="" Source="VotoSegreto.suo" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\VotoSegreto.suo">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="VotoSegreto.csproj" Description="Project file successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\VotoSegreto.csproj">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="VotoSegreto.csproj.user" Description="Project user file successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\VotoSegreto.csproj.user">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="AssemblyInfo.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="CSemaphore.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\CSemaphore.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="CVotoDBDati.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\CVotoDBDati.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="CVotoTouchScreen.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\CVotoTouchScreen.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="FMain.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\FMain.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="FVSMessage.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\FVSMessage.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="IniHandler.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\IniHandler.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="Logging.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\Logging.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="TVSDecl.cs" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\TVSDecl.cs">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="App.ico" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\App.ico">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="FMain.resx" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\FMain.resx">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="FVSMessage.resx" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\FVSMessage.resx">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="licenses.licx" Description="File successfully backed up as C:\Dev\St\VtSegreto\BPER_2010\VotoSegretoBPER_10\Backup\licenses.licx">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="VotoSegreto.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="VotoSegreto" Source="VotoSegreto.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="VotoSegreto.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="VotoSegreto.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="VotoSegreto" Source="VotoSegreto.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>

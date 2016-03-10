@@ -1,0 +1,247 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SAPP_VOTE_D_RASO" xml:space="preserve">
+    <value>Si sta votando per:</value>
+  </data>
+  <data name="SAPP_START_ERRCOM2" xml:space="preserve">
+    <value> non esiste o presenta problemi.\n Il lettore barcode è stato disabilitato, premere Ctrl+S per configurarlo nuovamente</value>
+  </data>
+  <data name="SAPP_START_ERRDB" xml:space="preserve">
+    <value>Problemi nel caricamento configurazione db</value>
+  </data>
+  <data name="SAPP_ERR_BDGCONV" xml:space="preserve">
+    <value> - Errore nella conversione Badge</value>
+  </data>
+  <data name="SAPP_START_INITVOT" xml:space="preserve">
+    <value>Carico liste e votazioni...</value>
+  </data>
+  <data name="SAPP_DEMO_3END" xml:space="preserve">
+    <value>Tocca per ritornare alla videata iniziale</value>
+  </data>
+  <data name="SAPP_START_CTRL" xml:space="preserve">
+    <value>Applicazione già in esecuzione</value>
+  </data>
+  <data name="SAPP_START_INIT" xml:space="preserve">
+    <value>Inizializzo applicazione...</value>
+  </data>
+  <data name="SAPP_CLOSE" xml:space="preserve">
+    <value>Chiudere l'applicazione?</value>
+  </data>
+  <data name="SAPP_ERR_BDGEST" xml:space="preserve">
+    <value> - Il Badge non esiste</value>
+  </data>
+  <data name="SAPP_START_INITTOUCH" xml:space="preserve">
+    <value>Inizializzo Touch...</value>
+  </data>
+  <data name="SAPP_SKBIANCA" xml:space="preserve">
+    <value>Scheda Bianca</value>
+  </data>
+  <data name="SAPP_ERR_BDGUSCITA" xml:space="preserve">
+    <value> Lettura codice di uscita (</value>
+  </data>
+  <data name="SAPP_ERR_BDGPRES" xml:space="preserve">
+    <value> - Badge non presente.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Save-icon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Save-icon.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SAPP_START_ERRCONN" xml:space="preserve">
+    <value>Problemi nella connessione al database</value>
+  </data>
+  <data name="SAPP_DEMO" xml:space="preserve">
+    <value>Simulazione di Voto</value>
+  </data>
+  <data name="SAPP_VOTE_DIRITTIPER" xml:space="preserve">
+    <value> diritti di voto per</value>
+  </data>
+  <data name="SAPP_VOTE_D_DIRITTI" xml:space="preserve">
+    <value> Diritti di voto</value>
+  </data>
+  <data name="SAPP_NOVOTO" xml:space="preserve">
+    <value>Non Voglio Votare</value>
+  </data>
+  <data name="SAPP_START_ERRMAP" xml:space="preserve">
+    <value>Problema nella mappatura dei dischi di rete. Il disco M: non è disponibile, effettuare la mappatura corretta e riavviare l'applicazione</value>
+  </data>
+  <data name="SAPP_START_INITSEM" xml:space="preserve">
+    <value>Inizializzo Semaforo...</value>
+  </data>
+  <data name="SAPP_START_INITPREF" xml:space="preserve">
+    <value>Carico preferenze...</value>
+  </data>
+  <data name="SAPP_ERR_BDG" xml:space="preserve">
+    <value>Badge : </value>
+  </data>
+  <data name="SAPP_START_INITVAR" xml:space="preserve">
+    <value>Inizializzo variabili...</value>
+  </data>
+  <data name="SAPP_START_IMGSEARCH" xml:space="preserve">
+    <value>Ricerco immagini...</value>
+  </data>
+  <data name="SAPP_START_ERRCFG" xml:space="preserve">
+    <value>Problemi nel caricamento della configurazione, verificare: \n - la mappatura dei dischi\n - il file votosegretospa.ini</value>
+  </data>
+  <data name="SAPP_ERR_BDGANN" xml:space="preserve">
+    <value> - Badge Annullato</value>
+  </data>
+  <data name="SAPP_ERR_BDGIMP" xml:space="preserve">
+    <value> - Codice Impianto diverso</value>
+  </data>
+  <data name="SAPP_CLOSE_ERR" xml:space="preserve">
+    <value>Impossibile effettuare questa operazione durante la votazione.</value>
+  </data>
+  <data name="SAPP_ERR_BDGZERO" xml:space="preserve">
+    <value> - Tutti i soci hanno già votato</value>
+  </data>
+  <data name="SAPP_START_INITDB" xml:space="preserve">
+    <value>Inizializzo database...</value>
+  </data>
+  <data name="SAPP_START_ERRCOM1" xml:space="preserve">
+    <value>Problema nel collegamento con la Pistola Barcode. La porta COM</value>
+  </data>
+  <data name="Save-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Save-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SAPP_ERR_BDGVOT" xml:space="preserve">
+    <value> - Il Badge ha già votato</value>
+  </data>
+  <data name="SAPP_START_INITCFG" xml:space="preserve">
+    <value>Carico configurazione...</value>
+  </data>
+  <data name="SAPP_DEMO_1DIR" xml:space="preserve">
+    <value>Tocca per provare con 1 diritto di voto</value>
+  </data>
+  <data name="SAPP_DEMO_3DIR" xml:space="preserve">
+    <value>Tocca per provare con 3 diritti di voto</value>
+  </data>
+  <data name="SAPP_START_INITBARCODE" xml:space="preserve">
+    <value>Inizializzo lettore barcode...</value>
+  </data>
+  <data name="SAPP_VOTE_1DIRITTOPER" xml:space="preserve">
+    <value>1 diritto di voto per</value>
+  </data>
+  <data name="RGB_White Logo_Trans Bk200" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RGB_White Logo_Trans Bk200.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RGB_Purple Logo_Trans Bk_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RGB_Purple Logo_Trans Bk_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>

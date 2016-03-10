@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D3BF99C7-CA07-4581-A6C7-A8FC69FFE6B4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>vote.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>VotoTouch</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>VotoTouch</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG;_DBClose</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;_DBClose</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.VisualBasic.PowerPacks.Vs, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Design">
+      <Name>System.Design</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\TListaAzionisti.cs" />
+    <Compile Include="Data\TListaVotazioni.cs" />
+    <Compile Include="FMain.Designer.cs">
+      <DependentUpon>FMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FMain_LetturaBadge.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FMain_MacchinaAStati.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FVSStart.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FVSStart.Designer.cs">
+      <DependentUpon>FVSStart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FVSTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FVSTest.Designer.cs">
+      <DependentUpon>FVSTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Hardware\CBaseSemaphore.cs" />
+    <Compile Include="Hardware\CComInfo.cs" />
+    <Compile Include="Hardware\CComSemaphore.cs" />
+    <Compile Include="Hardware\NotUsed\CIPNoBlockDiscSemaphore.cs" />
+    <Compile Include="Hardware\NotUsed\CIPNoBlockSemaphore.cs" />
+    <Compile Include="Hardware\CIPThreadSemaphore.cs" />
+    <Compile Include="Hardware\CNETActiveReader.cs" />
+    <Compile Include="FVSMessageExit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Hardware\NotUsed\CIPSemaphore.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\CVotoBaseDati.cs" />
+    <Compile Include="Data\CVotoDBDati.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Tipi_Voto\CBaseTipoVoto.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_AConferma.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_AStart.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_CandidatoSmall.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOld.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOriginal.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_Lista.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_MultiCandidatoNew.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_MultiCandidatoOriginal.cs" />
+    <Compile Include="Touchscreen\CVotoImages.cs" />
+    <Compile Include="Touchscreen\CVotoTheme.cs" />
+    <Compile Include="Touchscreen\CVotoTouchScreen.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\CVotoFileDati.cs" />
+    <Compile Include="FMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfig.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmConfig.Designer.cs">
+      <DependentUpon>frmConfig.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FVSMessage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IniHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Log\Logging.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SplashScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SplashScreen.Designer.cs">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TVSDecl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="FVSStart.resx">
+      <DependentUpon>FVSStart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FVSTest.resx">
+      <DependentUpon>FVSTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Semaforo_green.png" />
+    <EmbeddedResource Include="Resources\Semaforo_red.png" />
+    <EmbeddedResource Include="Resources\Semaforo_x.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo_selez.png" />
+    <EmbeddedResource Include="Resources\bottone_selezCDA.png" />
+    <EmbeddedResource Include="Data\Query\DammiDatiAzionista_Titolare.sql" />
+    <EmbeddedResource Include="Data\Query\DammiDatiAzionista_Deleganti.sql" />
+    <None Include="Resources\RGB_White Logo_Trans Bk200.jpg" />
+    <None Include="Resources\RGB_Purple Logo_Trans Bk_small.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo_cda.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo_selezCDA.png" />
+    <EmbeddedResource Include="Resources\bottone_selezCDS.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo_selezCDS.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo_cds.png" />
+    <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Deleganti.sql" />
+    <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Titolare.sql" />
+    <Content Include="vote.ico" />
+    <EmbeddedResource Include="Resources\tab_rev.png" />
+    <EmbeddedResource Include="Resources\tab.png" />
+    <EmbeddedResource Include="Resources\btn_alternativo.png" />
+    <EmbeddedResource Include="Resources\btn_cda.png" />
+    <EmbeddedResource Include="Resources\bottonetrasp_ok.png" />
+    <EmbeddedResource Include="FVSMessageExit.resx">
+      <DependentUpon>FVSMessageExit.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Save-icon.bmp" />
+    <None Include="Save-icon.png" />
+    <EmbeddedResource Include="FMain.resx">
+      <DependentUpon>FMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmConfig.resx">
+      <DependentUpon>frmConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FVSMessage.resx">
+      <DependentUpon>FVSMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SplashScreen.resx">
+      <DependentUpon>SplashScreen.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
