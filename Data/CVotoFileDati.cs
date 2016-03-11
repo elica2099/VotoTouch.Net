@@ -279,8 +279,7 @@ namespace VotoTouch
         //  CONTROLLO DELLA VOTAZIONE
         // --------------------------------------------------------------------------
 
-        override public int SalvaTutto(int AIDBadge, ref TListaVotazioni AVotazioni,
-                 TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti, ref ArrayList FVotiDaSalvare)
+        override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
         {
             return 0;
         }

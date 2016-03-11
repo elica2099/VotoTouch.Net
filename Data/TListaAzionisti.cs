@@ -26,12 +26,15 @@ namespace VotoTouch
         // dati del voto 
         public int IDVotaz { get; set; }
         // voti
-        public ArrayList VotiEspressi;
+        public List<TVotoEspresso> VotiEspressi;
+
+        // test se sk nonvoto
+        public bool HaNonVotato { get { return VotiEspressi.Count(v => v.VotoExp_IDScheda == VSDecl.VOTO_NONVOTO) > 0; } }
 
         public TAzionista()
         {
             HaVotato = TListaAzionisti.VOTATO_NO;
-            VotiEspressi = new ArrayList();
+            VotiEspressi = new List<TVotoEspresso>();
         }
 
         public void CopyFrom(ref TAzionista cp)
@@ -120,6 +123,11 @@ namespace VotoTouch
         public int DammiTotaleDirittiRimanenti()
         {
             return _Azionisti.Count(a => a.HaVotato == VOTATO_NO);
+        }
+
+        public int DammiQuantiDirittiSonoStatiVotati()
+        {
+            return _Azionisti.Count(a => a.HaVotato != VOTATO_NO);
         }
 
         public bool IsVotazioneFinita()

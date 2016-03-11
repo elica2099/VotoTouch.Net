@@ -119,10 +119,13 @@ namespace VotoTouch
         public string Badge_Seriale;
         // ********************DA VEDERE************************************
 
+        // TODO: verificare multicandidato e pagine
+        // TODO: Bottone uscita
+        // TODO: Votazione con contrari a tutte e astenuti a tutte
+        // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
+
 		public frmMain()
 		{
-            // DR11 OK
-			//int dbr;
 
 			InitializeComponent();
 
@@ -164,7 +167,6 @@ namespace VotoTouch
             splash.Show();
             splash.SetSplash(0, rm.GetString("SAPP_START_INIT")); //Inizializzo applicazione...
             splash.Update();
-
 
 			// Massimizzo la finestra
             this.WindowState = FormWindowState.Maximized;
@@ -242,7 +244,7 @@ namespace VotoTouch
             oDBDati.FDBConfig = DBConfig;
             //oDBDati.LogNomeFile = LogNomeFile;
             oDBDati.NomeTotem = NomeTotem;
-            oDBDati.ProgressoSalvaTutto += new ehProgressoSalvaTutto(onProgressoSalvaTutto);
+            //oDBDati.ProgressoSalvaTutto += new ehProgressoSalvaTutto(onProgressoSalvaTutto);
             // se è standalone prende i dati in locale
             oDBDati.ADataLocal = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
             oDBDati.AData_path = Data_Path;
@@ -678,11 +680,11 @@ namespace VotoTouch
         }
         */
 
-        private void onProgressoSalvaTutto(object source, int ATot, int AProg)
-        {
-            if (prbSalvaTutto.Maximum != ATot) prbSalvaTutto.Maximum = ATot;
-            prbSalvaTutto.Value = AProg;
-        }
+        //private void onProgressoSalvaTutto(object source, int ATot, int AProg)
+        //{
+        //    if (prbSalvaTutto.Maximum != ATot) prbSalvaTutto.Maximum = ATot;
+        //    prbSalvaTutto.Value = AProg;
+        //}
 
       
         //******************************************************************************
@@ -1011,33 +1013,31 @@ namespace VotoTouch
         //    //return true;
         //}
 
-        public void ControllaSalvaLinkVoto()
-        {
-            // TODO: ControllaSalvaLinkVoto da rivedereeee
+        //public void ControllaSalvaLinkVoto()
+        //{
+        //    // questa routine serve a mantenere o a distruggere il link voto->badge
+        //    // vedi situazione bpm
 
-            // questa routine serve a mantenere o a distruggere il link voto->badge
-            // vedi situazione bpm
+        //    /*
+        //    // ok ora, se è false, distruggo il link
+        //    if (!TotCfg.SalvaLinkVoto)
+        //    {
+        //        Random random = new Random();
+        //        TVotiDaSalvare v;
+        //        int TopRand = VSDecl.MAX_ID_RANDOM;
 
-            /*
-            // ok ora, se è false, distruggo il link
-            if (!TotCfg.SalvaLinkVoto)
-            {
-                Random random = new Random();
-                TVotiDaSalvare v;
-                int TopRand = VSDecl.MAX_ID_RANDOM;
-
-                for (int i = 0; i < FVotiDaSalvare.Count; i++)
-                {
-                    // trovo
-                    v = (TVotiDaSalvare)FVotiDaSalvare[i];
-                    // randomizzo il badge
-                    v.AIDBadge_4 = random.Next(1, TopRand); 
-                    //salvo
-                    FVotiDaSalvare[i] = v;
-                }
-            }
-             * */
-        }
+        //        for (int i = 0; i < FVotiDaSalvare.Count; i++)
+        //        {
+        //            // trovo
+        //            v = (TVotiDaSalvare)FVotiDaSalvare[i];
+        //            // randomizzo il badge
+        //            v.AIDBadge_4 = random.Next(1, TopRand); 
+        //            //salvo
+        //            FVotiDaSalvare[i] = v;
+        //        }
+        //    }
+        //     * */
+        //}
 
         // *************************************************************************
         // ----------------------------------------------------------------

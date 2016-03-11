@@ -172,8 +172,8 @@ namespace VotoTouch
 
                 case TAppStato.ssvVotoFinito:
                     oVotoTouch.CalcolaTouchSpecial(Stato, false);
-                    if (prbSalvaTutto.Visible)
-                        prbSalvaTutto.Visible = false;
+                    //if (prbSalvaTutto.Visible)
+                    //    prbSalvaTutto.Visible = false;
                     lbDirittiDiVoto.Visible = false;
                     SettaComponenti(false);
                     // labels
@@ -195,7 +195,6 @@ namespace VotoTouch
 
                 case TAppStato.ssvSalvaVoto:
 
-                    // TODO: DA RIVEDERE COMPLETAMENTE ssvSalvaVoto
                     /*
                     // salva i voti e le presenze in un one shot sul database
                     if (FVotiDaSalvare.Count > VSDecl.MINVOTI_PROGRESSIVO)
@@ -222,11 +221,18 @@ namespace VotoTouch
                     // ok, ora prima di salvare controllo il parametro SalvaLinkVoto
                     // se è true non faccio nulla, altrimenti distruggo il link voto-badge
                     ControllaSalvaLinkVoto();
+                    */
 
-                    oDBDati.SalvaTutto(Badge_Letto, ref Votazioni, TotCfg, ref Azionisti, ref FVotiDaSalvare);
-                     */
-
+                    if (Azionisti.DammiQuantiDirittiSonoStatiVotati() > VSDecl.MINVOTI_PROGRESSIVO)
+                    {
+                        // metti lo spinning wheel
+                    }
+                    // salvo i dati sul database
+                    oDBDati.SalvaTutto(Badge_Letto, TotCfg, ref Azionisti);
+                     
+                    // togli lo spinning wheel
                     pbSalvaDati.Visible = false;
+                    
                     oSemaforo.SemaforoFineOccupato();
                     //CurrVoteIDX = 0;
                     Stato = TAppStato.ssvVotoFinito;

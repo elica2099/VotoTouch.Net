@@ -73,7 +73,6 @@ namespace VotoTouch
             this.imgSemNo = new System.Windows.Forms.PictureBox();
             this.imgSemOk = new System.Windows.Forms.PictureBox();
             this.lbConfermaUp = new System.Windows.Forms.Label();
-            this.prbSalvaTutto = new System.Windows.Forms.ProgressBar();
             this.lbNomeAzStart = new System.Windows.Forms.Label();
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
@@ -367,15 +366,6 @@ namespace VotoTouch
             this.lbConfermaUp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbConfermaUp.Visible = false;
             // 
-            // prbSalvaTutto
-            // 
-            this.prbSalvaTutto.Location = new System.Drawing.Point(53, 12);
-            this.prbSalvaTutto.Name = "prbSalvaTutto";
-            this.prbSalvaTutto.Size = new System.Drawing.Size(463, 23);
-            this.prbSalvaTutto.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.prbSalvaTutto.TabIndex = 127;
-            this.prbSalvaTutto.Visible = false;
-            // 
             // lbNomeAzStart
             // 
             this.lbNomeAzStart.BackColor = System.Drawing.Color.Transparent;
@@ -397,7 +387,6 @@ namespace VotoTouch
             this.Controls.Add(this.Panel4);
             this.Controls.Add(this.pnBadge);
             this.Controls.Add(this.lbNomeAzStart);
-            this.Controls.Add(this.prbSalvaTutto);
             this.Controls.Add(this.lbConfermaUp);
             this.Controls.Add(this.pbSalvaDati);
             this.Controls.Add(this.imgSemNo);
@@ -466,7 +455,6 @@ namespace VotoTouch
         private Button btnCancVoti;
         private Label lbNomeAzStart;
         private Button btnRipetiz;
-        private ProgressBar prbSalvaTutto;
         private Button button2;
     }
 }

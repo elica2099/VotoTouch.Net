@@ -176,12 +176,13 @@ namespace VotoTouch
 
         public void onPremutoNonVoto(object source, int VParam)
         {
-            // NonVotante (caso BPM)
+            // non votante
             VotoEspresso = VSDecl.VOTO_NONVOTO;
             //VotoEspressoCarica = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
-            // nuova versione array
+            // nuova versione array, qua, essendo un non voglio votare, devo vedere
+            // se posso salvarlo o no, a seconda di AbilitaDirittiNonVoglioVotare
             TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,

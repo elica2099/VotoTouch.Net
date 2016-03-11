@@ -9,11 +9,11 @@ using System.IO;
 namespace VotoTouch
 {
 
-    public delegate void ehProgressoSalvaTutto(object source, int ATot, int AProg);
+    //public delegate void ehProgressoSalvaTutto(object source, int ATot, int AProg);
     
     public class CVotoBaseDati
     {
-        public event ehProgressoSalvaTutto ProgressoSalvaTutto;
+        //public event ehProgressoSalvaTutto ProgressoSalvaTutto;
 
         public ConfigDbData FDBConfig;
         public Boolean FConnesso;
@@ -35,10 +35,10 @@ namespace VotoTouch
         //  EVENTI
         // --------------------------------------------------------------------------
 
-        protected void OnProgressoSalvaTutto(object source, int ATot, int AProg)
-        {
-            if (ProgressoSalvaTutto != null) { ProgressoSalvaTutto(this, ATot, AProg); }
-        }
+        //protected void OnProgressoSalvaTutto(object source, int ATot, int AProg)
+        //{
+        //    if (ProgressoSalvaTutto != null) { ProgressoSalvaTutto(this, ATot, AProg); }
+        //}
 
         // --------------------------------------------------------------------------
         //  LETTURA CONFIGURAZIONE NEL DATABASE
@@ -125,8 +125,7 @@ namespace VotoTouch
         //  CONTROLLO DELLA VOTAZIONE
         // --------------------------------------------------------------------------
 
-        virtual public int SalvaTutto(int AIDBadge, ref TListaVotazioni AVotazioni, TTotemConfig ATotCfg,
-                ref TListaAzionisti FAzionisti, ref ArrayList FVotiDaSalvare)
+        virtual public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
         {
             return 0;
         }

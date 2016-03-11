@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Windows; //.Forms.Design;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Threading;
 
 
 // -----------------------------------------------------------------------
@@ -1040,9 +1041,7 @@ namespace VotoTouch
 
         #region Salvataggio Voti
 
-        // TODO: SalvaTutto DA RIVEDERE TOTALMENTE, i voti devono essere nei diritti di voto
-        override public int SalvaTutto(int AIDBadge, ref TListaVotazioni AVotazioni, 
-                TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti, ref ArrayList FVotiDaSalvare)
+        override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti AAzionisti)
         {
             // questa funzione viene chhiamata alla fine della votazione ed effettua le operazioni 
             // IN UN UNICA TRANSAZIONE:
@@ -1050,6 +1049,115 @@ namespace VotoTouch
             //  1. un record in VS_Votanti_Totem che indica che il badge ha votato, per il controlo iniziale
             //  2. tanti record quanti sono gli azionisti con azioni > 0 in VS_ConSchede
             //  3. l'arraylist FVotiDaSalvare in VS_Intonse_Totem, i voti veri e propri
+
+            SqlCommand qryStd = null, qryVoti = null;
+            SqlTransaction traStd = null;
+            int result = 0, NumberofRows;
+            int TopRand = VSDecl.MAX_ID_RANDOM;
+            Random random;
+
+            // testo la connessione
+            if (!OpenConnection("SalvaTutto")) return 0;
+
+            qryStd = new SqlCommand {Connection = STDBConn};
+            qryVoti = new SqlCommand { Connection = STDBConn };
+            try
+            {
+                // abilito la transazione
+                traStd = STDBConn.BeginTransaction();
+                qryStd.Transaction = traStd;
+                qryVoti.Transaction = traStd;
+
+                // 1. scrivo che ha votato in VS_Votanti_Totem
+                // se non è abilitato il non voto si comporta normalmente, quindi salva in vs_votanti_totem
+                if (!ATotCfg.AbilitaDirittiNonVoglioVotare)
+                {
+                    qryStd.Parameters.Clear();
+                    qryStd.CommandText = "insert into VS_Votanti_Totem with (ROWLOCK) " +
+                                         " (Badge, idSeggio, DataOraVotaz, NomeComputer) " +
+                                         " VALUES " +
+                                         " (@Badge, @idSeggio, { fn NOW() }, @NomeComputer)";
+                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                    qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
+                    qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = NomeTotem;
+                                         //") values ('" +
+                                         //AIDBadge.ToString() + "'," + FIDSeggio.ToString() + ",{ fn NOW() } , '" + NomeTotem + "')";
+                    NumberofRows = qryStd.ExecuteNonQuery();
+                }
+
+                // 2. ora scrivo vs_conschede e vs_intonse_totem insieme
+                random = new Random();
+                foreach (TAzionista az in AAzionisti.Azionisti)
+                {
+                    // salva solo se ha votato
+                    if (az.HaVotato == TListaAzionisti.VOTATO_SESSIONE && !az.HaNonVotato)
+                    {
+                        // conschede
+                        qryStd.Parameters.Clear();
+                        qryStd.CommandText = "INSERT INTO VS_ConSchede with (ROWLOCK) " +
+                                             " (Badge, NumVotaz, IdAzion, ProgDeleg, IdSeggio, DataOraVotaz, NomeComputer) " +
+                                             " VALUES " +
+                                             " (@Badge, @NumVotaz, @IdAzion, @ProgDeleg, @IdSeggio, { fn NOW() }, @NomeComputer) ";
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        qryStd.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
+                        qryStd.Parameters.Add("@IdAzion", System.Data.SqlDbType.Int).Value = az.IDAzion;
+                        qryStd.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
+                        qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
+                        qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = NomeTotem;
+                        //"VALUES ('" + AIDBadge.ToString() + "'," +
+                        //            NVotaz.ToString() + "," + c.IDAzion + "," + c.ProgDeleg +
+                        //            "," + FIDSeggio.ToString() + ",{ fn NOW() } , '" + NomeTotem + "')";
+                        NumberofRows = qryStd.ExecuteNonQuery();
+
+                        // 
+                        foreach (TVotoEspresso vt in az.VotiEspressi)
+                        {
+                            // intonse_totem, salvo il voto, ma prima devo fare qualche elaborazione
+                            // 1. testo se devo togliere il link voto-azionista
+                            int AIDBadge_OK = AIDBadge;
+                            if (!ATotCfg.SalvaLinkVoto)
+                                AIDBadge_OK = random.Next(1, TopRand);
+
+                            // salvo nel db
+                            qryVoti.Parameters.Clear();
+                            qryVoti.CommandText = "insert into VS_Intonse_Totem  with (rowlock) " +
+                                                  " (NumVotaz, idTipoScheda, idSeggio, voti, Badge, ProgDeleg, IdCarica) " +
+                                                  " VALUES " +
+                                                  " (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @Badge, @ProgDeleg, @IdCarica) ";
+                            qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
+                            qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
+                            qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
+                            qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Int).Value = 1;
+                            qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge_OK.ToString();
+                            qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
+                            qryVoti.Parameters.Add("@IdCarica", System.Data.SqlDbType.Int).Value = vt.TipoCarica;
+                            NumberofRows = qryVoti.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                // chiudo la transazione
+                traStd.Commit();
+                result = 1;
+            }
+            catch (Exception objExc)
+            {
+                if (traStd != null) traStd.Rollback();
+                result = 0;
+                Logging.WriteToLog("<dberror> fn SalvaTutto: " + AIDBadge.ToString() + " err: " + objExc.Message);
+                MessageBox.Show("Errore nella funzione SalvaTutto " + "\n\n" +
+                    "Impossibile salvare i voti.\n\n " +
+                    "Chiamare operatore esterno.\n\n " +
+                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                qryStd.Dispose();
+                qryVoti.Dispose();
+                traStd.Dispose();
+                CloseConnection("");
+            }
+            return result;
 
             /*
              
@@ -1110,8 +1218,6 @@ namespace VotoTouch
                             // controlla se nei voti non c'è il non voto
 
                             // ****************************
-                            // TODO: AbilitaDirittiNonVoglioVotare non va bene x n votazioni
-                            // TODO: AbilitaDirittiNonVoglioVotare se non trova che succede, salva???
 
                             for (int j = 0; j < FVotiDaSalvare.Count; j++)
                             {
@@ -1203,30 +1309,30 @@ namespace VotoTouch
             return 0;
         }
 
-        private void MandaEventoProgVoto(int ProgTotale, int ProgVoto, int TotVoti)
-        {
-            // DR12 OK
-            try
-            {
-                // questa funzione si occupa di mandare un evento alla finestra principale 
-                // sull'andamento del salvataggio del voto
-                if (TotVoti > VSDecl.MINVOTI_PROGRESSIVO)
-                {
-                    float cc = ((float)ProgVoto / (float)10);
-                    // mando l'evento perchè ho diviso per dieci
-                    if ((cc - Math.Truncate(cc)) == 0)
-                        OnProgressoSalvaTutto(this, ProgTotale, ProgVoto);
-                    // mando evento finale
-                    if (ProgVoto == ProgTotale)
-                        OnProgressoSalvaTutto(this, ProgTotale, ProgVoto);
-                }
-            }
-            catch (Exception objExc)
-            {
-                System.Diagnostics.Debug.WriteLine(objExc.Message);
-                // non faccio nulla, stanto non serve, è solo per precauzione
-            }
-        }
+        //private void MandaEventoProgVoto(int ProgTotale, int ProgVoto, int TotVoti)
+        //{
+        //    // DR12 OK
+        //    try
+        //    {
+        //        // questa funzione si occupa di mandare un evento alla finestra principale 
+        //        // sull'andamento del salvataggio del voto
+        //        if (TotVoti > VSDecl.MINVOTI_PROGRESSIVO)
+        //        {
+        //            float cc = ((float)ProgVoto / (float)10);
+        //            // mando l'evento perchè ho diviso per dieci
+        //            if ((cc - Math.Truncate(cc)) == 0)
+        //                OnProgressoSalvaTutto(this, ProgTotale, ProgVoto);
+        //            // mando evento finale
+        //            if (ProgVoto == ProgTotale)
+        //                OnProgressoSalvaTutto(this, ProgTotale, ProgVoto);
+        //        }
+        //    }
+        //    catch (Exception objExc)
+        //    {
+        //        System.Diagnostics.Debug.WriteLine(objExc.Message);
+        //        // non faccio nulla, stanto non serve, è solo per precauzione
+        //    }
+        //}
 
         #endregion
 
