@@ -21,10 +21,13 @@ namespace VotoTouch
         public int TipoSubVoto { get; set; }             // a seconda del tipo principale 
         public bool SkBianca { get; set; }               // ha scheda bianca
         public bool SkNonVoto { get; set; }              // ha il non voto
+        public bool SkContrarioTutte { get; set; }       // ha il contraio a tutte       
+        public bool SkAstenutoTutte { get; set; }       // ha il astenuto a tutte       
         public int MaxScelte { get; set; }               // n scelte max nel caso di multi
         public bool NeedConferma { get; set; }           // indica che dopo questa votazione necessita la conferma
-        public bool PreIntermezzo { get; set; }          // videata intermezzo
-        public bool PreIntermezzoFatto { get; set; }     // videata intermezzo
+        public bool AbilitaBottoneUscita { get; set; }
+        //public bool PreIntermezzo { get; set; }          // videata intermezzo
+        //public bool PreIntermezzoFatto { get; set; }     // videata intermezzo
 
         public bool SelezionaTuttiCDA;
 
@@ -42,6 +45,12 @@ namespace VotoTouch
             Liste = new List<TNewLista>();
             Pagine = new ArrayList();
             TouchZoneVoto = null;
+            AbilitaBottoneUscita = false;
+        }
+
+        public int DammiMaxMultiCandSelezionabili()
+        {
+            return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MaxScelte : 0;
         }
 
         ~TNewVotazione()
@@ -97,6 +106,9 @@ namespace VotoTouch
 
         private CVotoBaseDati DBDati;
         private bool DemoMode = false;
+        // stringhe sql
+        private string qry_DammiVotazioniTotem = "";
+
 
         public TListaVotazioni(CVotoBaseDati ADBDati, bool ADemoMode)
         {
@@ -104,6 +116,9 @@ namespace VotoTouch
             DBDati = ADBDati;
             _Votazioni = new List<TNewVotazione>();
             DemoMode = ADemoMode;
+
+            // load the query
+            qry_DammiVotazioniTotem = DBDati.getModelsQueryProcedure("DammiVotazioniTotem.sql");
 
             idxVotoCorrente = 0;
         }
@@ -504,7 +519,8 @@ namespace VotoTouch
             {
                 // ok ora carico le votazioni
                 qryStd.Parameters.Clear();
-                qryStd.CommandText = "SELECT * from VS_MatchVot_Totem with (NOLOCK)  where GruppoVotaz < 999 order by NumVotaz";
+                qryStd.CommandText = qry_DammiVotazioniTotem;
+                //qryStd.CommandText =   "SELECT * from VS_MatchVot_Totem with (NOLOCK)  where GruppoVotaz < 999 order by NumVotaz";
                 a = qryStd.ExecuteReader();
                 if (a.HasRows)
                 {
@@ -518,9 +534,12 @@ namespace VotoTouch
                                 Descrizione = a["Argomento"].ToString(),
                                 SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
                                 SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                                SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                                SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
                                 SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                                PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
-                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"])                              
+                                //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
+                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                                AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
                             };
                         _Votazioni.Add(v);
                         // nota: esisteva nella vecchia versione voto e subvoto, ora tolti, il codice era
@@ -657,8 +676,9 @@ namespace VotoTouch
                     SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
                     SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
                     SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                    PreIntermezzo = false,
-                    MaxScelte = Convert.ToInt32(a["MaxScelte"])
+                    //PreIntermezzo = false,
+                    MaxScelte = Convert.ToInt32(a["MaxScelte"]),
+                    AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
                 };
                 _Votazioni.Add(v);
             }

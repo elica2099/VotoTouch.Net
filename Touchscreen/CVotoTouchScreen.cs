@@ -14,7 +14,9 @@ namespace VotoTouch
     // eventi di pressione scheda
     public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
         steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
-        steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti};
+        steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti,
+        steBottoneUscita
+    };
 
     // struttura zone dello schermo
     public struct TTZone
@@ -51,6 +53,8 @@ namespace VotoTouch
     // multivotazione (v. 3.2)
     public delegate void ehPremutoMultiAvanti(object source, int VParam, ref List<int> voti);
     public delegate void ehPremutoMulti(object source, int VParam);
+    // (v. 4.0) btnUscita contraritutti astenutitutti
+    public delegate void ehPremutoBottoneUscita(object source, int VParam);
 
     public delegate void ehTouchWatchDog(object source, int VParam);
 
@@ -75,6 +79,8 @@ namespace VotoTouch
         // multivotazione (v. 3.2)
         public event ehPremutoMultiAvanti PremutoMultiAvanti;
         public event ehPremutoMulti PremutoMulti;               // serve per il repaint
+        // (v. 4.0) btnUscita contraritutti astenutitutti
+        public event ehPremutoBottoneUscita PremutoBottoneUscita;
 
         public event ehTouchWatchDog TouchWatchDog;
 
@@ -98,24 +104,26 @@ namespace VotoTouch
         public Bitmap btnBmpCDASelez;
 
         // Gestione delle Multivotazioni
-        public int NumMulti;
+        public int MaxMultiCandSelezionabili = 0;
 
         // Gestione delle Pagine
-        public int CurrPag;
+        public int CurrPag = 1;
 
         // i ritardi/watchdog del touch
         private Timer timTouch;
         private Timer timTouchWatchDog;
         private bool TouchEnabled;
         private int TouchWatch;
+        private TTotemConfig TotCfg;
 
-		public CVotoTouchScreen()
+        public CVotoTouchScreen(ref TTotemConfig ATotCfg)
 		{
             // DR11 OK
             // inizializzo
             FFormRect = new Rectangle();       
     
             //Tz = new ArrayList();
+            TotCfg = ATotCfg;
 
             PaintTouchOnScreen = false;
 
@@ -151,10 +159,10 @@ namespace VotoTouch
             ClasseTipoVotoConferma = new CTipoVoto_AConferma(FFormRect);
 
             // gestione delle pagine
-            CurrPag = 1;
+            //CurrPag = 1;
 
             // la variabile che indica quanti candidati si possono toccare
-            NumMulti = 0;
+            //MaxMultiCandSelezionabili = 0;
 
             // ritardo del touch
             TouchEnabled = true;
@@ -183,19 +191,19 @@ namespace VotoTouch
             if (ClasseTipoVotoStartNorm != null)
             {
                 ClasseTipoVotoStartNorm.FFormRect = AFormRect;
-                ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart, false);
+                ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart, false, false);
             }
 
             if (ClasseTipoVotoStartDiff != null)
             {
                 ClasseTipoVotoStartDiff.FFormRect = AFormRect;
-                ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true);
+                ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true, false);
             }
 
             if (ClasseTipoVotoConferma != null)
             {
                 ClasseTipoVotoConferma.FFormRect = AFormRect;
-                ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false);
+                ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, TotCfg.AbilitaBottoneUscita);
                 //ClasseTipoVotoConferma.GetTouchSpecialZone(Stato, Differ);
             }
         }
@@ -238,11 +246,11 @@ namespace VotoTouch
             return 0;
         }
 
-
         public int CalcolaTouchVote(TNewVotazione FVotaz)
         {
             Tz = null;
             Tz = FVotaz.TouchZoneVoto.TouchZone;
+            MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
             return 0;
         }
 
@@ -374,6 +382,8 @@ namespace VotoTouch
             TTZone a;
             int Trovato = -1;
 
+            if (Tz == null || Tz.Count == 0) return 0;
+
             // dunque, ciclo lungo la collection attiva per vedere se le coordinate corrispondono
             for (int i = 0; i < Tz.Count; i++)
             {
@@ -501,8 +511,13 @@ namespace VotoTouch
                         break;
 
                     case TTEvento.steSkNonVoto:
-                        // manda l'evento di scheda bianca
+                        // manda l'evento di non voto
                         if (PremutoNonVoto != null) { PremutoNonVoto(this, a.expr); }
+                        break;
+
+                    case TTEvento.steBottoneUscita:
+                        // manda l'evento di bottone uscita
+                        if (PremutoBottoneUscita != null) { PremutoBottoneUscita(this, a.expr); }
                         break;
 
                     case TTEvento.steTabs:
@@ -556,7 +571,7 @@ namespace VotoTouch
                         if (b.Multi > 0) fount++;
                 }
                 // ok, ora se è minore di NumMulti metto il campo a 1
-                if (fount < NumMulti)
+                if (fount < MaxMultiCandSelezionabili)
                     a.Multi = 1;
                 else
                     SystemSounds.Beep.Play();

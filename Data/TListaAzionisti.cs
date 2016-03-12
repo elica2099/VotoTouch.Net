@@ -107,6 +107,7 @@ namespace VotoTouch
             // mi da la collection di diritti di voto per singola votazione
             // in più se ASoloDaVotare = true mi da solo quello che devono esprimere il voto
             // sennò mi da tutti quanti
+            if (_Azionisti == null || _Azionisti.Count == 0) return null;
 
             //List<TAzionista> newList =  
             if (ASoloDaVotare)
@@ -130,7 +131,7 @@ namespace VotoTouch
             return _Azionisti.Count(a => a.HaVotato != VOTATO_NO);
         }
 
-        public bool IsVotazioneFinita()
+        public bool TuttiIDirittiSonoStatiEspressi()
         {
             return _Azionisti.Count(a => a.HaVotato == VOTATO_NO) == 0;
         }
@@ -146,18 +147,38 @@ namespace VotoTouch
             // che nel caso normale è semplice, ma in caso di votazioni differenziate già espresse
             // può essere difficoltoso. In pratica seleziono il conteggio dei diritti per IDVotazioni
             // e prendo il numero maggiore
-            var maxDiritti = Azionisti
-               .Where(n => n.HaVotato == VOTATO_NO)
-               .GroupBy(n => n.IDVotaz)
-               .Select(group =>
-                       new
-                       {
-                           IDVotaz = group.Key,
-                           //Diritti = group.ToList(),
-                           Count = group.Count()
-                       })
-               .Max(n => n.Count);
-            return (int) maxDiritti;
+            if (_Azionisti == null || _Azionisti.Count == 0) return 0;
+
+            var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+            if (AzionNoVotato.Count() > 0)
+            {
+                var maxDiritti = AzionNoVotato 
+                   .GroupBy(n => n.IDVotaz)
+                   .Select(group =>
+                           new
+                           {
+                               IDVotaz = group.Key,
+                               //Diritti = group.ToList(),
+                               Count = group.Count()
+                           })
+                   .Max(n => n.Count);
+                return (int)maxDiritti;
+            }
+            else
+                return 0;
+
+
+            //var maxDiritti = Azionisti
+            //   .Where(n => n.HaVotato == VOTATO_NO)
+            //   .GroupBy(n => n.IDVotaz)
+            //   .Select(group =>
+            //           new
+            //           {
+            //               IDVotaz = group.Key,
+            //               //Diritti = group.ToList(),
+            //               Count = group.Count()
+            //           })
+            //   .Max(n => n.Count);
         }
 
         #endregion

@@ -70,15 +70,12 @@ namespace VotoTouch
             this.edtBadge = new System.Windows.Forms.TextBox();
             this.timVotoApero = new System.Windows.Forms.Timer(this.components);
             this.pbSalvaDati = new System.Windows.Forms.PictureBox();
-            this.imgSemNo = new System.Windows.Forms.PictureBox();
-            this.imgSemOk = new System.Windows.Forms.PictureBox();
             this.lbConfermaUp = new System.Windows.Forms.Label();
             this.lbNomeAzStart = new System.Windows.Forms.Label();
+            this.pnSemaf = new System.Windows.Forms.Panel();
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgSemNo)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgSemOk)).BeginInit();
             this.SuspendLayout();
             // 
             // lbDirittiDiVoto
@@ -331,28 +328,6 @@ namespace VotoTouch
             this.pbSalvaDati.TabStop = false;
             this.pbSalvaDati.Visible = false;
             // 
-            // imgSemNo
-            // 
-            this.imgSemNo.Image = ((System.Drawing.Image)(resources.GetObject("imgSemNo.Image")));
-            this.imgSemNo.Location = new System.Drawing.Point(6, 4);
-            this.imgSemNo.Name = "imgSemNo";
-            this.imgSemNo.Size = new System.Drawing.Size(12, 12);
-            this.imgSemNo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.imgSemNo.TabIndex = 120;
-            this.imgSemNo.TabStop = false;
-            this.imgSemNo.Visible = false;
-            // 
-            // imgSemOk
-            // 
-            this.imgSemOk.Image = ((System.Drawing.Image)(resources.GetObject("imgSemOk.Image")));
-            this.imgSemOk.Location = new System.Drawing.Point(4, 2);
-            this.imgSemOk.Name = "imgSemOk";
-            this.imgSemOk.Size = new System.Drawing.Size(12, 12);
-            this.imgSemOk.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.imgSemOk.TabIndex = 119;
-            this.imgSemOk.TabStop = false;
-            this.imgSemOk.Visible = false;
-            // 
             // lbConfermaUp
             // 
             this.lbConfermaUp.BackColor = System.Drawing.Color.Transparent;
@@ -379,18 +354,24 @@ namespace VotoTouch
             this.lbNomeAzStart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbNomeAzStart.Visible = false;
             // 
+            // pnSemaf
+            // 
+            this.pnSemaf.Location = new System.Drawing.Point(0, 0);
+            this.pnSemaf.Name = "pnSemaf";
+            this.pnSemaf.Size = new System.Drawing.Size(10, 10);
+            this.pnSemaf.TabIndex = 129;
+            // 
             // frmMain
             // 
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(844, 566);
+            this.Controls.Add(this.pnSemaf);
             this.Controls.Add(this.Panel4);
             this.Controls.Add(this.pnBadge);
             this.Controls.Add(this.lbNomeAzStart);
             this.Controls.Add(this.lbConfermaUp);
             this.Controls.Add(this.pbSalvaDati);
-            this.Controls.Add(this.imgSemNo);
-            this.Controls.Add(this.imgSemOk);
             this.Controls.Add(this.lbDisgiuntoRimangono);
             this.Controls.Add(this.lbNomeDisgiunto);
             this.Controls.Add(this.lbNome);
@@ -419,8 +400,6 @@ namespace VotoTouch
             this.pnBadge.ResumeLayout(false);
             this.pnBadge.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgSemNo)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.imgSemOk)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -438,8 +417,6 @@ namespace VotoTouch
         private System.Windows.Forms.Label lbDisgiuntoRimangono;
         private System.Windows.Forms.Panel Panel4;
         private System.Windows.Forms.ListBox lbVersion;
-        private System.Windows.Forms.PictureBox imgSemOk;
-        private System.Windows.Forms.PictureBox imgSemNo;
         private Button button1;
         private Panel pnBadge;
         private Button btmBadge;
@@ -456,5 +433,6 @@ namespace VotoTouch
         private Label lbNomeAzStart;
         private Button btnRipetiz;
         private Button button2;
+        private Panel pnSemaf;
     }
 }

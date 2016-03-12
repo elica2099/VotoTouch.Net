@@ -205,6 +205,14 @@ namespace VotoTouch
             SystemSounds.Beep.Play();
         }
 
+        public void onPremutoBottoneUscita(object source, int VParam)
+        {
+            // Bottone Uscita
+            // TODO: Evento Bottone Uscita con msgbox di conferma
+
+            MessageBox.Show("PremutoBottoneUscita");
+        }
+
         // ----------------------------------------------------------------
         //	 CONFERMA - ANNULLA VOTI
         //      versione con SalvaVotoNonConfermato
@@ -219,7 +227,7 @@ namespace VotoTouch
             Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
 
             // cambio stato
-            Stato = Azionisti.IsVotazioneFinita() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
+            Stato = Azionisti.TuttiIDirittiSonoStatiEspressi() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
             // cambio
             CambiaStato();
 

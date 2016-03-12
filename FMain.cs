@@ -251,8 +251,7 @@ namespace VotoTouch
                 return;
             }
 
-            // vado avanti con il database
-            // mi connetto
+            // vado avanti con il database mi connetto
             //dbr = oDBDati.DBConnect();
             splash.SetSplash(30, rm.GetString("SAPP_START_INITCFG"));    //"Carico configurazione..."
             if (oDBDati.DBConnect() != null)
@@ -280,16 +279,16 @@ namespace VotoTouch
                     // nel log va tutto bene
                     Logging.WriteToLog("<startup> Caricamento dati database OK");
                     // ora secondo TotCfg.AbilitalogV creo il file del log per le versioni Standalone e normale
-                    if (TotCfg.AbilitaLogV)
-                    {
-                        // Inizializzo il log dei voti
-                        if (System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt"))
-                            LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(Data_Path, "VotoT_" + NomeTotem);
-                        else
-                            LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(@"M:\LST\VotoTouch\",
-                                    "VotoT_" + NomeTotem);
-                    } 
-                    if (TotCfg.AbilitaLogV) LogVote.WriteToLog((LogVotiNomeFile), "------ Inizio Applicazione ------");
+                    //if (TotCfg.AbilitaLogV)
+                    //{
+                    //    // Inizializzo il log dei voti
+                    //    if (System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt"))
+                    //        LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(Data_Path, "VotoT_" + NomeTotem);
+                    //    else
+                    //        LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(@"M:\LST\VotoTouch\",
+                    //                "VotoT_" + NomeTotem);
+                    //} 
+                    //if (TotCfg.AbilitaLogV) LogVote.WriteToLog((LogVotiNomeFile), "------ Inizio Applicazione ------");
                 }
                 else
                 {
@@ -343,7 +342,7 @@ namespace VotoTouch
             //FAzionisti = new ArrayList();
             //FNAzionisti = 0;
             // Classe del TouchScreen
-            oVotoTouch = new CVotoTouchScreen();
+            oVotoTouch = new CVotoTouchScreen(ref TotCfg);
             oVotoTouch.PremutoVotaNormale += new ehPremutoVotaNormale(onPremutoVotaNormale);
             oVotoTouch.PremutoVotaDifferenziato += new ehPremutoVotaDifferenziato(onPremutoVotaDifferenziato);
             oVotoTouch.PremutoConferma += new ehPremutoConferma(onPremutoConferma);
@@ -354,9 +353,9 @@ namespace VotoTouch
             oVotoTouch.PremutoInvalido += new ehPremutoInvalido(onPremutoInvalido);
             oVotoTouch.PremutoTab += new ehPremutoTab(onPremutoTab);
             oVotoTouch.TouchWatchDog += new ehTouchWatchDog(onTouchWatchDog);
-            // multivotazione
             oVotoTouch.PremutoMultiAvanti += new ehPremutoMultiAvanti(onPremutoVotoValidoMulti);
             oVotoTouch.PremutoMulti += new ehPremutoMulti(onPremutoVotoMulti);
+            oVotoTouch.PremutoBottoneUscita += new ehPremutoBottoneUscita(onPremutoBottoneUscita);
 
             // classe del tema
             oVotoTheme = new CVotoTheme();
@@ -385,6 +384,7 @@ namespace VotoTouch
             timConfigura.Enabled = false;
             timConfigura.Interval = 30;
             timConfigura.Tick += timConfigura_Tick;
+		    pnSemaf.BackColor = Color.Transparent;
 
             splash.SetSplash(90, rm.GetString("SAPP_START_INITVAR"));   //"Inizializzo variabili...");
             // scrive la configurazione nel log
@@ -1303,8 +1303,10 @@ namespace VotoTouch
 
         private void SemaforoOKImg(bool bok)
         {
-            imgSemNo.Visible = !bok;
-            imgSemOk.Visible = bok;
+            if (bok)
+                pnSemaf.BackColor = Color.LimeGreen;
+            else
+                pnSemaf.BackColor = Color.Red;
         }
         
         //public bool CopiaImmagini()

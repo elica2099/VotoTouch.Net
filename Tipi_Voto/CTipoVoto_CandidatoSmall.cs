@@ -242,6 +242,9 @@ namespace VotoTouch
                 #endregion
 
             }
+
+            // nella classe base c'è qualcosa
+            base.GetTouchVoteZone(AVotazione);
         }
 
 

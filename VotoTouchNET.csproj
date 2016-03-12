@@ -257,6 +257,7 @@
     <EmbeddedResource Include="Resources\btn_alternativo_cds.png" />
     <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Deleganti.sql" />
     <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Titolare.sql" />
+    <EmbeddedResource Include="Data\Query\DammiVotazioniTotem.sql" />
     <Content Include="vote.ico" />
     <EmbeddedResource Include="Resources\tab_rev.png" />
     <EmbeddedResource Include="Resources\tab.png" />

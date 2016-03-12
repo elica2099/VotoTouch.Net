@@ -35,38 +35,26 @@ namespace VotoTouch
             // faccio un  ulteriore controllo
             TotCfg.IDSeggio = 99;
             FIDSeggio = 99;
-
             TotCfg.Attivo = true;
             TotCfg.VotoAperto = true;
-
-
+            TotCfg.ControllaPresenze = 1;
             TotCfg.UsaSemaforo = false;
             TotCfg.IP_Com_Semaforo = "127.0.0.1";
             TotCfg.TipoSemaforo = 1;
-
-
-            TotCfg.ControllaPresenze = 1;
             TotCfg.SalvaLinkVoto = true;
             TotCfg.SalvaVotoNonConfermato = true;
-            TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
-            
+            TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "10.178.6.16";
             //TotCfg.IP_Com_Semaforo = "192.168.0.32";
-
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "COM3";           
             //TotCfg.TipoSemaforo = 2;
-
-
-
             TotCfg.UsaLettore = false;
             TotCfg.PortaLettore = 0;
             TotCfg.CodiceUscita = "999999";
-
-
-            TotCfg.UsaController = false;
-            TotCfg.IPController = "127.0.0.1";
+            //TotCfg.UsaController = false;
+            //TotCfg.IPController = "127.0.0.1";
             return 0;
         }
 
@@ -75,8 +63,8 @@ namespace VotoTouch
             TotCfg.SalvaLinkVoto = true;
             TotCfg.SalvaVotoNonConfermato = true;
             TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
-            TotCfg.TastoRicominciaDaCapo = false;
-            TotCfg.AbilitaLogV = true;
+            //TotCfg.TastoRicominciaDaCapo = false;
+            //TotCfg.AbilitaLogV = true;
             return 0;
         }
 

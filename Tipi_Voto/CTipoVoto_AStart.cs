@@ -19,7 +19,7 @@ namespace VotoTouch
 
         //override public void GetTouchVoteZone(TAppStato AStato, TNewVotazione AFVotaz, 
         //                                                bool ADiffer, ref ArrayList Tz )
-        override public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer)
+        override public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita)
         {
             // DR12 OK
             TTZone a;
@@ -47,7 +47,8 @@ namespace VotoTouch
 				Tz.Add(a);
 			}
 
-		}
+            base.GetTouchSpecialZone(AStato, ADiffer, ABtnUscita);
+        }
 
     }
 }

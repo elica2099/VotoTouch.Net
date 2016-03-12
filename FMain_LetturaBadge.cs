@@ -186,7 +186,7 @@ namespace VotoTouch
                     // separo così mi evito un controllo in più
                     if (Controllato)
                     {
-                        if (Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni))
+                        if (Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni) && !Azionisti.TuttiIDirittiSonoStatiEspressi())
                         {
                             // resetto alcune variabili
                             //VotoCorrente = Votazioni.DammiPrimaVotazione();

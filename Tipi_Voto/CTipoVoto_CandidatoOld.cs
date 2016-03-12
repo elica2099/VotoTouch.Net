@@ -24,7 +24,9 @@ namespace VotoTouch
         {
             // DR12 OK
             Tz.Clear();
-            
+
+            // nella classe base c'è qualcosa
+            base.GetTouchVoteZone(AVotazione);
         }
 
 

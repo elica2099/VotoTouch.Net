@@ -30,44 +30,40 @@ namespace VotoTouch
     // configurazione del programma
     public struct TTotemConfig
     {
-        // variabili di configurazione Singola Postazione
-        public string Postazione;
-        public string Descrizione;
-        public int IDSeggio;
-
-        // variabili di configurazione Generali
-        public int ControllaPresenze;
+        // CONFIGURAZIONE GENERALE
         public bool SalvaLinkVoto;
         public bool SalvaVotoNonConfermato;
         public int IDSchedaUscitaForzata;
-        public bool TastoRicominciaDaCapo;
-        public bool AbilitaLogV;
+        public int ModoPosizioneAreeTouch;
+        public int ControllaPresenze;
+        public bool AbilitaBottoneUscita;
+        public bool AttivaAutoRitornoVoto;
+        public int TimeAutoRitornoVoto;
         public bool AbilitaDirittiNonVoglioVotare;
-
-        // Comportamento
+        //public bool TastoRicominciaDaCapo;
+        //public bool AbilitaLogV;
+        
+        // CONFIGURAZIONE LOCALE
+        public string Postazione;
+        public string Descrizione;
+        public int IDSeggio;
         public bool Attivo;
         public bool VotoAperto;
-
+        public int Sala;
         // Semaforo
         public bool UsaSemaforo;
         public string IP_Com_Semaforo;
         public int TipoSemaforo;
-
         // Variabili di configurazione Lettore
         public bool UsaLettore;
         public int PortaLettore;
         public string CodiceUscita;
-
         // codici impianto
         public int BadgeLen;
         public string CodImpianto;
-
-        // controller centrale
-        public bool UsaController;
-        public string IPController;
-
-        // IdSala
-        public int Sala;
+        //// controller centrale
+        //public bool UsaController;
+        //public string IPController;
     }
 
     // struttura di configurazione del database
@@ -220,7 +216,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "3.7 01/03/2016";
+        public const string VTS_VERSION = "4.0 01/03/2016";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string CONFIGURA = "88889990";
@@ -244,7 +240,6 @@ namespace VotoTouch
                                                "\n ----> Badge da cancellare : ";
         public const string MSG_CANC_VOTO_C = "Sei proprio sicuro di Cancellare i voti dal DB ? \n Badge: ";
 
-
         // path Immagini assoluti
         public const string DATA_PATH_ABS = "\\Data\\";
         public const string IMG_PATH_ABS = "\\Data\\VtsNETImg\\";
@@ -266,15 +261,12 @@ namespace VotoTouch
         public const string IMG_voto_c = "_conf";
         public const string IMG_voto_pre = "_pre";
 
-        // ----------------------------
-        // COSTANTI VOTAZIONE
-        // ----------------------------
         // tipi di Votazione
         public const int VOTO_LISTA = 1;            // voto di lista
         public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
         public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
         public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
-        //
+
         // Voti
         public const int LISTA_1 = 0;
         public const int LISTA_2 = 1;
@@ -287,48 +279,39 @@ namespace VotoTouch
         public const int VOTO_MULTIAVANTI = -10;
         public const int VOTO_TUTTI_ABS = 226;
         public const int VOTO_TUTTI_CON = 227;
-        //
-        // ----------------------------
+        public const int VOTO_BTN_USCITA = -3;
 
         //public const int VOTO_MULTICAND_ETRURIA = 5;   // voto multicandidato
 
-        // n. di selezioni per pagina in caso di VOTO_CANDIDATO
+        // n. di selezioni per pagina in caso di VOTO_CANDIDATO / alfabeto
         public const int CANDIDATI_PER_PAGINA = 10;
         public const int CANDXPAG_10 = 10;
         public const int CANDXPAG_8 = 8;
         public const int CANDXPAG_6 = 6;
-
         public static readonly string[] abt ={ 
                 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", 
                 "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
+        // presenze
         public const int PRES_NON_CONTROLLARE = 0;
         public const int PRES_CONTROLLA = 1;
         public const int PRES_FORZA_INGRESSO = 2;
-
-        // timer del chck voto
-        public const int TIM_CKVOTO_MIN = 15000;   // 15 secondi
-        public const int TIM_CKVOTO_MAX = 40000;   // 50 secondi
-
-        // costante del randomize id (link scollegato)
-        public const int MAX_ID_RANDOM = 9999999;
-
-
-        //public const int VOTO_ETRURIA = 999999;
+        // Modo Touch aree 
+        public const int MODO_POS_TOUCH_NORMALE = 0;
+        public const int MODO_POS_TOUCH_MODERN = 1;
 
         public const int SEMAFORO_IP = 1;
         public const int SEMAFORO_COM = 2;
 
-        // salvataggio su log
+        public const int MAX_ID_RANDOM = 9999999;
         public const bool SALVAVOTISULOG = true;
-
-        // progressivo voti
         public const int MINVOTI_PROGRESSIVO = 30;
-
-        // costanti per la finestra
         public const int BTN_FONT_SIZE = 14;
         public const string BTN_FONT_NAME = "Arial";
-        //
-    
+        public const int TIM_CKVOTO_MIN = 15000;   // 15 secondi
+        public const int TIM_CKVOTO_MAX = 40000;   // 50 secondi
+        public const int TIME_AUTOCLOSEVOTO = 20;
+
+
     }
 }

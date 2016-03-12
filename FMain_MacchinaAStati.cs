@@ -191,6 +191,18 @@ namespace VotoTouch
                     }
                     else
                         oVotoImg.LoadImages(VSDecl.IMG_fine);
+
+                    // ora devo vediricare se è attivo AttivaAutoRitornoVoto
+                    if (TotCfg.AttivaAutoRitornoVoto)
+                    {
+                        System.Windows.Forms.Timer timAutoRitorno = new System.Windows.Forms.Timer
+                            {
+                                Enabled = true,
+                                Interval = TotCfg.TimeAutoRitornoVoto*1000
+                            };
+                        timAutoRitorno.Tick += timAutoRitorno_Tick;
+                    }
+
                     break;
 
                 case TAppStato.ssvSalvaVoto:
@@ -266,6 +278,15 @@ namespace VotoTouch
                 }
             }
             // chiaramente se non sono diversi non faccio nulla
+        }
+
+        private void timAutoRitorno_Tick(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Timer timer = sender as System.Windows.Forms.Timer;
+            if (timer != null) timer.Enabled = false;
+
+            // esco
+            TornaInizio();
         }
 
         #endregion

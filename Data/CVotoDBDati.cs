@@ -249,10 +249,10 @@ namespace VotoTouch
                     TotCfg.PortaLettore = Convert.ToInt32(a["PortaLettore"]);
                     TotCfg.CodiceUscita = a["CodiceUscita"].ToString();
 
-                    TotCfg.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
+                    //TotCfg.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
 
-                    TotCfg.UsaController = Convert.ToBoolean(a["UsaController"]);
-                    TotCfg.IPController = a["IPController"].ToString();
+                    //TotCfg.UsaController = Convert.ToBoolean(a["UsaController"]);
+                    //TotCfg.IPController = a["IPController"].ToString();
 
                     TotCfg.Sala = a.IsDBNull(a.GetOrdinal("Sala")) ? 1 : Convert.ToInt32(a["Sala"]);
 
@@ -268,11 +268,10 @@ namespace VotoTouch
                     // non c'è configurazione, devo inserirla
                     qryStd.CommandText = "INSERT into CONFIG_POSTAZIONI_TOTEM " +
                         "(Postazione, Descrizione, IdSeggio, Attivo, VotoAperto, UsaSemaforo, "+
-                        " IPCOMSemaforo, TipoSemaforo, UsaLettore, PortaLettore, CodiceUscita, ControllaPresenze, " +
-                        " UsaController, IPController, Comando, RicaricaConfig, Configurazione, Sala) " +
+                        " IPCOMSemaforo, TipoSemaforo, UsaLettore, PortaLettore, CodiceUscita, " +
+                        " UsaController, IPController, Sala) " +
                         " VALUES ('" + NomeTotem + "', 'Desc_" + NomeTotem + "', 999, 1, 0, 0, " +
-                        "'127.0.0.1', 2, 0, 1, '999999', " + VSDecl.PRES_CONTROLLA.ToString() + 
-                        ", 0, '127.0.0.1', 0, 0, 'n', 1)";
+                        "'127.0.0.1', 2, 0, 1, '999999', 0, '127.0.0.1', 1)";
                     
                     // metto in quadro i valori
                     TotCfg.Postazione = NomeTotem;
@@ -286,9 +285,9 @@ namespace VotoTouch
                     TotCfg.UsaLettore = false;
                     TotCfg.PortaLettore = 1;
                     TotCfg.CodiceUscita = "999999";
-                    TotCfg.ControllaPresenze = VSDecl.PRES_CONTROLLA;
-                    TotCfg.UsaController = false;
-                    TotCfg.IPController = "127.0.0.1";
+                    //TotCfg.ControllaPresenze = VSDecl.PRES_CONTROLLA;
+                    //TotCfg.UsaController = false;
+                    //TotCfg.IPController = "127.0.0.1";
                     TotCfg.Sala = 1;
                     // parte come semaforo com per facilitare gli esterni,
                     // poi bisognerà fare un wizard di configurazione
@@ -334,7 +333,7 @@ namespace VotoTouch
             qryStd = new SqlCommand();
             qryStd.Connection = STDBConn;
             // la configurazione ci deve essere, non è necessario inserirla
-            qryStd.CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock)";
+            qryStd.CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock) where attivo = 1";
 
             try
             {
@@ -350,28 +349,45 @@ namespace VotoTouch
                     // il salvataggio del voto anche se non ha confermato
                     TotCfg.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
                     // l'id della scheda che deve essere salvata in caso di 999999
-                    int IDSchedaForz = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
-                    // qua dovrei in teoria controllare che vada bene
-                    // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre
-                    if (IDSchedaForz == VSDecl.VOTO_SCHEDABIANCA || IDSchedaForz == VSDecl.VOTO_NONVOTO)
-                        TotCfg.IDSchedaUscitaForzata = IDSchedaForz;
-                    else
-                        TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
-                    // ok, ora il tasto ricomincia da capo
-                    TotCfg.TastoRicominciaDaCapo = Convert.ToBoolean(a["TastoRicominciaDaCapo"]);
+                    TotCfg.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
                     // ok, ora il LOG del voto
-                    TotCfg.AbilitaLogV = Convert.ToBoolean(a["AbilitaLogV"]);
+                    //TotCfg.AbilitaLogV = Convert.ToBoolean(a["AbilitaLogV"]);
+                    // ModoPosizioneAreeTouch
+                    TotCfg.ModoPosizioneAreeTouch = Convert.ToInt32(a["ModoPosizioneAreeTouch"]);
+                    // controllo delle presenze
+                    TotCfg.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
+                    // AbilitaBottoneUscita
+                    TotCfg.AbilitaBottoneUscita = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                    // AttivaAutoRitornoVoto
+                    TotCfg.AttivaAutoRitornoVoto = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                    // TimeAutoRitornoVoto
+                    TotCfg.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]);
                     // AbilitaDirittiNonVoglioVotare
                     TotCfg.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
 
+
+                    // qua dovrei in teoria controllare che vada bene
+                    // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre
+                    //if (IDSchedaForz == VSDecl.VOTO_SCHEDABIANCA || IDSchedaForz == VSDecl.VOTO_NONVOTO)
+                    //    TotCfg.IDSchedaUscitaForzata = IDSchedaForz;
+                    //else
+                    //    TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
+                    // ok, ora il tasto ricomincia da capo
+                    //TotCfg.TastoRicominciaDaCapo = Convert.ToBoolean(a["TastoRicominciaDaCapo"]);
                 }
                 else
                 {
                     TotCfg.SalvaLinkVoto = true;
                     TotCfg.SalvaVotoNonConfermato = false;
                     TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_NONVOTO;
-                    TotCfg.TastoRicominciaDaCapo = false;
-                    TotCfg.AbilitaLogV = true;
+                    TotCfg.ModoPosizioneAreeTouch = VSDecl.MODO_POS_TOUCH_NORMALE;
+                    TotCfg.ControllaPresenze = VSDecl.PRES_CONTROLLA;
+                    TotCfg.AbilitaBottoneUscita = false;
+                    TotCfg.AttivaAutoRitornoVoto = false;
+                    TotCfg.TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
+                    //TotCfg.TastoRicominciaDaCapo = false;
+                    //TotCfg.AbilitaLogV = true;
+                    TotCfg.AbilitaDirittiNonVoglioVotare = false;
                 }
                 // chiudo
                 a.Close();

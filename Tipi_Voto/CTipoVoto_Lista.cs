@@ -182,6 +182,9 @@ namespace VotoTouch
                 a.Text = ""; a.ev = TTEvento.steSkNonVoto; a.pag = 0; a.Multi = 0;
                 Tz.Add(a);
             }
+
+            // nella classe base c'è qualcosa
+            base.GetTouchVoteZone(AVotazione);
         }
 
 

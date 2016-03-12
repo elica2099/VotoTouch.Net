@@ -42,11 +42,33 @@ namespace VotoTouch
         virtual public void GetTouchVoteZone(TNewVotazione AVotazione) //ref ArrayList Tz)
         {
             // l'implementazione è nelle varie classi
+
+            //c 'è una parte comune
+            // il Bottone Uscita
+            if (AVotazione.AbilitaBottoneUscita)
+            {
+                TTZone a = new TTZone();
+                GetZone(ref a, 75, 0, 97, 12); // in alto a dx
+                a.expr = VSDecl.VOTO_BTN_USCITA;
+                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0;
+                Tz.Add(a);
+            }
         }
 
-        virtual public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer) //, ref ArrayList Tz
+        virtual public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita) //, ref ArrayList Tz
         {
             // l'implementazione è nelle varie classi
+
+            //c 'è una parte comune
+            // il Bottone Uscita
+            if (ABtnUscita)
+            {
+                TTZone a = new TTZone();
+                GetZone(ref a, 75, 0, 97, 12); // in alto a dx
+                a.expr = VSDecl.VOTO_BTN_USCITA;
+                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0;
+                Tz.Add(a);
+            }
         }
 
         // --------------------------------------------------------------

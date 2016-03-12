@@ -28,6 +28,8 @@ namespace VotoTouch
             NewCalcolaTouchCandidatoPagina(AVotazione);
             // ora devo mettere i tabs
             CalcolaTouchTabsPagina(AVotazione);
+            // nella classe base c'è qualcosa
+            base.GetTouchVoteZone(AVotazione);
         }
 
         // --------------------------------------------------------------

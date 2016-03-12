@@ -18,14 +18,17 @@ namespace VotoTouch
             // costruttore
         }
 
-        override public void GetTouchVoteZone(TNewVotazione AFVotaz)                                                      
+        override public void GetTouchVoteZone(TNewVotazione AVotazione)                                                      
         {
             // DR12 OK
             Tz.Clear();
             // metto i rettangoli del candidato a singola pagina
-            NewCalcolaTouchCandidatoPagina(AFVotaz);
+            NewCalcolaTouchCandidatoPagina(AVotazione);
             // ora devo mettere i tabs
-            CalcolaTouchTabsPagina(AFVotaz);
+            CalcolaTouchTabsPagina(AVotazione);
+        
+            // nella classe base c'è qualcosa
+            base.GetTouchVoteZone(AVotazione);
         }
 
         // --------------------------------------------------------------
