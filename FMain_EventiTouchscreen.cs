@@ -15,6 +15,7 @@ using Microsoft.Win32;
 using System.Threading;
 using System.Media;
 using System.Reflection;
+
 namespace VotoTouch
 {
 

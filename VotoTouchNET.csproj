@@ -136,11 +136,20 @@
     <Compile Include="FMain_EventiTouchscreen.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FMain_Interfaccia.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FMain_LetturaBadge.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FMain_MacchinaAStati.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FTest.Designer.cs">
+      <DependentUpon>FTest.cs</DependentUpon>
     </Compile>
     <Compile Include="FVSStart.cs">
       <SubType>Form</SubType>
@@ -223,6 +232,9 @@
     <Compile Include="TVSDecl.cs">
       <SubType>Code</SubType>
     </Compile>
+    <EmbeddedResource Include="FTest.resx">
+      <DependentUpon>FTest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FVSStart.resx">
       <DependentUpon>FVSStart.cs</DependentUpon>
     </EmbeddedResource>
