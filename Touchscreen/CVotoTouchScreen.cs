@@ -837,7 +837,6 @@ namespace VotoTouch
                     //}
                     //else
                     //{
-                        // todo: modifica per BPM giugno2013
                         e.Graphics.DrawImage(btnBmpCand, r);                                                
                         //e.Graphics.DrawImage(btnBmpCandSing, r);
 

@@ -47,16 +47,11 @@ namespace VotoTouch
         {
             TAzionista c;
             // gestione degli stati della votazione
-            // Touchscreen
-            //oVotoTouch.CalcolaTouch(this, Stato, Votazioni.VotoCorrente, DatiUsr.utente_voti > 1);
-            //
             switch (Stato)
             {
                 case TAppStato.ssvBadge:
                     oVotoTouch.CalcolaTouchSpecial(Stato, false);
                     SettaComponenti(false);
-                    // resetto la votazione, lo faccio sempre
-                    //CurrVoteIDX = 0;
                     UscitaInVotazione = false;
                     // labels
                     lbDirittiDiVoto.Text = "";
@@ -100,15 +95,10 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvVotoStart:
-                    //IsStartingVoto = true;
                     oVotoTouch.CalcolaTouchSpecial(Stato, Azionisti.HaDirittiDiVotoMultipli());
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
                     MettiComponentiStartVoto();
-                    // resetto comunque la delega che è sempre la prima anche nel caso di un voto solo
-                    // nota: l'array degli azionisti parte da 1
-                    //CurrIdAzionDelega = 0;
-
                     break;
 
                 case TAppStato.ssvVoto:
@@ -117,12 +107,6 @@ namespace VotoTouch
                     // tutti i voti sulla prima e nessuno sulla seconda votazione.
                     // lo vedo caricando di volta in volta l'azionista che non ha diritti di voto espressi (havotato = false)
 
-                    //// segnalo all'oggetto Azionista che è partito il voto
-                    //if (IsStartingVoto)
-                    //{
-                    //    IsStartingVoto = false;
-                    //    Azionisti.InizioProceduraVotazione(IsVotazioneDifferenziata);                        
-                    //}
                     // ok, ora estraggo l'azionista o il gruppo di azionisti (se non è differenziato) che devono votare
                     // in Azionisti.AzionistiInVotoCorrente ho l'elenco dei diritti
                     Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata);
@@ -154,16 +138,6 @@ namespace VotoTouch
                     // ora metto in quadro l'immagine, che deve essere presa da un file composto da
                     oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + VSDecl.IMG_voto_c);
                     lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() == 1);
-
-                // Differenziato
-                    //if (IsVotazioneDifferenziata || DatiUsr.utente_voti == 1)
-                    //{
-                    //    if (TotCfg.SalvaLinkVoto) lbNomeDisgiunto.Visible = true;
-                    //    c = (TAzionista)FAzionisti[CurrIdAzionDelega];
-                    //    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + c.RaSo; // "Si sta votando per:\n"
-                    //    if (IsVotazioneDifferenziata)
-                    //        lbDisgiuntoRimangono.Visible = true;
-                    //}
                     break;
 
                 case TAppStato.ssvVotoContinua:
@@ -172,8 +146,6 @@ namespace VotoTouch
 
                 case TAppStato.ssvVotoFinito:
                     oVotoTouch.CalcolaTouchSpecial(Stato, false);
-                    //if (prbSalvaTutto.Visible)
-                    //    prbSalvaTutto.Visible = false;
                     lbDirittiDiVoto.Visible = false;
                     SettaComponenti(false);
                     // labels
@@ -206,35 +178,6 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvSalvaVoto:
-
-                    /*
-                    // salva i voti e le presenze in un one shot sul database
-                    if (FVotiDaSalvare.Count > VSDecl.MINVOTI_PROGRESSIVO)
-                    {
-                        // devo mettere la videata di salvataggio
-                        oVotoImg.LoadImages(VSDecl.IMG_Salva);
-                        // devo settare le dimensioni della barra
-                        prbSalvaTutto.Left = 200;
-                        prbSalvaTutto.Width = this.Width - 400;
-                        prbSalvaTutto.Top = this.Height / 2;
-                        prbSalvaTutto.Visible = true;
-                        lbDirittiDiVoto.Visible = false;
-                        SettaComponenti(false);
-                        this.Refresh();
-                    }
-
-                    // controllo i voti, alla ricerca di problemi, ma ora non posso più farlo
-                    // perché ci sono i multicandidati
-                    //ControllaVoti();
-
-                    // salvataggio dati su log
-                    if (TotCfg.AbilitaLogV) SalvaTuttoSuLog();
-
-                    // ok, ora prima di salvare controllo il parametro SalvaLinkVoto
-                    // se è true non faccio nulla, altrimenti distruggo il link voto-badge
-                    ControllaSalvaLinkVoto();
-                    */
-
                     if (Azionisti.DammiQuantiDirittiSonoStatiVotati() > VSDecl.MINVOTI_PROGRESSIVO)
                     {
                         // metti lo spinning wheel
@@ -246,7 +189,6 @@ namespace VotoTouch
                     pbSalvaDati.Visible = false;
                     
                     oSemaforo.SemaforoFineOccupato();
-                    //CurrVoteIDX = 0;
                     Stato = TAppStato.ssvVotoFinito;
                     CambiaStato();
 

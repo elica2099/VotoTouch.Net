@@ -49,22 +49,17 @@ namespace VotoTouch
             // le labels
             // nome azionista
             PrefNomeAz = Azionisti.Titolare_Badge.RaSo;
-            //PrefNomeAz = oDBDati.DammiNomeAzionista(Badge_Letto);
 
             PrefNomeAz = UppercaseWords(PrefNomeAz.ToLower());
-            //PrefNomeAz += UppercaseWords(DatiUsr.utente_nome.ToLower());
             lbNomeAzStart.Text = PrefNomeAz;
             lbNomeAzStart.Visible = true;
             // diritti di voto    
             lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");      // " Diritti di voto";
             lbDirittiStart.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString();
-            //lbDirittiDiVoto.Text = DatiUsr.utente_voti.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");      // " Diritti di voto";
-            //lbDirittiStart.Text = DatiUsr.utente_voti.ToString();
             // in funzione del n. di deleghe metto
             if (Azionisti.HaDirittiDiVotoMultipli())
             {
                 oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
-                //CaricaImmagini(VSDecl.IMG_VotostartD);
                 // sono le label del differenziato
                 lbDirittiStart.Visible = true;
             }
@@ -72,7 +67,6 @@ namespace VotoTouch
             {
                 // immagine di 1 voto
                 oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
-                //CaricaImmagini(VSDecl.IMG_Votostart1);
             }
         }
 
@@ -106,9 +100,6 @@ namespace VotoTouch
             // in un secondo tempo dovrà essere unificato
             if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
             {
-
-
-
                 // ciclo e metto i candidati
                 TVotoEspresso vt;
                 bool acapo = false;
@@ -186,7 +177,6 @@ namespace VotoTouch
 
         private void InizializzaControlli()
         {
-            // DR->OK11
             Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
 
             // il pannello della conferma
@@ -224,17 +214,12 @@ namespace VotoTouch
                     btnBadgePiuVoti.Visible = (Stato == TAppStato.ssvBadge);
                 if (btnFineVotoDemo != null)
                     btnFineVotoDemo.Visible = (Stato == TAppStato.ssvVotoFinito);
-
             }
         }
 
         private void TornaInizio()
         {
-            //TODO: TornaInizio da verificare
-
             // dall'inizio
-            //VotoCorrente = Votazioni.DammiPrimaVotazione();
-            //CurrVoteIDX = 0;
             Stato = TAppStato.ssvBadge;
             CambiaStato();
         }

@@ -26,8 +26,6 @@ namespace VotoTouch
         public int MaxScelte { get; set; }               // n scelte max nel caso di multi
         public bool NeedConferma { get; set; }           // indica che dopo questa votazione necessita la conferma
         public bool AbilitaBottoneUscita { get; set; }
-        //public bool PreIntermezzo { get; set; }          // videata intermezzo
-        //public bool PreIntermezzoFatto { get; set; }     // videata intermezzo
 
         public bool SelezionaTuttiCDA;
 
@@ -675,6 +673,8 @@ namespace VotoTouch
                     Descrizione = a["Argomento"].ToString(),
                     SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
                     SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                    SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                    SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
                     SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
                     //PreIntermezzo = false,
                     MaxScelte = Convert.ToInt32(a["MaxScelte"]),

@@ -73,15 +73,17 @@ namespace VotoTouch
         // stringhe sql
         private string qry_DammiDirittiDiVoto_Deleganti = "";
         private string qry_DammiDirittiDiVoto_Titolare = "";
+        private bool DemoMode = false;
 
         private CVotoBaseDati DBDati;
 
-        public TListaAzionisti(CVotoBaseDati ADBDati)
+        public TListaAzionisti(CVotoBaseDati ADBDati, bool ADemoMode)
         {
             // costruttore
             DBDati = ADBDati;
             _Azionisti = new List<TAzionista>();
             Titolare_Badge = new TAzionista();
+            DemoMode = ADemoMode;
 
             ListaDiritti_VotoCorrente = new List<TAzionista>();
             IDVotazione_VotoCorrente = -1;
@@ -166,19 +168,6 @@ namespace VotoTouch
             }
             else
                 return 0;
-
-
-            //var maxDiritti = Azionisti
-            //   .Where(n => n.HaVotato == VOTATO_NO)
-            //   .GroupBy(n => n.IDVotaz)
-            //   .Select(group =>
-            //           new
-            //           {
-            //               IDVotaz = group.Key,
-            //               //Diritti = group.ToList(),
-            //               Count = group.Count()
-            //           })
-            //   .Max(n => n.Count);
         }
 
         #endregion
@@ -188,14 +177,6 @@ namespace VotoTouch
         // --------------------------------------------------------------------------
 
         #region Gestione della procedura di votazione
-
-        //public void InizioProceduraVotazione(bool ADifferenziato)
-        //{
-        //    // segnala che è l'inizio della procedura di votazione, vediamo a cosa serve
-
-        //    // resetta i diritti di voto
-        //    ListaDiritti_VotoCorrente.Clear();
-        //}
 
         public bool EstraiAzionisti_VotoCorrente(bool ADifferenziato)
         {
@@ -347,6 +328,13 @@ namespace VotoTouch
             // del idbadge, in pratica alla fine avrò una lista di diritti *per ogni votazione*
             // con l'indicazione se sono stati già espressi o no
 
+            // prima testo se sono in demo, carico dati finti
+            if (DemoMode)
+            {
+                CaricaDirittidiVotoDemo(AIDBadge, ref AVotazioni);
+                return true;
+            }
+
             // ok, questa procedura mi carica tutti i dati
 		    SqlConnection STDBConn = null;
             SqlDataReader a = null;
@@ -453,7 +441,81 @@ namespace VotoTouch
             return result;
         }
 
+        // --------------------------------------------------------------------------
+        //  DEMO
+        // --------------------------------------------------------------------------
 
+        public bool CaricaDirittidiVotoDemo(int AIDBadge, ref TListaVotazioni AVotazioni)
+        {
+            int IDVotazione = -1;
+            _Azionisti.Clear();
+            TAzionista a;
+
+            foreach (TNewVotazione voto in AVotazioni.Votazioni)
+            {
+                IDVotazione = voto.IDVoto;
+                // un voto
+                if (AIDBadge == 1000)
+                {
+                    a = new TAzionista();
+                    a.CoAz = "10000";
+                    a.IDAzion = 10000;
+                    a.IDBadge = 1000;
+                    a.ProgDeleg = 0;
+                    a.RaSo = "Mario Rossi";
+                    a.Sesso = "M";
+                    a.NAzioni = 1;
+                    a.IDVotaz = IDVotazione;
+                    a.HaVotato = VOTATO_NO;
+                    _Azionisti.Add(a);
+                    // poi lo salvo come titolare
+                    Titolare_Badge.CopyFrom(ref a);
+                }
+                // tre voti
+                if (AIDBadge == 1001)
+                {
+                    a = new TAzionista();
+                    a.CoAz = "10001";
+                    a.IDAzion = 10001;
+                    a.IDBadge = 1001;
+                    a.ProgDeleg = 0;
+                    a.RaSo = "Mario Rossi";
+                    a.Sesso = "M";
+                    a.NAzioni = 1;
+                    a.IDVotaz = IDVotazione;
+                    a.HaVotato = VOTATO_NO;
+                    _Azionisti.Add(a);
+                    // poi lo salvo come titolare
+                    Titolare_Badge.CopyFrom(ref a);
+
+                    a = new TAzionista();
+                    a.CoAz = "10002";
+                    a.IDAzion = 10002;
+                    a.IDBadge = 1001;
+                    a.ProgDeleg = 1;
+                    a.Sesso = "M";
+                    a.RaSo = "Mario Rossi - Delega 1";
+                    a.NAzioni = 1;
+                    a.IDVotaz = IDVotazione;
+                    a.HaVotato = VOTATO_NO;
+                    _Azionisti.Add(a);
+
+                    a = new TAzionista();
+                    a.CoAz = "10003";
+                    a.IDAzion = 10003;
+                    a.IDBadge = 1003;
+                    a.ProgDeleg = 0;
+                    a.NAzioni = 1;
+                    a.Sesso = "M";
+                    a.RaSo = "Mario Rossi - Delega 2";
+                    a.IDVotaz = IDVotazione;
+                    a.HaVotato = VOTATO_NO;
+                    _Azionisti.Add(a);
+                }
+            }
+
+            return true;
+        }
 
     }
 }

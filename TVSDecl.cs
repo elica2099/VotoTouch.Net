@@ -40,8 +40,6 @@ namespace VotoTouch
         public bool AttivaAutoRitornoVoto;
         public int TimeAutoRitornoVoto;
         public bool AbilitaDirittiNonVoglioVotare;
-        //public bool TastoRicominciaDaCapo;
-        //public bool AbilitaLogV;
         
         // CONFIGURAZIONE LOCALE
         public string Postazione;
@@ -61,9 +59,6 @@ namespace VotoTouch
         // codici impianto
         public int BadgeLen;
         public string CodImpianto;
-        //// controller centrale
-        //public bool UsaController;
-        //public string IPController;
     }
 
     // struttura di configurazione del database
@@ -111,50 +106,6 @@ namespace VotoTouch
         public int BAlt() { return YAlt + HAlt; }
     }
 
-    // struttura per le votazioni
-    // *************** OBSOLETO CON I NUOVI OGGETTI *************************
-    //public struct TVotazione
-    //{
-    //    public int IDVoto;
-    //    public int IDGruppoVoto;
-    //    public string Descrizione;
-    //    public int TipoVoto;                //1.norm, 2.Lista, 3.Multi
-    //    public int TipoSubVoto;             // a seconda del tipo principale 
-    //    public int NListe;                  // >nota era nscelte
-    //    public bool SkBianca;               // ha scheda bianca
-    //    public bool SkNonVoto;              // ha il non voto
-    //    public int MaxScelte;               // n scelte max nel caso di multi
-    //    public bool NeedConferma;           // indica che dopo questa votazione necessita la conferma
-    //    public bool PreIntermezzo;          // videata intermezzo
-    //    public bool PreIntermezzoFatto;     // videata intermezzo
-
-    //    public TAreaVotazione AreaVoto;
-
-    //    // quanti sono stati preszentati da cda (serve per candidati e multi)
-    //    public int NPresentatoCDA;
-    //    public bool SelezionaTuttiCDA;
-
-    //    // classe CVotazione
-    //    public ArrayList Liste;     // collection di strutture Tliste
-    //    public ArrayList Pagine;    // collection delle pagine (per le votazioni candidato)
-    //}
-
-    // *************** OBSOLETO CON I NUOVI OGGETTI *************************
-    //public struct TLista
-    //{
-    //    public int NumVotaz;
-    //    public int IDLista;
-    //    public int IDScheda;
-    //    public string DescrLista;
-    //    public int TipoCarica;
-    //    public bool PresentatodaCDA;
-    //    public string Presentatore;
-    //    public string Capolista;
-    //    public string ListaElenco;
-    //    public int Pag;
-    //    public string PagInd;
-    //}
-
     public struct TIndiceListe
     {
         public int pag;
@@ -173,45 +124,6 @@ namespace VotoTouch
         public string Str_ListaElenco;
         public string StrUp_DescrLista;
     }
-
-    //public struct TVotiDaSalvare     // non serve, si inegra con cls Azionisti
-    //{
-    //    public int NumVotaz_1;
-    //    public int AScheda_2;
-    //    public int NVoti_3;
-    //    public int AIDBadge_4;
-    //    public int ProgDelega_5;
-    //    public int IdCarica_6;
-    //    public int IDazion;
-    //}
-
-    //public struct TAzionista
-    //{
-    //    // dati dell'utente
-    //    public int IDBadge;
-    //    public string CoAz;
-    //    public int IDAzion;
-    //    public int ProgDeleg;
-    //    public string RaSo;
-    //    public int NAzioni;
-    //    public string Sesso;
-    //    // dati del voto
-    //    public int IDVotaz;
-    //    public int IDScheda;
-    //    public int NVoti;
-    //    public int IDCarica;
-    //}
-
-    // dati dell'utente
-    //public struct DatiUtente
-    //{
-    //    public int utente_badge;
-    //    public string utente_nome;
-    //    public int utente_voti;
-    //    public int utente_voti_bak;
-    //    public int utente_id;
-    //    public string utente_sesso;
-    //}
 
     public class VSDecl
     {
@@ -280,8 +192,6 @@ namespace VotoTouch
         public const int VOTO_ASTENUTO_TUTTI = 226;
         public const int VOTO_CONTRARIO_TUTTI = 227;
         public const int VOTO_BTN_USCITA = -3;
-
-        //public const int VOTO_MULTICAND_ETRURIA = 5;   // voto multicandidato
 
         // n. di selezioni per pagina in caso di VOTO_CANDIDATO / alfabeto
         public const int CANDIDATI_PER_PAGINA = 10;

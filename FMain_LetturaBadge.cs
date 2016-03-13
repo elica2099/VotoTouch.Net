@@ -165,36 +165,14 @@ namespace VotoTouch
                     // ok ora iniziano i test
                     bool Controllato = oDBDati.ControllaBadge(Badge_Lettura, TotCfg, ref ErrorFlag);
 
-                    // NOTA
-                    // per creval c'è il problema del non voto, quindi devo caricare tutti i diritti
-                    // non espressi, usiamo il trucco:
-                    // se non ha votato va bene come prima
-                    // se ha votato, dopo bisogna controllare se ha espresso almeno un non voglio votare -2
-                    //  se è così si deve:
-                    //     cancellare la riga su votanti totem,
-                    //     cancellare conschede e intonse che hanno voto -2
-                    //     andare avanti, dovrebbe entrare nel giro badge banana
-
-                    // mettere flag su db che caricato dalla configurazione
-
-                    // if ((ErrorFlag & 0x04) == 0x04 && AbilitaDirittiNonVoglioVotare == true)
-                    //{
-
-                    //}
-
-
                     // separo così mi evito un controllo in più
                     if (Controllato)
                     {
                         if (Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni) && !Azionisti.TuttiIDirittiSonoStatiEspressi())
                         {
                             // resetto alcune variabili
-                            //VotoCorrente = Votazioni.DammiPrimaVotazione();
-                            //CurrVoteIDX = 0;                    // resetto alla 1° votazione
-                            //FVotiDaSalvare.Clear();             // cancello i voti
                             IsVotazioneDifferenziata = false;                   // dico che è un voto normale
                             CancellaTempVotiCorrenti();         // cancello i voti temporanei
-                            //CurrIdAzionDelega = 0;              // la prima delega
                             // cambio lo stato
                             Logging.WriteToLog("** Inizio Voto : " + Badge_Letto.ToString() +
                                 " Diritti di Voto Max: " + Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString());
@@ -332,61 +310,11 @@ namespace VotoTouch
             SettaComponenti(false);
             // labels
             lbDirittiDiVoto.Text = "";
-            // messaggio di arrivederci
-            //VotoCorrente = Votazioni.DammiPrimaVotazione();
-            //CurrVoteIDX = 0;
             Stato = TAppStato.ssvSalvaVoto;
             UscitaInVotazione = true;
             CambiaStato();
             edtBadge.Text = "";
         }
-
-        // ----------------------------------------------------------------
-        //   RITROVO DATI UTENTE DA DB
-        // ----------------------------------------------------------------
-
-        //private bool DammiUtente()
-        //{
-        //    //DR12 OK, non è stato cambiato
-        //    //bool result, funz;
-        //    //TAzionista c;
-
-        //    // ok, ora dovrei capire le cose leggendole dal database
-        //    //funz = (oDBDati.DammiDatiAzionistaOneShot(Badge_Letto, ref FNAzionisti, ref FAzionisti) == 1);
-
-        //    return Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni);
-
-        //    /*
-        //    if (funz)
-        //    {
-        //        // dati
-        //        utente_voti_bak = FNAzionisti;
-        //        utente_voti_diff = FNAzionisti;
-        //         metto i dati dell'utente principale, il primo
-        //        DatiUsr.utente_badge = Badge_Letto;
-        //        if (FAzionisti.Count > 0)
-        //        {
-        //            c = (TAzionista)FAzionisti[0];
-        //            DatiUsr.utente_id = c.IDAzion;
-        //            DatiUsr.utente_nome = c.RaSo;
-        //            DatiUsr.utente_sesso = c.Sesso;
-        //        }
-        //        else
-        //        {
-        //            DatiUsr.utente_id = 0;
-        //            DatiUsr.utente_nome = "NONE";
-        //            DatiUsr.utente_sesso = "N";
-        //        }
-        //        DatiUsr.utente_voti = FNAzionisti;
-        //        DatiUsr.utente_voti_bak = FNAzionisti;
-        //        result = true;
-        //    }
-        //    else
-        //        result = false;
-
-        //    return result;
-        //     */
-        //}
 
         #endregion
 

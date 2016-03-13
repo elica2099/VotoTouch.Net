@@ -156,7 +156,6 @@ namespace VotoTouch
         {
             // scheda bianca
             VotoEspresso = VSDecl.VOTO_SCHEDABIANCA;
-            //VotoEspressoCarica = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
             // nuova versione array
@@ -220,7 +219,6 @@ namespace VotoTouch
         {
             // non votante
             VotoEspresso = VSDecl.VOTO_NONVOTO;
-            //VotoEspressoCarica = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
             // nuova versione array, qua, essendo un non voglio votare, devo vedere
@@ -274,238 +272,8 @@ namespace VotoTouch
             Stato = Azionisti.TuttiIDirittiSonoStatiEspressi() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
             // cambio
             CambiaStato();
-
-
-            /*
-            // testo la votazione
-            if (!IsVotazioneDifferenziata)     // VOTAZIONE NORMALE
-            {
-                // passo alla votazione successiva
-                CurrVoteIDX++;
-
-                // testo se ho finito
-                if (CurrVoteIDX == NVoti)
-                {
-                    // per precauzione metto CurrVoteIDX all'ultima votazione 
-                    CurrVoteIDX = NVoti - 1;
-                    Stato = TAppStato.ssvSalvaVoto;         // finito, salvo i voti e poi chiudo
-                }
-                else
-                    Stato = TAppStato.ssvVoto;              // passo al voto successivo
-                CambiaStato();
-            }
-            else
-            {
-                // punto all'indice della delega corrente
-                CurrIdAzionDelega++;
-                // controllo se ho finito la singola multi-votazione
-                if (utente_voti_bak == 0)
-                {
-                    // poi passo alla votazione successiva
-                    CurrVoteIDX++;
-                    // resetto le deleghe
-                    CurrIdAzionDelega = 0;
-                    // rimetto a posto i valori
-                    utente_voti_bak = DatiUsr.utente_voti;
-                    utente_voti_diff = DatiUsr.utente_voti;
-                }
-                // testo se ho finito tutte le votazioni
-                if (CurrVoteIDX == NVoti)
-                {
-                    // per precauzione metto CurrVoteIDX all'ultima votazione 
-                    CurrVoteIDX = NVoti - 1;
-                    Stato = TAppStato.ssvSalvaVoto;             // finito, salvo i voti e poi chiudo
-                }
-                else
-                    // passo al voto della votazione successiva (o successiva delega)
-                    Stato = TAppStato.ssvVoto;
-                // cambio
-                CambiaStato();
-            }
-             */
-
         }
 
-        /*
-        public void ConfermaVotiEspressi()
-        {
-            int i, k;
-            TVotiDaSalvare v;
-            TVotoEspresso vt;
-            TAzionista c;
-
-            // non è il massimo, ma setta a 1 la pagina del touch quando preme conferma
-            oVotoTouch.CurrPag = 1;
-            // ok, questo evento arriva quando, nella conferma del voto, è stata scelta l'opzione
-            //  conferma, cioè il salvataggio del voto
-            if (!IsVotazioneDifferenziata)     // VOTAZIONE NORMALE
-            {
-                // Votazione Normale, In VParam c'è l'idx del voto
-                // Ok, ora salvo i voti espressi:
-                // 1. Nell'arrayList
-                for (i = 0; i < FNAzionisti; i++)
-                {
-                    // prendo l'azionista
-                    c = (TAzionista)FAzionisti[i];
-                    // ok qui distinguo i multicandidati
-                    // NOTA: unificare con il metodo collection
-                    if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
-                    {
-                        // ok, ora riempio la collection di voti
-                        for (k = 0; k < FVotiExpr.Count; k++)
-                        {
-                            vt = (TVotoEspresso)FVotiExpr[k];
-                            v = new TVotiDaSalvare();
-                            // parte da 1
-                            v.NumVotaz_1 = Votazioni.VotoCorrente.IDVoto;
-                            v.AScheda_2 = vt.VotoExp_IDScheda;
-                            v.NVoti_3 = 1;
-                            v.AIDBadge_4 = Badge_Letto;
-                            v.ProgDelega_5 = c.ProgDeleg;
-                            v.IdCarica_6 = vt.TipoCarica;
-                            v.IDazion = c.IDAzion;
-                            // carico
-                            FVotiDaSalvare.Add(v);
-                        }
-                    }
-                    else
-                    {
-
-                        //if (VotoEspresso == VSDecl.VOTO_ETRURIA)
-                        //{
-                        //    v = new TVotiDaSalvare();
-                        //    // parte da 1
-                        //    //c = (clsAzionisti)FAzionisti[i];
-                        //    v.NumVotaz_1 = FParVoto[CurrVoteIDX].IDVoto;
-                        //    v.AScheda_2 = 201;
-                        //    v.NVoti_3 = 1;
-                        //    v.AIDBadge_4 = Badge_Letto;
-                        //    v.ProgDelega_5 = c.ProgDeleg;
-                        //    v.IdCarica_6 = VotoEspressoCarica;
-                        //    v.IDazion = c.IDAzion;
-                        //    // carico
-                        //    FVotiDaSalvare.Add(v);
-                        //    v = new TVotiDaSalvare();
-                        //    // parte da 1
-                        //    //c = (clsAzionisti)FAzionisti[i];
-                        //    v.NumVotaz_1 = FParVoto[CurrVoteIDX].IDVoto;
-                        //    v.AScheda_2 = 202;
-                        //    v.NVoti_3 = 1;
-                        //    v.AIDBadge_4 = Badge_Letto;
-                        //    v.ProgDelega_5 = c.ProgDeleg;
-                        //    v.IdCarica_6 = VotoEspressoCarica;
-                        //    v.IDazion = c.IDAzion;
-                        //    // carico
-                        //    FVotiDaSalvare.Add(v);
-                        //}
-                        //else
-                        //{
-                            // -------------------------------------------
-                            // in obsolescenza, si dovrà usare la collection
-                            //
-                            v = new TVotiDaSalvare();
-                            // parte da 1
-                            //c = (clsAzionisti)FAzionisti[i];
-                            v.NumVotaz_1 = Votazioni.VotoCorrente.IDVoto;
-                            v.AScheda_2 = VotoEspresso;
-                            v.NVoti_3 = 1;
-                            v.AIDBadge_4 = Badge_Letto;
-                            v.ProgDelega_5 = c.ProgDeleg;
-                            v.IdCarica_6 = VotoEspressoCarica;
-                            v.IDazion = c.IDAzion;
-                            // carico
-                            FVotiDaSalvare.Add(v);
-                            // -------------------------------------------
-                        //}
-
-                    }
-                }
-                // alla fine saranno da unificare i metodi
-            }
-            else
-            {
-                // Votazione differenziata
-                utente_voti_bak --;
-                utente_voti_diff --;
-                // trovo l'azionista
-                c = (TAzionista)FAzionisti[CurrIdAzionDelega];
-                // Ok, ora salvo i voti espressi Nell'arrayList
-                // ok qui distinguo i multicandidati
-                // NOTA: unificare con il metodo collection
-                if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
-                {
-                    // ok, ora riempio la collection di voti
-                    for (k = 0; k < FVotiExpr.Count; k++)
-                    {
-                        vt = (TVotoEspresso)FVotiExpr[k];
-                        v = new TVotiDaSalvare();
-                        // parte da 1
-                        v.NumVotaz_1 = Votazioni.VotoCorrente.IDVoto;
-                        v.AScheda_2 = vt.VotoExp_IDScheda;
-                        v.NVoti_3 = 1;
-                        v.AIDBadge_4 = Badge_Letto;
-                        v.ProgDelega_5 = c.ProgDeleg;
-                        v.IdCarica_6 = vt.TipoCarica;
-                        v.IDazion = c.IDAzion;
-                        // carico
-                        FVotiDaSalvare.Add(v);
-                    }
-                }
-                else
-                {
-                    //if (VotoEspresso == VSDecl.VOTO_ETRURIA)
-                    //{
-                    //    v = new TVotiDaSalvare();
-                    //    // parte da 1
-                    //    //c = (clsAzionisti)FAzionisti[i];
-                    //    v.NumVotaz_1 = FParVoto[CurrVoteIDX].IDVoto;
-                    //    v.AScheda_2 = 201;
-                    //    v.NVoti_3 = 1;
-                    //    v.AIDBadge_4 = Badge_Letto;
-                    //    v.ProgDelega_5 = c.ProgDeleg;
-                    //    v.IdCarica_6 = VotoEspressoCarica;
-                    //    v.IDazion = c.IDAzion;
-                    //    // carico
-                    //    FVotiDaSalvare.Add(v);
-                    //    v = new TVotiDaSalvare();
-                    //    // parte da 1
-                    //    //c = (clsAzionisti)FAzionisti[i];
-                    //    v.NumVotaz_1 = FParVoto[CurrVoteIDX].IDVoto;
-                    //    v.AScheda_2 = 202;
-                    //    v.NVoti_3 = 1;
-                    //    v.AIDBadge_4 = Badge_Letto;
-                    //    v.ProgDelega_5 = c.ProgDeleg;
-                    //    v.IdCarica_6 = VotoEspressoCarica;
-                    //    v.IDazion = c.IDAzion;
-                    //    // carico
-                    //    FVotiDaSalvare.Add(v);
-                    //}
-                    //else
-                    //{
-                        // -------------------------------------------
-                        // in obsolescenza, si dovrà usare la collection
-                        //
-                        //c = (clsAzionisti)FAzionisti[CurrIdAzionDelega];
-                        v = new TVotiDaSalvare();
-                        // parte da 1
-                        v.NumVotaz_1 = Votazioni.VotoCorrente.IDVoto;
-                        v.AScheda_2 = VotoEspresso;
-                        v.NVoti_3 = 1;
-                        v.AIDBadge_4 = Badge_Letto;
-                        v.ProgDelega_5 = c.ProgDeleg;
-                        v.IdCarica_6 = VotoEspressoCarica;
-                        v.IDazion = c.IDAzion;
-                        // carico
-                        FVotiDaSalvare.Add(v);
-                        // -------------------------------------------
-                    //}
-                }
-            }
-             * 
-             
-        }
-
-    */
         public void onPremutoAnnulla(object source, int VParam)
         {
             // ok, questo evento arriva quando, nella conferma del voto, è stata scelta l'opzione
@@ -523,7 +291,6 @@ namespace VotoTouch
             VotoEspresso = -1;
             VotoEspressoStr = "";
             VotoEspressoStrUp = "";
-            //VotoEspressoCarica = 0;
         }
 
         #endregion
