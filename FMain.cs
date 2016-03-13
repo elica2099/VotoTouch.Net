@@ -20,8 +20,6 @@ using System.Reflection;
 namespace VotoTouch
 {
     // TODO: verificare multicandidato e pagine
-    // TODO: Bottone uscita
-    // TODO: Votazione con contrari a tutte e astenuti a tutte
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: VERIFICARE DEMO MODE
 
@@ -30,7 +28,6 @@ namespace VotoTouch
 	/// </summary>
     public partial class frmMain : Form
 	{
-
         public delegate void EventDataReceived(object source, string messaggio);
         public event EventDataReceived evtDataReceived;
 
@@ -356,6 +353,8 @@ namespace VotoTouch
             oVotoTouch.PremutoMultiAvanti += new ehPremutoMultiAvanti(onPremutoVotoValidoMulti);
             oVotoTouch.PremutoMulti += new ehPremutoMulti(onPremutoVotoMulti);
             oVotoTouch.PremutoBottoneUscita += new ehPremutoBottoneUscita(onPremutoBottoneUscita);
+            oVotoTouch.PremutoContrarioTutti += new ehPremutoContrarioTutti(onPremutoContrarioTutti);
+            oVotoTouch.PremutoAstenutoTutti += new ehPremutoAstenutoTutti(onPremutoAstenutoTutti);
 
             // classe del tema
             oVotoTheme = new CVotoTheme();

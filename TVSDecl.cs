@@ -277,8 +277,8 @@ namespace VotoTouch
         public const int VOTO_SCHEDABIANCA = -1;
         public const int VOTO_NONVOTO = -2;
         public const int VOTO_MULTIAVANTI = -10;
-        public const int VOTO_TUTTI_ABS = 226;
-        public const int VOTO_TUTTI_CON = 227;
+        public const int VOTO_ASTENUTO_TUTTI = 226;
+        public const int VOTO_CONTRARIO_TUTTI = 227;
         public const int VOTO_BTN_USCITA = -3;
 
         //public const int VOTO_MULTICAND_ETRURIA = 5;   // voto multicandidato

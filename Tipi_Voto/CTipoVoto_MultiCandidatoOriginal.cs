@@ -92,59 +92,64 @@ namespace VotoTouch
                         PosCandAlt = 1;
                 }
             }
-            // Ok, ora la scheda bianca e il non voto
-            if (AFVotaz.SkBianca && !AFVotaz.SkNonVoto)
-            {
-                // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
-                a = new TTZone();
-                // cambio la posizione nel caso ho Avanti
-                if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
-                    GetZone(ref a, 12, 81, 44, 91);
-                else
-                    GetZone(ref a, 23, 79, 78, 92);
-                a.expr = VSDecl.VOTO_SCHEDABIANCA;
-                a.pag = 0;
-                a.cda = false;
-                a.Multi = 0;
-                a.Text = "";
-                a.ev = TTEvento.steSkBianca;
-                Tz.Add(a);
-            }
-            else
-            {
-                // Ok, ora la scheda bianca
-                if (AFVotaz.SkBianca)
-                {
-                    a = new TTZone();
-                    // se c'è anche non voto devo spostarla
-                    if (!AFVotaz.SkNonVoto)
-                        GetZone(ref a, 32, 76, 67, 90); // non la sposto sta in centro
-                    else
-                        GetZone(ref a, 10, 76, 44, 90); //la sposto a sinistra
-                    a.expr = VSDecl.VOTO_SCHEDABIANCA;
-                    a.Text = "";
-                    a.ev = TTEvento.steSkBianca;
-                    a.pag = 0;
-                    a.Multi = 0;
-                    Tz.Add(a);
-                }
-                // il non voto, se presente (caso BPM)
-                if (AFVotaz.SkNonVoto)
-                {
-                    a = new TTZone();
-                    // se c'è anche SkBianca devo spostarla
-                    if (!AFVotaz.SkBianca)
-                        GetZone(ref a, 32, 76, 67, 90); // non la sposto, sta in centro
-                    else
-                        GetZone(ref a, 55, 76, 89, 90); //la sposto a destra
-                    a.expr = VSDecl.VOTO_NONVOTO;
-                    a.Text = "";
-                    a.ev = TTEvento.steSkNonVoto;
-                    a.pag = 0;
-                    a.Multi = 0;
-                    Tz.Add(a);
-                }
-            }
+
+            // Le schede Speciali
+            MettiSchedeSpeciali(AFVotaz);
+
+            //// Ok, ora la scheda bianca e il non voto
+            //if (AFVotaz.SkBianca && !AFVotaz.SkNonVoto)
+            //{
+            //    // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+            //    a = new TTZone();
+            //    // cambio la posizione nel caso ho Avanti
+            //    if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            //        GetZone(ref a, 12, 81, 44, 91);
+            //    else
+            //        GetZone(ref a, 23, 79, 78, 92);
+            //    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //    a.pag = 0;
+            //    a.cda = false;
+            //    a.Multi = 0;
+            //    a.Text = "";
+            //    a.ev = TTEvento.steSkBianca;
+            //    Tz.Add(a);
+            //}
+            //else
+            //{
+            //    // Ok, ora la scheda bianca
+            //    if (AFVotaz.SkBianca)
+            //    {
+            //        a = new TTZone();
+            //        // se c'è anche non voto devo spostarla
+            //        if (!AFVotaz.SkNonVoto)
+            //            GetZone(ref a, 32, 76, 67, 90); // non la sposto sta in centro
+            //        else
+            //            GetZone(ref a, 10, 76, 44, 90); //la sposto a sinistra
+            //        a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //        a.Text = "";
+            //        a.ev = TTEvento.steSkBianca;
+            //        a.pag = 0;
+            //        a.Multi = 0;
+            //        Tz.Add(a);
+            //    }
+            //    // il non voto, se presente (caso BPM)
+            //    if (AFVotaz.SkNonVoto)
+            //    {
+            //        a = new TTZone();
+            //        // se c'è anche SkBianca devo spostarla
+            //        //if (!AFVotaz.SkBianca)
+            //        //    GetZone(ref a, 32, 76, 67, 90); // non la sposto, sta in centro
+            //        //else
+            //        //    GetZone(ref a, 55, 76, 89, 90); //la sposto a destra
+            //        GetZone(ref a, 75, 88, 97, 100); // in bass a dx
+            //        a.expr = VSDecl.VOTO_NONVOTO;
+            //        a.Text = "";
+            //        a.ev = TTEvento.steSkNonVoto;
+            //        a.pag = 0;
+            //        a.Multi = 0;
+            //        Tz.Add(a);
+            //    }
+            //}
             // Attenzione, nel caso la votazione sia di tipo Multicandidato, devo Aggiungere un tasto
             // "Avanti" o "Conferma" per continuare ed è possibile che ci sia un tasto SelezionaTuttiCDA
             if (AFVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)

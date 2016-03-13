@@ -48,9 +48,9 @@ namespace VotoTouch
             if (AVotazione.AbilitaBottoneUscita)
             {
                 TTZone a = new TTZone();
-                GetZone(ref a, 75, 0, 97, 12); // in alto a dx
+                GetZone(ref a, 76, 0, 98, 12); // in alto a dx
                 a.expr = VSDecl.VOTO_BTN_USCITA;
-                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0;
+                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
             }
         }
@@ -64,12 +64,94 @@ namespace VotoTouch
             if (ABtnUscita)
             {
                 TTZone a = new TTZone();
-                GetZone(ref a, 75, 0, 97, 12); // in alto a dx
+                GetZone(ref a, 76, 0, 98, 12); // in alto a dx
                 a.expr = VSDecl.VOTO_BTN_USCITA;
-                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0;
+                a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
             }
         }
+
+        // --------------------------------------------------------------
+        //  SCHEDE SPECIALI
+        // --------------------------------------------------------------
+
+        protected void MettiSchedeSpeciali(TNewVotazione AVotazione)
+        {
+            TTZone a;
+            
+            // le schede speciali possono essere 4
+            // - Bianca - Contrario Tutti - Astenuto tutti - Cotinua (Multivoto)
+            // solo  bianca : in centro
+            // solo contrario e astenuto vanno in fila a sx
+            // tutti e 3 : in teoria non dovrebbero andare
+
+            // per evitarmi 1000 casi metto i casi + usati
+
+            // solo sk Bianca
+            if (AVotazione.SkBianca && !AVotazione.SkContrarioTutte && !AVotazione.SkAstenutoTutte)
+            {
+                a = new TTZone();
+                // se c'è anche non voto devo spostarla
+                GetZone(ref a, 35, 75, 64, 92); // non la sposto sta in centro
+                //if (!AVotazione.SkNonVoto)
+                //    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
+                //else
+                //    GetZone(ref a, 10, 72, 44, 90); //la sposto a sinistra
+                a.expr = VSDecl.VOTO_SCHEDABIANCA;
+                a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
+                Tz.Add(a);
+            }
+
+            // ora solo Contrario + Astenuto
+            if (!AVotazione.SkBianca && AVotazione.SkContrarioTutte && AVotazione.SkAstenutoTutte)
+            {
+                // Contrario A Tutti
+                a = new TTZone();
+                GetZone(ref a, 3, 75, 26, 92); // non la sposto sta in centro
+                a.expr = VSDecl.VOTO_CONTRARIO_TUTTI;
+                a.Text = ""; a.ev = TTEvento.steSkContrarioTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
+                Tz.Add(a);
+                // Astenuti A Tutti
+                a = new TTZone();
+                if (AVotazione.SkContrarioTutte)
+                    GetZone(ref a, 31, 75, 54, 92); 
+                else
+                    GetZone(ref a, 3, 75, 26, 92); 
+                a.expr = VSDecl.VOTO_ASTENUTO_TUTTI;
+                a.Text = ""; a.ev = TTEvento.steSkAstenutoTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
+                Tz.Add(a);
+            }
+
+            // Ok, ora la scheda bianca
+            //if (AVotazione.SkBianca)
+            //{
+            //    a = new TTZone();
+            //    // se c'è anche non voto devo spostarla
+            //    GetZone(ref a, 35, 75, 64, 92); // non la sposto sta in centro
+            //    //if (!AVotazione.SkNonVoto)
+            //    //    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
+            //    //else
+            //    //    GetZone(ref a, 10, 72, 44, 90); //la sposto a sinistra
+            //    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //    a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; a.Multi = 0;
+            //    Tz.Add(a);
+            //}
+            // il non voto, se presente (caso BPM)
+            if (AVotazione.SkNonVoto)
+            {
+                a = new TTZone();
+                // nella nuova versione è in basso a dx
+                //if (!AVotazione.SkBianca)
+                //    GetZone(ref a, 32, 72, 67, 90); // non la sposto, sta in centro
+                //else
+                //    GetZone(ref a, 55, 72, 89, 90); //la sposto a destra
+                GetZone(ref a, 76, 87, 98, 100); // in bass a sx
+                a.expr = VSDecl.VOTO_NONVOTO;
+                a.Text = ""; a.ev = TTEvento.steSkNonVoto; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
+                Tz.Add(a);
+            }
+        }
+
 
         // --------------------------------------------------------------
         //  UTILITA DI RICALCOLO SCHERMO

@@ -156,32 +156,9 @@ namespace VotoTouch
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
             }
-            // Ok, ora la scheda bianca
-            if (AVotazione.SkBianca)
-            {
-                a = new TTZone();
-                // se c'è anche non voto devo spostarla
-                if (!AVotazione.SkNonVoto)
-                    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
-                else
-                    GetZone(ref a, 10, 72, 44, 90); //la sposto a sinistra
-                a.expr = VSDecl.VOTO_SCHEDABIANCA;
-                a.Text = ""; a.ev = TTEvento.steSkBianca; a.pag = 0; a.Multi = 0;
-                Tz.Add(a);
-            }
-            // il non voto, se presente (caso BPM)
-            if (AVotazione.SkNonVoto)
-            {
-                a = new TTZone();
-                // se c'è anche SkBianca devo spostarla
-                if (!AVotazione.SkBianca)
-                    GetZone(ref a, 32, 72, 67, 90); // non la sposto, sta in centro
-                else
-                    GetZone(ref a, 55, 72, 89, 90); //la sposto a destra
-                a.expr = VSDecl.VOTO_NONVOTO;
-                a.Text = ""; a.ev = TTEvento.steSkNonVoto; a.pag = 0; a.Multi = 0;
-                Tz.Add(a);
-            }
+
+            // Le schede Speciali
+            MettiSchedeSpeciali(AVotazione);
 
             // nella classe base c'è qualcosa
             base.GetTouchVoteZone(AVotazione);

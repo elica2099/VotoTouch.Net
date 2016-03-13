@@ -24,8 +24,7 @@ namespace VotoTouch
 		/// </summary>
 		private System.ComponentModel.Container components = null;
 
-		public FVSMessageExit
-            ()
+		public FVSMessageExit()
 		{
 			//
 			// Required for Windows Form Designer support
@@ -118,12 +117,13 @@ namespace VotoTouch
             this.label3.BackColor = System.Drawing.Color.Transparent;
             this.label3.Font = new System.Drawing.Font("Arial", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.Color.DimGray;
-            this.label3.Location = new System.Drawing.Point(135, 137);
+            this.label3.Location = new System.Drawing.Point(12, 167);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(539, 76);
             this.label3.TabIndex = 4;
             this.label3.Text = "In questo caso i voti non espressi saranno salvati come scheda bianca.";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label3.Visible = false;
             // 
             // label2
             // 
@@ -131,7 +131,7 @@ namespace VotoTouch
             this.label2.BackColor = System.Drawing.Color.Transparent;
             this.label2.Font = new System.Drawing.Font("Arial", 32.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(278, 77);
+            this.label2.Location = new System.Drawing.Point(231, 104);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(274, 51);
             this.label2.TabIndex = 3;
@@ -182,7 +182,7 @@ namespace VotoTouch
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FVSMessageExit";
-            this.Opacity = 0.95D;
+            this.Opacity = 0.98D;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FVSMessage";

@@ -119,7 +119,7 @@ namespace VotoTouch
             // 
             // lbConfermaNVoti
             // 
-            this.lbConfermaNVoti.BackColor = System.Drawing.Color.Transparent;
+            this.lbConfermaNVoti.BackColor = System.Drawing.Color.Cyan;
             this.lbConfermaNVoti.Font = new System.Drawing.Font("Arial", 35.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbConfermaNVoti.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(195)))), ((int)(((byte)(0)))), ((int)(((byte)(3)))));
             this.lbConfermaNVoti.Location = new System.Drawing.Point(390, 502);
@@ -366,17 +366,17 @@ namespace VotoTouch
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(844, 566);
+            this.Controls.Add(this.lbConfermaUp);
+            this.Controls.Add(this.lbConferma);
             this.Controls.Add(this.pnSemaf);
             this.Controls.Add(this.Panel4);
             this.Controls.Add(this.pnBadge);
             this.Controls.Add(this.lbNomeAzStart);
-            this.Controls.Add(this.lbConfermaUp);
             this.Controls.Add(this.pbSalvaDati);
             this.Controls.Add(this.lbDisgiuntoRimangono);
             this.Controls.Add(this.lbNomeDisgiunto);
             this.Controls.Add(this.lbNome);
             this.Controls.Add(this.lbConfermaNVoti);
-            this.Controls.Add(this.lbConferma);
             this.Controls.Add(this.lbDirittiStart);
             this.Controls.Add(this.lbDirittiDiVoto);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

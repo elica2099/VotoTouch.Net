@@ -274,26 +274,7 @@ namespace VotoTouch
                 Stato != TAppStato.ssvVotoStart &&
                 Stato != TAppStato.ssvBadge)
             {
-                // ok, è proprio l'uscita dalla votazione
-                // il problema è che qua devo far votare scheda bianca/nulla, ma non so a che punto sono arrivato
-                // qundi devo fare un po di eculubrazioni
-                int NSKSalvate = MettiSchedeDaInterruzione();
-                // loggo
-                Logging.WriteToLog("--> USCITA IN VOTO (999999) id:" + Badge_Letto.ToString() +
-                                                  " (" + NSKSalvate.ToString() + ")");
-                // resetto il tutto
-                lbDirittiDiVoto.Visible = false;
-                SettaComponenti(false);
-                // labels
-                lbDirittiDiVoto.Text = "";
-                // messaggio di arrivederci
-                //VotoCorrente = Votazioni.DammiPrimaVotazione();
-                //CurrVoteIDX = 0;
-                Stato = TAppStato.ssvSalvaVoto;
-                UscitaInVotazione = true;
-                CambiaStato();
-                edtBadge.Text = "";
-
+                CodiceUscitaInVotazione();
             }  // if (AText == TotCfg.CodiceUscita && Stato
         }
 
@@ -337,52 +318,75 @@ namespace VotoTouch
             }
         }
 
+        public void CodiceUscitaInVotazione()
+        {
+            // ok, è proprio l'uscita dalla votazione
+            // il problema è che qua devo far votare scheda bianca/nulla, ma non so a che punto sono arrivato
+            // qundi devo fare un po di eculubrazioni
+            int NSKSalvate = MettiSchedeDaInterruzione();
+            // loggo
+            Logging.WriteToLog("--> USCITA IN VOTO (999999) id:" + Badge_Letto.ToString() +
+                                              " (" + NSKSalvate.ToString() + ")");
+            // resetto il tutto
+            lbDirittiDiVoto.Visible = false;
+            SettaComponenti(false);
+            // labels
+            lbDirittiDiVoto.Text = "";
+            // messaggio di arrivederci
+            //VotoCorrente = Votazioni.DammiPrimaVotazione();
+            //CurrVoteIDX = 0;
+            Stato = TAppStato.ssvSalvaVoto;
+            UscitaInVotazione = true;
+            CambiaStato();
+            edtBadge.Text = "";
+        }
+
         // ----------------------------------------------------------------
         //   RITROVO DATI UTENTE DA DB
         // ----------------------------------------------------------------
 
-        private bool DammiUtente()
-        {
-            //DR12 OK, non è stato cambiato
-            //bool result, funz;
-            //TAzionista c;
+        //private bool DammiUtente()
+        //{
+        //    //DR12 OK, non è stato cambiato
+        //    //bool result, funz;
+        //    //TAzionista c;
 
-            // ok, ora dovrei capire le cose leggendole dal database
-            //funz = (oDBDati.DammiDatiAzionistaOneShot(Badge_Letto, ref FNAzionisti, ref FAzionisti) == 1);
+        //    // ok, ora dovrei capire le cose leggendole dal database
+        //    //funz = (oDBDati.DammiDatiAzionistaOneShot(Badge_Letto, ref FNAzionisti, ref FAzionisti) == 1);
 
-            return Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni);
+        //    return Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni);
 
-            /*
-            if (funz)
-            {
-                // dati
-                utente_voti_bak = FNAzionisti;
-                utente_voti_diff = FNAzionisti;
-                 metto i dati dell'utente principale, il primo
-                DatiUsr.utente_badge = Badge_Letto;
-                if (FAzionisti.Count > 0)
-                {
-                    c = (TAzionista)FAzionisti[0];
-                    DatiUsr.utente_id = c.IDAzion;
-                    DatiUsr.utente_nome = c.RaSo;
-                    DatiUsr.utente_sesso = c.Sesso;
-                }
-                else
-                {
-                    DatiUsr.utente_id = 0;
-                    DatiUsr.utente_nome = "NONE";
-                    DatiUsr.utente_sesso = "N";
-                }
-                DatiUsr.utente_voti = FNAzionisti;
-                DatiUsr.utente_voti_bak = FNAzionisti;
-                result = true;
-            }
-            else
-                result = false;
+        //    /*
+        //    if (funz)
+        //    {
+        //        // dati
+        //        utente_voti_bak = FNAzionisti;
+        //        utente_voti_diff = FNAzionisti;
+        //         metto i dati dell'utente principale, il primo
+        //        DatiUsr.utente_badge = Badge_Letto;
+        //        if (FAzionisti.Count > 0)
+        //        {
+        //            c = (TAzionista)FAzionisti[0];
+        //            DatiUsr.utente_id = c.IDAzion;
+        //            DatiUsr.utente_nome = c.RaSo;
+        //            DatiUsr.utente_sesso = c.Sesso;
+        //        }
+        //        else
+        //        {
+        //            DatiUsr.utente_id = 0;
+        //            DatiUsr.utente_nome = "NONE";
+        //            DatiUsr.utente_sesso = "N";
+        //        }
+        //        DatiUsr.utente_voti = FNAzionisti;
+        //        DatiUsr.utente_voti_bak = FNAzionisti;
+        //        result = true;
+        //    }
+        //    else
+        //        result = false;
 
-            return result;
-             */
-        }
+        //    return result;
+        //     */
+        //}
 
         #endregion
 

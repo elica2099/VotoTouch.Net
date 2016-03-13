@@ -28,12 +28,12 @@ namespace VotoTouch
 
 			 // Bottone Annulla
 			 a = new TTZone();
-			 GetZone(ref a, 4, 60, 45, 90); a.expr = 0; a.pag = 0; a.Multi = 0; 
+			 GetZone(ref a, 14, 66, 45, 90); a.expr = 0; a.pag = 0; a.Multi = 0; 
 			 a.Text = ""; a.ev = TTEvento.steAnnulla;
 			 Tz.Add(a);
 			 // Bottone Conferma
 			 a = new TTZone();
-			 GetZone(ref a, 55, 60, 96, 90); a.expr = 1; a.pag = 0; a.Multi = 0;  
+			 GetZone(ref a, 55, 66, 86, 90); a.expr = 1; a.pag = 0; a.Multi = 0;  
 			 a.Text = ""; a.ev = TTEvento.steConferma;
 			 Tz.Add(a);
 

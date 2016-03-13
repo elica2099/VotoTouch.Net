@@ -106,6 +106,9 @@ namespace VotoTouch
             // in un secondo tempo dovrà essere unificato
             if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
             {
+
+
+
                 // ciclo e metto i candidati
                 TVotoEspresso vt;
                 bool acapo = false;
@@ -187,8 +190,9 @@ namespace VotoTouch
             Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
 
             // il pannello della conferma
-            lbConferma.BackColor = Color.Transparent;
-            lbConfermaUp.BackColor = Color.Transparent;
+            lbConferma.BackColor = PaintTouch ? Color.Red : Color.Transparent;
+            lbConfermaUp.BackColor = PaintTouch ? Color.Turquoise : Color.Transparent;
+            lbConfermaNVoti.BackColor = PaintTouch ? Color.GreenYellow : Color.Transparent;
 
             if (DebugMode) pnBadge.Visible = true;
 

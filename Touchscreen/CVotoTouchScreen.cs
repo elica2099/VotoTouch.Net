@@ -15,11 +15,11 @@ namespace VotoTouch
     public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
         steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
         steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti,
-        steBottoneUscita
+        steBottoneUscita, steSkContrarioTutti, steSkAstenutoTutti
     };
 
     // struttura zone dello schermo
-    public struct TTZone
+    public class TTZone
     {
         public int id;
 
@@ -34,7 +34,13 @@ namespace VotoTouch
         public int pag;     // importante, gli item con pag=0 vengono sempre visualizzati/considerati
         public bool cda;
         // per la multivotazione
+        public bool MultiNoPrint;
         public int Multi;
+
+        public TTZone()
+        {
+            MultiNoPrint = false;
+        }
     }
 
     //Dichiaro il delegate
@@ -55,6 +61,8 @@ namespace VotoTouch
     public delegate void ehPremutoMulti(object source, int VParam);
     // (v. 4.0) btnUscita contraritutti astenutitutti
     public delegate void ehPremutoBottoneUscita(object source, int VParam);
+    public delegate void ehPremutoContrarioTutti(object source, int VParam);
+    public delegate void ehPremutoAstenutoTutti(object source, int VParam);
 
     public delegate void ehTouchWatchDog(object source, int VParam);
 
@@ -81,6 +89,8 @@ namespace VotoTouch
         public event ehPremutoMulti PremutoMulti;               // serve per il repaint
         // (v. 4.0) btnUscita contraritutti astenutitutti
         public event ehPremutoBottoneUscita PremutoBottoneUscita;
+        public event ehPremutoContrarioTutti PremutoContrarioTutti;
+        public event ehPremutoAstenutoTutti PremutoAstenutoTutti;
 
         public event ehTouchWatchDog TouchWatchDog;
 
@@ -515,6 +525,16 @@ namespace VotoTouch
                         if (PremutoNonVoto != null) { PremutoNonVoto(this, a.expr); }
                         break;
 
+                    case TTEvento.steSkContrarioTutti:
+                        // manda l'evento di contrario a tutti
+                        if (PremutoContrarioTutti != null) { PremutoContrarioTutti(this, a.expr); }
+                        break;
+
+                    case TTEvento.steSkAstenutoTutti:
+                        // manda l'evento di astenuto a tutti
+                        if (PremutoAstenutoTutti != null) { PremutoAstenutoTutti(this, a.expr); }
+                        break;
+
                     case TTEvento.steBottoneUscita:
                         // manda l'evento di bottone uscita
                         if (PremutoBottoneUscita != null) { PremutoBottoneUscita(this, a.expr); }
@@ -687,7 +707,7 @@ namespace VotoTouch
             {
                 a = (TTZone)Tz[i];
                 // se è maggiore di 0 vuol dire che è un oggetto da stampare
-                if (a.expr >= 0)
+                if (a.expr >= 0 && !a.MultiNoPrint )
                 {
                     Rectangle r = new Rectangle(a.x, a.y, (a.r - a.x), (a.b - a.y));
                     r = Rectangle.Inflate(r, 5, 5);

@@ -69,8 +69,7 @@ namespace VotoTouch
             // TODO: Serve che TVotoEspresso abbia Str_ListaElenco o StrUp_DescrLista ? solo per i multi, risparmiamo spazio
 
             // ok, questo evento arriva quando, nella selezione del voto, è stata
-            // premuna una zona valida
-            // devo veder in funzione della lista selezionata
+            // premuta una zona valida devo veder in funzione della lista selezionata
             TNewLista a;
             TVotoEspresso VExp;
             // questo controllo dell'indice è inutile, però è meglio farlo,
@@ -108,7 +107,7 @@ namespace VotoTouch
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
                     Str_ListaElenco = "",
-                    StrUp_DescrLista = rm.GetString("SAPP_SKBIANCA")
+                    StrUp_DescrLista = "" //rm.GetString("SAPP_SKBIANCA")
                 };
                 FVotiExpr.Add(VExp);
             }
@@ -175,6 +174,48 @@ namespace VotoTouch
             CambiaStato();
         }
 
+        public void onPremutoContrarioTutti(object source, int VParam)
+        {
+            // ContrarioATutti
+            VotoEspresso = VSDecl.VOTO_CONTRARIO_TUTTI;
+            VotoEspressoStr = "";
+            VotoEspressoStrUp = rm.GetString("SAPP_SKCONTRARIOTUTTI");
+            // nuova versione array
+            TVotoEspresso VExp = new TVotoEspresso
+            {
+                NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                VotoExp_IDScheda = VSDecl.VOTO_CONTRARIO_TUTTI,
+                TipoCarica = 0,
+                Str_ListaElenco = "",
+                StrUp_DescrLista = rm.GetString("SAPP_SKCONTRARIOTUTTI")
+            };
+            FVotiExpr.Add(VExp);
+            // a questo punto vado in conferma con la stessa CurrVote
+            Stato = TAppStato.ssvVotoConferma;
+            CambiaStato();
+        }
+
+        public void onPremutoAstenutoTutti(object source, int VParam)
+        {
+            // Astenuto Tutti
+            VotoEspresso = VSDecl.VOTO_ASTENUTO_TUTTI;
+            VotoEspressoStr = "";
+            VotoEspressoStrUp = rm.GetString("SAPP_SKASTENUTOTUTTI");
+            // nuova versione array
+            TVotoEspresso VExp = new TVotoEspresso
+            {
+                NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                VotoExp_IDScheda = VSDecl.VOTO_ASTENUTO_TUTTI,
+                TipoCarica = 0,
+                Str_ListaElenco = "",
+                StrUp_DescrLista = rm.GetString("SAPP_SKASTENUTOTUTTI")
+            };
+            FVotiExpr.Add(VExp);
+            // a questo punto vado in conferma con la stessa CurrVote
+            Stato = TAppStato.ssvVotoConferma;
+            CambiaStato();
+        }
+
         public void onPremutoNonVoto(object source, int VParam)
         {
             // non votante
@@ -208,9 +249,12 @@ namespace VotoTouch
         public void onPremutoBottoneUscita(object source, int VParam)
         {
             // Bottone Uscita
-            // TODO: Evento Bottone Uscita con msgbox di conferma
-
-            MessageBox.Show("PremutoBottoneUscita");
+            FVSMessageExit FMsgExit = new FVSMessageExit();
+            if (FMsgExit.ShowDialog() == DialogResult.OK)
+            {
+                CodiceUscitaInVotazione();
+            }
+            FMsgExit = null;
         }
 
         // ----------------------------------------------------------------

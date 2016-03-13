@@ -124,64 +124,69 @@ namespace VotoTouch
             }
             #endregion
 
+            // Le schede Speciali
+            MettiSchedeSpeciali(AVotazione);
+
             #region SkBianca, non voto e continua
             // Ok, ora la scheda bianca e il non voto
-            if (AVotazione.SkBianca && !AVotazione.SkNonVoto)
-            {
-                // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
-                a = new TTZone();
-                GetZone(ref a, 12, 74, 44, 91);
-                a.expr = VSDecl.VOTO_SCHEDABIANCA;
-                a.pag = 0;
-                a.cda = false;
-                a.Multi = 0;
-                a.Text = "";
-                a.ev = TTEvento.steSkBianca;
-                Tz.Add(a);
-            }
-            else
-            {
-                // la sk bianca ci sarà sempre, quindi la mettiamo
-                a = new TTZone();
-                GetZone(ref a, 3, 76, 30, 90); //la sposto a sinistra
-                a.expr = VSDecl.VOTO_SCHEDABIANCA;
-                a.Text = "";
-                a.ev = TTEvento.steSkBianca;
-                a.pag = 0;
-                a.Multi = 0;
-                Tz.Add(a);
+            //if (AVotazione.SkBianca && !AVotazione.SkNonVoto)
+            //{
+            //    // la scheda bianca ( che è sempre l'ultima, quindi ntasti)
+            //    a = new TTZone();
+            //    GetZone(ref a, 12, 74, 44, 91);
+            //    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //    a.pag = 0;
+            //    a.cda = false;
+            //    a.Multi = 0;
+            //    a.Text = "";
+            //    a.ev = TTEvento.steSkBianca;
+            //    Tz.Add(a);
+            //}
+            //else
+            //{
+            //    // la sk bianca ci sarà sempre, quindi la mettiamo
+            //    a = new TTZone();
+            //    GetZone(ref a, 3, 76, 30, 90); //la sposto a sinistra
+            //    a.expr = VSDecl.VOTO_SCHEDABIANCA;
+            //    a.Text = "";
+            //    a.ev = TTEvento.steSkBianca;
+            //    a.pag = 0;
+            //    a.Multi = 0;
+            //    Tz.Add(a);
 
-                // sk non voto
-                a = new TTZone();
-                GetZone(ref a, 33, 76, 60, 90); //la sposto a destra
-                a.expr = VSDecl.VOTO_NONVOTO;
-                a.Text = "";
-                a.ev = TTEvento.steSkNonVoto;
-                a.pag = 0;
-                a.Multi = 0;
-                Tz.Add(a);
-            }
+            //    // sk non voto
+            //    a = new TTZone();
+            //    GetZone(ref a, 75, 88, 97, 100); // in bass a dx
+            //    //GetZone(ref a, 33, 76, 60, 90); //la sposto a destra
+            //    a.expr = VSDecl.VOTO_NONVOTO;
+            //    a.Text = "";
+            //    a.ev = TTEvento.steSkNonVoto;
+            //    a.pag = 0;
+            //    a.Multi = 0;
+            //    Tz.Add(a);
+            //}
             // Attenzione, nel caso la votazione sia di tipo Multicandidato, devo Aggiungere un tasto
             // "Avanti" o "Conferma" per continuare ed è possibile che ci sia un tasto SelezionaTuttiCDA
             if (AVotazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
             {
-                // devo aggiungere il tasto con evento           
+                // devo aggiungere il tasto avanti con evento           
                 a = new TTZone();
-
-                if (AVotazione.SkBianca && !AVotazione.SkNonVoto)
-                {
-                    GetZone(ref a, 54, 76, 97, 90);
-                    a.expr = VSDecl.VOTO_MULTIAVANTI;
-                }
-                else
-                {
-                    GetZone(ref a, 69, 76, 97, 90); 
-                    a.expr = VSDecl.VOTO_MULTIAVANTI;
-                }
-                
+                GetZone(ref a, 76, 65, 98, 82);
+                a.expr = VSDecl.VOTO_MULTIAVANTI;
                 a.Text = ""; a.ev = TTEvento.steMultiAvanti; a.pag = 0; a.cda = false; a.Multi = 0;
                 Tz.Add(a);
 
+                //if (AVotazione.SkBianca && !AVotazione.SkNonVoto)
+                //{
+                //    GetZone(ref a, 54, 76, 97, 90);
+                //    a.expr = VSDecl.VOTO_MULTIAVANTI;
+                //}
+                //else
+                //{
+                //    GetZone(ref a, 69, 76, 97, 90); 
+                //    a.expr = VSDecl.VOTO_MULTIAVANTI;
+                //}
+                
                 // se nella votazione è presente il seleziona TuttoCDA
                 if (AVotazione.SelezionaTuttiCDA && AVotazione.NPresentatoCDA > 0)
                 {

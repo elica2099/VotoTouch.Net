@@ -219,11 +219,29 @@ namespace VotoTouch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Astenuto a tutte le liste.
+        /// </summary>
+        internal static string SAPP_SKASTENUTOTUTTI {
+            get {
+                return ResourceManager.GetString("SAPP_SKASTENUTOTUTTI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Scheda Bianca.
         /// </summary>
         internal static string SAPP_SKBIANCA {
             get {
                 return ResourceManager.GetString("SAPP_SKBIANCA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contrario a tutte le liste.
+        /// </summary>
+        internal static string SAPP_SKCONTRARIOTUTTI {
+            get {
+                return ResourceManager.GetString("SAPP_SKCONTRARIOTUTTI", resourceCulture);
             }
         }
         
