@@ -28,37 +28,39 @@ namespace VotoTouch
 
 
     // configurazione del programma
-    public struct TTotemConfig
+//    static public class TTotemConfig
+    static public class VTConfig
     {
         // CONFIGURAZIONE GENERALE
-        public bool SalvaLinkVoto;
-        public bool SalvaVotoNonConfermato;
-        public int IDSchedaUscitaForzata;
-        public int ModoPosizioneAreeTouch;
-        public int ControllaPresenze;
-        public bool AbilitaBottoneUscita;
-        public bool AttivaAutoRitornoVoto;
-        public int TimeAutoRitornoVoto;
-        public bool AbilitaDirittiNonVoglioVotare;
+        static public int ModoAssemblea;
+        static public bool SalvaLinkVoto;
+        static public bool SalvaVotoNonConfermato;
+        static public int IDSchedaUscitaForzata;
+        static public int ModoPosizioneAreeTouch;
+        static public int ControllaPresenze;
+        static public bool AbilitaBottoneUscita;
+        static public bool AttivaAutoRitornoVoto;
+        static public int TimeAutoRitornoVoto;
+        static public bool AbilitaDirittiNonVoglioVotare;
         
         // CONFIGURAZIONE LOCALE
-        public string Postazione;
-        public string Descrizione;
-        public int IDSeggio;
-        public bool Attivo;
-        public bool VotoAperto;
-        public int Sala;
+        static public string Postazione;
+        static public string Descrizione;
+        static public int IDSeggio;
+        static public bool Attivo;
+        static public bool VotoAperto;
+        static public int Sala;
         // Semaforo
-        public bool UsaSemaforo;
-        public string IP_Com_Semaforo;
-        public int TipoSemaforo;
+        static public bool UsaSemaforo;
+        static public string IP_Com_Semaforo;
+        static public int TipoSemaforo;
         // Variabili di configurazione Lettore
-        public bool UsaLettore;
-        public int PortaLettore;
-        public string CodiceUscita;
+        static public bool UsaLettore;
+        static public int PortaLettore;
+        static public string CodiceUscita;
         // codici impianto
-        public int BadgeLen;
-        public string CodImpianto;
+        static public int BadgeLen;
+        static public string CodImpianto;
     }
 
     // struttura di configurazione del database
@@ -172,6 +174,11 @@ namespace VotoTouch
         public const string IMG_voto = "voto_";
         public const string IMG_voto_c = "_conf";
         public const string IMG_voto_pre = "_pre";
+
+        // Modo Assemblea
+        // TODO: FARE COME PROPOSTE che lo trova in automatico
+        public const int MODO_AGM_POP = 0;            // popolari
+        public const int MODO_AGM_SPA = 1;            // spa
 
         // tipi di Votazione
         public const int VOTO_LISTA = 1;            // voto di lista

@@ -60,11 +60,11 @@ namespace VotoTouch
         public  CBaseSemaphore oSemaforo;       // classe del semaforo
         public  CNETActiveReader NewReader;
         public  CVotoImages oVotoImg;
-
+        // configurazione
+        //static public TTotemConfig VTConfig;             
         // strutture
         public ConfigDbData DBConfig;           // database
         public TAppStato Stato;                 // macchina a stato
-        public TTotemConfig TotCfg;             // configurazione
         public string Data_Path;                // path della cartella data
         public string   NomeTotem;              // nome della macchina
         public string   LogVotiNomeFile;        // nome file del log
@@ -230,15 +230,15 @@ namespace VotoTouch
             {
                 int DBOk = 0;  // variabile di controllo sul caricamento
                 // leggo la configurazione del badge/impianto
-                DBOk += oDBDati.CaricaConfigDB(ref TotCfg.BadgeLen, ref TotCfg.CodImpianto);
+                DBOk += oDBDati.CaricaConfigDB(ref VTConfig.BadgeLen, ref VTConfig.CodImpianto);
                 splash.SetSplash(40, rm.GetString("SAPP_START_INITPREF"));   //"Carico preferenze..."
                 // leggo la configurazione generale
-                DBOk += oDBDati.DammiConfigDatabase(ref TotCfg);
+                DBOk += oDBDati.DammiConfigDatabase(); //ref TotCfg);
                 // leggo la configurazione del singolo totem
-                DBOk += oDBDati.DammiConfigTotem(NomeTotem, ref TotCfg);
+                DBOk += oDBDati.DammiConfigTotem(NomeTotem); //, ref TotCfg);
                 splash.SetSplash(50, rm.GetString("SAPP_START_INITVOT"));  //"Carico liste e votazioni..."
 
-                if (TotCfg.VotoAperto) Logging.WriteToLog("Votazione già aperta");
+                if (VTConfig.VotoAperto) Logging.WriteToLog("Votazione già aperta");
 
                 // carica le votazioni, le carica comunque all'inizio
                 Votazioni = new TListaVotazioni(oDBDati, DemoVersion);
@@ -271,24 +271,24 @@ namespace VotoTouch
             NewReader.ADataRead += ObjDataReceived;
             evtDataReceived += new EventDataReceived(onDataReceived);
             // lo attiverà nel load
-            if (TotCfg.UsaLettore)
+            if (VTConfig.UsaLettore)
             {
-                NewReader.PortName = "COM" + TotCfg.PortaLettore.ToString();
+                NewReader.PortName = "COM" + VTConfig.PortaLettore.ToString();
             }
 
             splash.SetSplash(70, rm.GetString("SAPP_START_INITSEM"));       //"Inizializzo Semaforo..."
             // il semaforo, ora fa tutto lei
-            SemaforoOKImg(TotCfg.UsaSemaforo);
+            SemaforoOKImg(VTConfig.UsaSemaforo);
             // ok, in funzione del tipo di semaforo faccio
-            if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_IP)
+            if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_IP)
                 // USARE SEMPRE CIPThreadSemaphore
                 oSemaforo = new CIPThreadSemaphore();
             else
                 oSemaforo = new CComSemaphore();
             // se è attivato lo setto
-            oSemaforo.ConnAddress = TotCfg.IP_Com_Semaforo;  //  deve essere "COM1" o "COMn"
+            oSemaforo.ConnAddress = VTConfig.IP_Com_Semaforo;  //  deve essere "COM1" o "COMn"
             oSemaforo.ChangeSemaphore += onChangeSemaphore;
-            if (TotCfg.UsaSemaforo)
+            if (VTConfig.UsaSemaforo)
                 oSemaforo.AttivaSemaforo(true);
 
             splash.SetSplash(80, rm.GetString("SAPP_START_INITTOUCH"));       // "Inizializzo Touch..."
@@ -297,7 +297,7 @@ namespace VotoTouch
             // azionisti
             Azionisti = new TListaAzionisti(oDBDati, DemoVersion);
             // Classe del TouchScreen
-            oVotoTouch = new CVotoTouchScreen(ref TotCfg);
+		    oVotoTouch = new CVotoTouchScreen(); //ref TotCfg);
             oVotoTouch.PremutoVotaNormale += new ehPremutoVotaNormale(onPremutoVotaNormale);
             oVotoTouch.PremutoVotaDifferenziato += new ehPremutoVotaDifferenziato(onPremutoVotaDifferenziato);
             oVotoTouch.PremutoConferma += new ehPremutoConferma(onPremutoConferma);
@@ -318,10 +318,9 @@ namespace VotoTouch
             oVotoTheme = new CVotoTheme();
             oVotoTheme.CaricaTemaDaXML(oVotoImg.Img_path);
 
-            //CurrVoteIDX = 0;                // parte alla prima votazione
             IsVotazioneDifferenziata = false;               // non è differenziata
             Badge_Letto = 0;
-            AperturaVotoEsterno = TotCfg.VotoAperto;  // lo setto uguale così in stato badge non carica 2 volte le Liste
+            AperturaVotoEsterno = VTConfig.VotoAperto;  // lo setto uguale così in stato badge non carica 2 volte le Liste
             Badge_Seriale = "";
             UscitaInVotazione = false;
 
@@ -347,14 +346,14 @@ namespace VotoTouch
             // scrive la configurazione nel log
             Logging.WriteToLog(VSDecl.VTS_VERSION);
             Logging.WriteToLog("** Configurazione:");
-            Logging.WriteToLog("   Usalettore: " + TotCfg.UsaLettore.ToString());
-            Logging.WriteToLog("   Porta: " + TotCfg.PortaLettore.ToString());
-            Logging.WriteToLog("   UsaSemaforo: " + TotCfg.UsaSemaforo.ToString());
-            Logging.WriteToLog("   IPSemaforo: " + TotCfg.IP_Com_Semaforo.ToString());
-            Logging.WriteToLog("   IDSeggio: " + TotCfg.IDSeggio.ToString());
+            Logging.WriteToLog("   Usalettore: " + VTConfig.UsaLettore.ToString());
+            Logging.WriteToLog("   Porta: " + VTConfig.PortaLettore.ToString());
+            Logging.WriteToLog("   UsaSemaforo: " + VTConfig.UsaSemaforo.ToString());
+            Logging.WriteToLog("   IPSemaforo: " + VTConfig.IP_Com_Semaforo.ToString());
+            Logging.WriteToLog("   IDSeggio: " + VTConfig.IDSeggio.ToString());
             Logging.WriteToLog("   NomeComputer: " + NomeTotem);
-            Logging.WriteToLog("   ControllaPresenze: " + TotCfg.ControllaPresenze.ToString());
-            Logging.WriteToLog("** CodiceUscita: " + TotCfg.CodiceUscita);
+            Logging.WriteToLog("   ControllaPresenze: " + VTConfig.ControllaPresenze.ToString());
+            Logging.WriteToLog("** CodiceUscita: " + VTConfig.CodiceUscita);
             Logging.WriteToLog("");
             
             // inizializzo i componenti
@@ -373,7 +372,7 @@ namespace VotoTouch
             oVotoTouch.PaintTouchOnScreen = PaintTouch;
 
             // se la votazione è aperta il timer di controllo voto batte di meno
-            if (TotCfg.VotoAperto)
+            if (VTConfig.VotoAperto)
                 timVotoApero.Interval = VSDecl.TIM_CKVOTO_MAX;
             else
                 timVotoApero.Interval = VSDecl.TIM_CKVOTO_MIN;
@@ -422,13 +421,13 @@ namespace VotoTouch
             frmVSMessage = new FVSMessage();
             this.AddOwnedForm(frmVSMessage);
 
-            if (TotCfg.UsaLettore)
+            if (VTConfig.UsaLettore)
             {
                 if (!NewReader.Open())
                 {
                     // ci sono stati errori con la com all'apertura
-                    TotCfg.UsaLettore = false;
-                    MessageBox.Show(rm.GetString("SAPP_START_ERRCOM1") + TotCfg.PortaLettore + rm.GetString("SAPP_START_ERRCOM2"), "Error",
+                    VTConfig.UsaLettore = false;
+                    MessageBox.Show(rm.GetString("SAPP_START_ERRCOM1") + VTConfig.PortaLettore + rm.GetString("SAPP_START_ERRCOM2"), "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -580,7 +579,7 @@ namespace VotoTouch
 		{
             // prima di tutto vedo se è attivato SalvaVotoNonConfermato
             // se sono nello stato di conferma, confermo il voto espresso e poi metto le altre schede
-            if (Stato == TAppStato.ssvVotoConferma && TotCfg.SalvaVotoNonConfermato) 
+            if (Stato == TAppStato.ssvVotoConferma && VTConfig.SalvaVotoNonConfermato) 
                 Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
 
             // Dopodichè segnalo ad azionisti di riempire le votazioni con schede bianche, ma solo  
@@ -588,12 +587,12 @@ namespace VotoTouch
             //      false - mi comporto normalmente, salvo i non votati con IDSchedaUscitaForzata
             //      true  - non faccio nulla, verranno come non votati e saranno disponibili alla nuova votazione
 
-            if (!TotCfg.AbilitaDirittiNonVoglioVotare)
+            if (!VTConfig.AbilitaDirittiNonVoglioVotare)
             {
                 TVotoEspresso vz = new TVotoEspresso
                     {
                         NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                        VotoExp_IDScheda = TotCfg.IDSchedaUscitaForzata,
+                        VotoExp_IDScheda = VTConfig.IDSchedaUscitaForzata,
                         TipoCarica = 0,
                         Str_ListaElenco = "",
                         StrUp_DescrLista = ""
@@ -620,7 +619,7 @@ namespace VotoTouch
 
         private void MostraFinestraConfig()
         {
-            fConfig = new frmConfig(TotCfg);
+            fConfig = new frmConfig(); //TotCfg);
             fConfig.ConfiguraLettore += new ehConfiguraLettore(OnConfiguraLettore);
             fConfig.SalvaConfigurazioneLettore += new ehSalvaConfigurazioneLettore(OnSalvaConfigurazioneLettore);
             fConfig.ConfiguraSemaforo += new ehConfiguraSemaforo(OnConfiguraSemaforo);
@@ -631,9 +630,9 @@ namespace VotoTouch
             fConfig = null;
  
             // aggiorna il componente (lo faccio comunque)
-            CfgLettore(TotCfg.UsaLettore, TotCfg.PortaLettore);
-            OnConfiguraSemaforo(this, TotCfg.UsaSemaforo, 
-                TotCfg.IP_Com_Semaforo, TotCfg.TipoSemaforo);
+            CfgLettore(VTConfig.UsaLettore, VTConfig.PortaLettore);
+            OnConfiguraSemaforo(this, VTConfig.UsaSemaforo,
+                VTConfig.IP_Com_Semaforo, VTConfig.TipoSemaforo);
 
             // metto il semaforo libero
             oSemaforo.SemaforoLibero();
@@ -649,15 +648,15 @@ namespace VotoTouch
                 string ASemComPort, bool AUsaSemaforo)
         {
             // aggiorna le variabili
-            TotCfg.UsaLettore = AUsaLettore;
-            TotCfg.PortaLettore = AComPort;
-            if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_COM)
+            VTConfig.UsaLettore = AUsaLettore;
+            VTConfig.PortaLettore = AComPort;
+            if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_COM)
             {
-                TotCfg.UsaSemaforo = AUsaSemaforo;
-                TotCfg.IP_Com_Semaforo = ASemComPort;
+                VTConfig.UsaSemaforo = AUsaSemaforo;
+                VTConfig.IP_Com_Semaforo = ASemComPort;
             }
             // salva la configurazione sul database
-            if (oDBDati.SalvaConfigurazione(NomeTotem, ref TotCfg) == 1)
+            if (oDBDati.SalvaConfigurazione(NomeTotem) == 1)
                 MessageBox.Show("Configurazione salvata sul database", "Information",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             //// aggiorna il componente (non serve)
@@ -852,15 +851,15 @@ namespace VotoTouch
             lbVersion.Items.Add("DBClose version");
 #endif
             lbVersion.Items.Add("Configurazione");
-            lbVersion.Items.Add("Usalettore: " + TotCfg.UsaLettore.ToString() + " Porta: " + TotCfg.PortaLettore.ToString());
-            lbVersion.Items.Add("UsaSemaforo: " + TotCfg.UsaSemaforo.ToString() + " IP: " + TotCfg.IP_Com_Semaforo.ToString());
-            lbVersion.Items.Add("IDSeggio: " + TotCfg.IDSeggio.ToString() + " NomeComputer: " + NomeTotem);
-            lbVersion.Items.Add("ControllaPresenze: " + TotCfg.ControllaPresenze.ToString() +
-                " CodiceUscita: " + TotCfg.CodiceUscita);
-            lbVersion.Items.Add("SalvaLinkVoto: " + TotCfg.SalvaLinkVoto.ToString());
-            lbVersion.Items.Add("SalvaVotoNonConfermato: " + TotCfg.SalvaVotoNonConfermato.ToString());
-            lbVersion.Items.Add("IDSchedaUscitaForzata: " + TotCfg.IDSchedaUscitaForzata.ToString());
-            lbVersion.Items.Add("AbilitaDirittiNonVoglioVotare: " + TotCfg.AbilitaDirittiNonVoglioVotare.ToString());
+            lbVersion.Items.Add("Usalettore: " + VTConfig.UsaLettore.ToString() + " Porta: " + VTConfig.PortaLettore.ToString());
+            lbVersion.Items.Add("UsaSemaforo: " + VTConfig.UsaSemaforo.ToString() + " IP: " + VTConfig.IP_Com_Semaforo.ToString());
+            lbVersion.Items.Add("IDSeggio: " + VTConfig.IDSeggio.ToString() + " NomeComputer: " + NomeTotem);
+            lbVersion.Items.Add("ControllaPresenze: " + VTConfig.ControllaPresenze.ToString() +
+                " CodiceUscita: " + VTConfig.CodiceUscita);
+            lbVersion.Items.Add("SalvaLinkVoto: " + VTConfig.SalvaLinkVoto.ToString());
+            lbVersion.Items.Add("SalvaVotoNonConfermato: " + VTConfig.SalvaVotoNonConfermato.ToString());
+            lbVersion.Items.Add("IDSchedaUscitaForzata: " + VTConfig.IDSchedaUscitaForzata.ToString());
+            lbVersion.Items.Add("AbilitaDirittiNonVoglioVotare: " + VTConfig.AbilitaDirittiNonVoglioVotare.ToString());
             lbVersion.Items.Add("");
             // le votazioni
             foreach (TNewVotazione fVoto in Votazioni.Votazioni)

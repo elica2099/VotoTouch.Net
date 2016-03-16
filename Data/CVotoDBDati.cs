@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using System.Threading;
 
-
 // -----------------------------------------------------------------------
 //			VOTO TOUCH - TSTSQLCONN ClassE
 //  Classe di gestione del database e task relativi
@@ -147,7 +146,7 @@ namespace VotoTouch
 
         #region Lettura/Scrittura Configurazione
 
-        override public int CaricaConfigDB(ref int BadgeLen, ref string CodImpianto)
+        override public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
             // DROK 13
             // mi dice la lunghezza del badge e il codice impianto per il lettore
@@ -158,8 +157,8 @@ namespace VotoTouch
             // testo la connessione
             if (!OpenConnection("CaricaConfigDB")) return 0;
 
-            BadgeLen = 8;
-            CodImpianto = "00";
+            ABadgeLen = 8;
+            ACodImpianto = "00";
             Tok = 0;
             qryStd = new SqlCommand();
             try
@@ -173,13 +172,13 @@ namespace VotoTouch
                     // devo verificare 
                     a.Read();
 
-                    BadgeLen = a.IsDBNull(a.GetOrdinal("LenNumBadge")) ? 8 : Convert.ToInt32(a["LenNumBadge"]);
-                    CodImpianto = a.IsDBNull(a.GetOrdinal("CodImpRea")) ? "00" : (a["CodImpRea"]).ToString();
+                    ABadgeLen = a.IsDBNull(a.GetOrdinal("LenNumBadge")) ? 8 : Convert.ToInt32(a["LenNumBadge"]);
+                    ACodImpianto = a.IsDBNull(a.GetOrdinal("CodImpRea")) ? "00" : (a["CodImpRea"]).ToString();
                 }
                 else
                 {
-                    BadgeLen = 8;
-                    CodImpianto = "00";
+                    ABadgeLen = 8;
+                    ACodImpianto = "00";
                 }
                 a.Close();
             }
@@ -198,7 +197,7 @@ namespace VotoTouch
             return Tok;
         }
 
-        override public int DammiConfigTotem(string NomeTotem, ref TTotemConfig TotCfg)
+        override public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
         {
             SqlDataReader a;
             SqlCommand qryStd;
@@ -214,7 +213,7 @@ namespace VotoTouch
             qryStd = new SqlCommand();
             qryStd.Connection = STDBConn;
             // registra il totem aggiungendo il record in CONFIG_POSTAZIONI, e chiaramente verifica che ci sia già
-            qryStd.CommandText = "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + NomeTotem + "'";
+            qryStd.CommandText = "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + ANomeTotem + "'";
             
             traStd = STDBConn.BeginTransaction();
             qryStd.Transaction = traStd;
@@ -229,26 +228,26 @@ namespace VotoTouch
                     // devo verificare 
                     a.Read();
                     // carico
-                    TotCfg.Postazione = a["Postazione"].ToString();
+                    VTConfig.Postazione = a["Postazione"].ToString();
                     // faccio un  ulteriore controllo
-                    if (NomeTotem != TotCfg.Postazione) TotCfg.Postazione = NomeTotem;
+                    if (ANomeTotem != VTConfig.Postazione) VTConfig.Postazione = ANomeTotem;
 
-                    TotCfg.Descrizione = a.IsDBNull(a.GetOrdinal("Descrizione")) ? NomeTotem : a["Descrizione"].ToString();
-                    TotCfg.IDSeggio = Convert.ToInt32(a["IdSeggio"]);
+                    VTConfig.Descrizione = a.IsDBNull(a.GetOrdinal("Descrizione")) ? ANomeTotem : a["Descrizione"].ToString();
+                    VTConfig.IDSeggio = Convert.ToInt32(a["IdSeggio"]);
                     FIDSeggio = Convert.ToInt32(a["IdSeggio"]);
 
-                    TotCfg.Attivo = Convert.ToBoolean(a["Attivo"]);
-                    TotCfg.VotoAperto = Convert.ToBoolean(a["VotoAperto"]);
+                    VTConfig.Attivo = Convert.ToBoolean(a["Attivo"]);
+                    VTConfig.VotoAperto = Convert.ToBoolean(a["VotoAperto"]);
 
-                    TotCfg.UsaSemaforo = Convert.ToBoolean(a["UsaSemaforo"]);
-                    TotCfg.IP_Com_Semaforo = a["IPCOMSemaforo"].ToString();
-                    TotCfg.TipoSemaforo = Convert.ToInt32(a["TipoSemaforo"]);
+                    VTConfig.UsaSemaforo = Convert.ToBoolean(a["UsaSemaforo"]);
+                    VTConfig.IP_Com_Semaforo = a["IPCOMSemaforo"].ToString();
+                    VTConfig.TipoSemaforo = Convert.ToInt32(a["TipoSemaforo"]);
 
-                    TotCfg.UsaLettore = Convert.ToBoolean(a["UsaLettore"]);
-                    TotCfg.PortaLettore = Convert.ToInt32(a["PortaLettore"]);
-                    TotCfg.CodiceUscita = a["CodiceUscita"].ToString();
+                    VTConfig.UsaLettore = Convert.ToBoolean(a["UsaLettore"]);
+                    VTConfig.PortaLettore = Convert.ToInt32(a["PortaLettore"]);
+                    VTConfig.CodiceUscita = a["CodiceUscita"].ToString();
 
-                    TotCfg.Sala = a.IsDBNull(a.GetOrdinal("Sala")) ? 1 : Convert.ToInt32(a["Sala"]);
+                    VTConfig.Sala = a.IsDBNull(a.GetOrdinal("Sala")) ? 1 : Convert.ToInt32(a["Sala"]);
                 }
                 else
                     inserisci = true;
@@ -263,25 +262,25 @@ namespace VotoTouch
                         "(Postazione, Descrizione, IdSeggio, Attivo, VotoAperto, UsaSemaforo, "+
                         " IPCOMSemaforo, TipoSemaforo, UsaLettore, PortaLettore, CodiceUscita, " +
                         " UsaController, IPController, Sala) " +
-                        " VALUES ('" + NomeTotem + "', 'Desc_" + NomeTotem + "', 999, 1, 0, 0, " +
+                        " VALUES ('" + ANomeTotem + "', 'Desc_" + ANomeTotem + "', 999, 1, 0, 0, " +
                         "'127.0.0.1', 2, 0, 1, '999999', 0, '127.0.0.1', 1)";
                     
                     // metto in quadro i valori
-                    TotCfg.Postazione = NomeTotem;
-                    TotCfg.Descrizione = NomeTotem; 
-                    TotCfg.IDSeggio = 999;
+                    VTConfig.Postazione = ANomeTotem;
+                    VTConfig.Descrizione = ANomeTotem;
+                    VTConfig.IDSeggio = 999;
                     FIDSeggio = 999;
-                    TotCfg.Attivo = true;
-                    TotCfg.VotoAperto = false;
-                    TotCfg.UsaSemaforo = false;
-                    TotCfg.IP_Com_Semaforo = "127.0.0.1";
-                    TotCfg.UsaLettore = false;
-                    TotCfg.PortaLettore = 1;
-                    TotCfg.CodiceUscita = "999999";
-                    TotCfg.Sala = 1;
+                    VTConfig.Attivo = true;
+                    VTConfig.VotoAperto = false;
+                    VTConfig.UsaSemaforo = false;
+                    VTConfig.IP_Com_Semaforo = "127.0.0.1";
+                    VTConfig.UsaLettore = false;
+                    VTConfig.PortaLettore = 1;
+                    VTConfig.CodiceUscita = "999999";
+                    VTConfig.Sala = 1;
                     // parte come semaforo com per facilitare gli esterni,
                     // poi bisognerà fare un wizard di configurazione
-                    TotCfg.TipoSemaforo = VSDecl.SEMAFORO_COM;
+                    VTConfig.TipoSemaforo = VSDecl.SEMAFORO_COM;
                     // ora scrivo
                     int NumberofRows = qryStd.ExecuteNonQuery();
                 }
@@ -308,7 +307,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int DammiConfigDatabase(ref TTotemConfig TotCfg)
+        override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
             SqlDataReader a;
             SqlCommand qryStd;
@@ -333,25 +332,25 @@ namespace VotoTouch
                     // devo verificare 
                     a.Read();
                     // carico
+                    VTConfig.ModoAssemblea = Convert.ToInt32(a["ModoAssemblea"]);
                     // il link del voto
-                    TotCfg.SalvaLinkVoto = Convert.ToBoolean(a["SalvaLinkVoto"]);
+                    VTConfig.SalvaLinkVoto = Convert.ToBoolean(a["SalvaLinkVoto"]);
                     // il salvataggio del voto anche se non ha confermato
-                    TotCfg.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
+                    VTConfig.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
                     // l'id della scheda che deve essere salvata in caso di 999999
-                    TotCfg.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
+                    VTConfig.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
                     // ModoPosizioneAreeTouch
-                    TotCfg.ModoPosizioneAreeTouch = Convert.ToInt32(a["ModoPosizioneAreeTouch"]);
+                    VTConfig.ModoPosizioneAreeTouch = Convert.ToInt32(a["ModoPosizioneAreeTouch"]);
                     // controllo delle presenze
-                    TotCfg.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
+                    VTConfig.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
                     // AbilitaBottoneUscita
-                    TotCfg.AbilitaBottoneUscita = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                    VTConfig.AbilitaBottoneUscita = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
                     // AttivaAutoRitornoVoto
-                    TotCfg.AttivaAutoRitornoVoto = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                    VTConfig.AttivaAutoRitornoVoto = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
                     // TimeAutoRitornoVoto
-                    TotCfg.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]);
+                    VTConfig.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]);
                     // AbilitaDirittiNonVoglioVotare
-                    TotCfg.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
-
+                    VTConfig.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
 
                     // qua dovrei in teoria controllare che vada bene
                     // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre
@@ -364,15 +363,15 @@ namespace VotoTouch
                 }
                 else
                 {
-                    TotCfg.SalvaLinkVoto = true;
-                    TotCfg.SalvaVotoNonConfermato = false;
-                    TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_NONVOTO;
-                    TotCfg.ModoPosizioneAreeTouch = VSDecl.MODO_POS_TOUCH_NORMALE;
-                    TotCfg.ControllaPresenze = VSDecl.PRES_CONTROLLA;
-                    TotCfg.AbilitaBottoneUscita = false;
-                    TotCfg.AttivaAutoRitornoVoto = false;
-                    TotCfg.TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
-                    TotCfg.AbilitaDirittiNonVoglioVotare = false;
+                    VTConfig.SalvaLinkVoto = true;
+                    VTConfig.SalvaVotoNonConfermato = false;
+                    VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_NONVOTO;
+                    VTConfig.ModoPosizioneAreeTouch = VSDecl.MODO_POS_TOUCH_NORMALE;
+                    VTConfig.ControllaPresenze = VSDecl.PRES_CONTROLLA;
+                    VTConfig.AbilitaBottoneUscita = false;
+                    VTConfig.AttivaAutoRitornoVoto = false;
+                    VTConfig.TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
+                    VTConfig.AbilitaDirittiNonVoglioVotare = false;
                 }
                 // chiudo
                 a.Close();
@@ -396,7 +395,7 @@ namespace VotoTouch
             return result;
         }
         
-        override public int SalvaConfigurazione(string ANomeTotem, ref TTotemConfig ATotCfg)
+        override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
         {
             SqlCommand qryStd;
             SqlTransaction traStd;
@@ -408,8 +407,8 @@ namespace VotoTouch
 
             result = 0;
             // preparo gli oggetti
-            if (ATotCfg.UsaLettore) usal = 1; else usal = 0;
-            if (ATotCfg.UsaSemaforo) usas = 1; else usas = 0;
+            if (VTConfig.UsaLettore) usal = 1; else usal = 0;
+            if (VTConfig.UsaSemaforo) usas = 1; else usas = 0;
             qryStd = new SqlCommand();
             qryStd.Connection = STDBConn;
              // devo inserirlo
@@ -418,10 +417,10 @@ namespace VotoTouch
             {
                 qryStd.Transaction = traStd;
                 qryStd.CommandText = "update CONFIG_POSTAZIONI_TOTEM with (rowlock) set " +
-                        "  UsaLettore = " + usal.ToString() + 
-                        ", PortaLettore = " + ATotCfg.PortaLettore.ToString() +
+                        "  UsaLettore = " + usal.ToString() +
+                        ", PortaLettore = " + VTConfig.PortaLettore.ToString() +
                         ", UsaSemaforo = " + usas.ToString() +
-                        ", IPCOMSemaforo = '" + ATotCfg.IP_Com_Semaforo + "'" +
+                        ", IPCOMSemaforo = '" + VTConfig.IP_Com_Semaforo + "'" +
                         " where Postazione = '" + ANomeTotem + "'";
                 NumberofRows = qryStd.ExecuteNonQuery();
                 traStd.Commit();
@@ -453,7 +452,8 @@ namespace VotoTouch
 
         #region Metodi sui Badge (Presenza, ha già votato...)
 
-        override public bool ControllaBadge(int AIDBadge, TTotemConfig ATotCfg, ref int AReturnFlags)
+        //override public bool ControllaBadge(int AIDBadge, TTotemConfig ATotCfg, ref int AReturnFlags)
+        override public bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
         {
             // questa procedura effettua in un colpo solo tutti i controlli relativi al badge
             // 1 - Se il badge è annullato
@@ -519,14 +519,14 @@ namespace VotoTouch
                 a.Close();
                 // se non è annullato e non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO
                 // forzo un movimento di ingresso
-                if (!BAnnull && !Presente && (ATotCfg.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO))
+                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO))
                 {
                     // forzo il movimento
                     qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
                         " DataOra, Badge, TipoMov, Reale, Classe, Terminale, DataIns " +
                         ") values ({ fn NOW() } , '" +
                         AIDBadge.ToString() + "', 'E', 1, 3, " +
-                        ATotCfg.Sala.ToString() + ", { fn NOW() })";
+                        VTConfig.Sala.ToString() + ", { fn NOW() })";
                     // eseguo
                     NumberofRows = qryStd.ExecuteNonQuery();
                     Presente = true;
@@ -536,14 +536,14 @@ namespace VotoTouch
                 // perché se Presente = true va tutto bene, ma se Presente è a false
                 // bisogna testare il flag ControllaPresenze perché nel caso "PRES_NON_CONTROLLARE"
                 // è ok lo stesso e bisogna mettere Presente a true x il confronto finale
-                if (!Presente && ATotCfg.ControllaPresenze == VSDecl.PRES_NON_CONTROLLARE)
+                if (!Presente && VTConfig.ControllaPresenze == VSDecl.PRES_NON_CONTROLLARE)
                     Presente = true;
 
                 // -------------------------------------------------
                 // ok, ora testo se ha votato
 
                 // modifiche AbilitaDirittiNonVoglioVotare.
-                if (ATotCfg.AbilitaDirittiNonVoglioVotare)
+                if (VTConfig.AbilitaDirittiNonVoglioVotare)
                 {
                     // se è abilitato il controllo su non voglio votare vuol dire che non salvo in 
                     // vs_votanti_totem, ma controllo i residui diritti di voto
@@ -660,7 +660,6 @@ namespace VotoTouch
 
             return NomeAz;
         }
-
 
         #endregion
 
@@ -795,7 +794,8 @@ namespace VotoTouch
 
         #region Salvataggio Voti
 
-        override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti AAzionisti)
+        //override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti AAzionisti)
+        override public int SalvaTutto(int AIDBadge, ref TListaAzionisti AAzionisti)
         {
             // questa funzione viene chhiamata alla fine della votazione ed effettua le operazioni 
             // IN UN UNICA TRANSAZIONE:
@@ -824,7 +824,7 @@ namespace VotoTouch
 
                 // 1. scrivo che ha votato in VS_Votanti_Totem
                 // se non è abilitato il non voto si comporta normalmente, quindi salva in vs_votanti_totem
-                if (!ATotCfg.AbilitaDirittiNonVoglioVotare)
+                if (!VTConfig.AbilitaDirittiNonVoglioVotare)
                 {
                     qryStd.Parameters.Clear();
                     qryStd.CommandText = "insert into VS_Votanti_Totem with (ROWLOCK) " +
@@ -864,7 +864,7 @@ namespace VotoTouch
                             // intonse_totem, salvo il voto, ma prima devo fare qualche elaborazione
                             // 1. testo se devo togliere il link voto-azionista
                             int AIDBadge_OK = AIDBadge;
-                            if (!ATotCfg.SalvaLinkVoto)
+                            if (!VTConfig.SalvaLinkVoto)
                                 AIDBadge_OK = random.Next(1, TopRand);
 
                             // salvo nel db
@@ -876,7 +876,7 @@ namespace VotoTouch
                             qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                             qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
                             qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
-                            qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Int).Value = 1;
+                            qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Float).Value = az.NAzioni;
                             qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge_OK.ToString();
                             qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
                             qryVoti.Parameters.Add("@IdCarica", System.Data.SqlDbType.Int).Value = vt.TipoCarica;
@@ -954,7 +954,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int CheckStatoVoto(string NomeTotem)
+        override public int CheckStatoVoto(string ANomeTotem)
         {
             //  mi da quante azioni ha un titolare
             SqlDataReader ab;
@@ -988,7 +988,7 @@ namespace VotoTouch
             try
             {
                 // apro la query
-                qryStd1.CommandText = "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + NomeTotem + "'";
+                qryStd1.CommandText = "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + ANomeTotem + "'";
                 ab = qryStd1.ExecuteReader();
                 if (ab.HasRows)
                 {
@@ -1007,7 +1007,7 @@ namespace VotoTouch
             catch (Exception objExc)
             {
                 result = -1;
-                Logging.WriteToLog("<dberror> fn CheckStatoVoto: " + NomeTotem + " err: " + objExc.Message);
+                Logging.WriteToLog("<dberror> fn CheckStatoVoto: " + ANomeTotem + " err: " + objExc.Message);
             }
             finally
             {
@@ -1020,7 +1020,6 @@ namespace VotoTouch
 
             return result;
         }
-
 
         override public bool CancellaBadgeVotazioni(int AIDBadge)
         {

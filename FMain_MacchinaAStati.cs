@@ -63,7 +63,7 @@ namespace VotoTouch
                     // All'avvio dell'applicazione AperturaVotoEsterno viene settato come la lettura
                     // sul db, quindi quando qui cambia vuol dire (in funzione del valore)
                     // che un evento di apertura/chiusura votazione è avvenuto
-                    if (AperturaVotoEsterno != TotCfg.VotoAperto)
+                    if (AperturaVotoEsterno != VTConfig.VotoAperto)
                     {
                         if (AperturaVotoEsterno)
                         {
@@ -73,16 +73,16 @@ namespace VotoTouch
                         else
                             Logging.WriteToLog("Evento Chiusura votazione");
                         // ok, ora setto la variabile locale di configurazione
-                        TotCfg.VotoAperto = AperturaVotoEsterno;
+                        VTConfig.VotoAperto = AperturaVotoEsterno;
                         // se la votazione è aperta il timer di controllo voto batte di meno
-                        if (TotCfg.VotoAperto)
+                        if (VTConfig.VotoAperto)
                             timVotoApero.Interval = VSDecl.TIM_CKVOTO_MAX;
                         else
                             timVotoApero.Interval = VSDecl.TIM_CKVOTO_MIN;
                     }
 
                     // a seconda dello stato, mostro il semaforo e metto l'immagine corretta
-                    if (TotCfg.VotoAperto)
+                    if (VTConfig.VotoAperto)
                     {
                         oSemaforo.SemaforoLibero();
                         oVotoImg.LoadImages(VSDecl.IMG_Badge);
@@ -151,7 +151,7 @@ namespace VotoTouch
                     // labels
                     lbDirittiDiVoto.Text = "";
                     // messaggio di arrivederci
-                    if (TotCfg.UsaLettore)
+                    if (VTConfig.UsaLettore)
                     {
                         NewReader.Flush();
                     }
@@ -165,12 +165,12 @@ namespace VotoTouch
                         oVotoImg.LoadImages(VSDecl.IMG_fine);
 
                     // ora devo vediricare se è attivo AttivaAutoRitornoVoto
-                    if (TotCfg.AttivaAutoRitornoVoto)
+                    if (VTConfig.AttivaAutoRitornoVoto)
                     {
                         System.Windows.Forms.Timer timAutoRitorno = new System.Windows.Forms.Timer
                             {
                                 Enabled = true,
-                                Interval = TotCfg.TimeAutoRitornoVoto*1000
+                                Interval = VTConfig.TimeAutoRitornoVoto * 1000
                             };
                         timAutoRitorno.Tick += timAutoRitorno_Tick;
                     }
@@ -183,7 +183,8 @@ namespace VotoTouch
                         // metti lo spinning wheel
                     }
                     // salvo i dati sul database
-                    oDBDati.SalvaTutto(Badge_Letto, TotCfg, ref Azionisti);
+                    //oDBDati.SalvaTutto(Badge_Letto, TotCfg, ref Azionisti);
+                    oDBDati.SalvaTutto(Badge_Letto, ref Azionisti);
                      
                     // togli lo spinning wheel
                     pbSalvaDati.Visible = false;
@@ -208,7 +209,7 @@ namespace VotoTouch
             {
                 if (getvtaperto == 1) vtaperto = true; else vtaperto = false;
                 // se sono diversi e sono all'inizio allora cambio lo stato
-                if (TotCfg.VotoAperto != vtaperto)
+                if (VTConfig.VotoAperto != vtaperto)
                 {
                     // segnalo che c'è stato un evento e setto una variabile che sarà controllata
                     // appena lo stato sarà su Badge, quindi sarà finita l'eventuale votazione 

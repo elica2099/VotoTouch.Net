@@ -36,53 +36,53 @@ namespace VotoTouch
 
         #region Lettura/Scrittura Configurazione
 
-        override public int CaricaConfigDB(ref int BadgeLen, ref string CodImpianto)
+        override public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
-            BadgeLen = 8;
-            CodImpianto = "00";
+            ABadgeLen = 8;
+            ACodImpianto = "00";
             return 0;
         }
 
-        override public int DammiConfigTotem(string NomeTotem, ref TTotemConfig TotCfg)
+        override public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
         {
-            TotCfg.Postazione = NomeTotem;
+            VTConfig.Postazione = NomeTotem;
             // faccio un  ulteriore controllo
-            TotCfg.IDSeggio = 99;
+            VTConfig.IDSeggio = 99;
             FIDSeggio = 99;
-            TotCfg.Attivo = true;
-            TotCfg.VotoAperto = true;
-            TotCfg.ControllaPresenze = 1;
-            TotCfg.UsaSemaforo = false;
-            TotCfg.IP_Com_Semaforo = "127.0.0.1";
-            TotCfg.TipoSemaforo = 1;
-            TotCfg.SalvaLinkVoto = true;
-            TotCfg.SalvaVotoNonConfermato = true;
-            TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
+            VTConfig.Attivo = true;
+            VTConfig.VotoAperto = true;
+            VTConfig.ControllaPresenze = 1;
+            VTConfig.UsaSemaforo = false;
+            VTConfig.IP_Com_Semaforo = "127.0.0.1";
+            VTConfig.TipoSemaforo = 1;
+            VTConfig.SalvaLinkVoto = true;
+            VTConfig.SalvaVotoNonConfermato = true;
+            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "10.178.6.16";
             //TotCfg.IP_Com_Semaforo = "192.168.0.32";
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "COM3";           
             //TotCfg.TipoSemaforo = 2;
-            TotCfg.UsaLettore = false;
-            TotCfg.PortaLettore = 0;
-            TotCfg.CodiceUscita = "999999";
+            VTConfig.UsaLettore = false;
+            VTConfig.PortaLettore = 0;
+            VTConfig.CodiceUscita = "999999";
             //TotCfg.UsaController = false;
             //TotCfg.IPController = "127.0.0.1";
             return 0;
         }
 
-        override public int DammiConfigDatabase(ref TTotemConfig TotCfg)
+        override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
-            TotCfg.SalvaLinkVoto = true;
-            TotCfg.SalvaVotoNonConfermato = true;
-            TotCfg.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
+            VTConfig.SalvaLinkVoto = true;
+            VTConfig.SalvaVotoNonConfermato = true;
+            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
             //TotCfg.TastoRicominciaDaCapo = false;
             //TotCfg.AbilitaLogV = true;
             return 0;
         }
 
-        override public int SalvaConfigurazione(string ANomeTotem, ref TTotemConfig ATotCfg)
+        override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
@@ -190,7 +190,8 @@ namespace VotoTouch
         //  METODI SUI BADGE
         // --------------------------------------------------------------------------
 
-        override public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
+//        override public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
+        override public bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
         {
             AReturnFlags = 0;
             return true;
@@ -281,7 +282,8 @@ namespace VotoTouch
         //  CONTROLLO DELLA VOTAZIONE
         // --------------------------------------------------------------------------
 
-        override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
+//        override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
+        override public int SalvaTutto(int AIDBadge, ref TListaAzionisti FAzionisti)
         {
             return 0;
         }
@@ -291,7 +293,7 @@ namespace VotoTouch
             return 0;
         }
 
-        override public int CheckStatoVoto(string NomeTotem)
+        override public int CheckStatoVoto(string ANomeTotem)
         {
             return 1;
         }
@@ -310,12 +312,12 @@ namespace VotoTouch
         //  REGISTRAZIONE NEL DATABASE
         // --------------------------------------------------------------------------
 
-        override public int RegistraTotem(string NomeTotem)
+        override public int RegistraTotem(string ANomeTotem)
         {
             return 0;
         }
 
-        override public int UnregistraTotem(string NomeTotem)
+        override public int UnregistraTotem(string ANomeTotem)
         {
             return 0;
         }

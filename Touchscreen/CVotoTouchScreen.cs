@@ -124,16 +124,16 @@ namespace VotoTouch
         private Timer timTouchWatchDog;
         private bool TouchEnabled;
         private int TouchWatch;
-        private TTotemConfig TotCfg;
+        //private TTotemConfig TotCfg;
 
-        public CVotoTouchScreen(ref TTotemConfig ATotCfg)
+        public CVotoTouchScreen() //ref TTotemConfig ATotCfg)
 		{
             // DR11 OK
             // inizializzo
             FFormRect = new Rectangle();       
     
             //Tz = new ArrayList();
-            TotCfg = ATotCfg;
+            //TotCfg = ATotCfg;
 
             PaintTouchOnScreen = false;
 
@@ -213,7 +213,7 @@ namespace VotoTouch
             if (ClasseTipoVotoConferma != null)
             {
                 ClasseTipoVotoConferma.FFormRect = AFormRect;
-                ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, TotCfg.AbilitaBottoneUscita);
+                ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, VTConfig.AbilitaBottoneUscita);
                 //ClasseTipoVotoConferma.GetTouchSpecialZone(Stato, Differ);
             }
         }

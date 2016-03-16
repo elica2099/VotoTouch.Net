@@ -19,7 +19,7 @@ namespace VotoTouch
         public int IDAzion { get; set; }
         public int ProgDeleg { get; set; }
         public string RaSo { get; set; }
-        public int NAzioni { get; set; }
+        public double NAzioni { get; set; }
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
         
@@ -43,7 +43,6 @@ namespace VotoTouch
             RaSo = cp.RaSo; NAzioni = cp.NAzioni; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
             IDVotaz = cp.IDVotaz;
         }
-
 	}
 
     public class TListaAzionisti
@@ -375,7 +374,7 @@ namespace VotoTouch
                                 IDBadge = AIDBadge,
                                 ProgDeleg = 0,
                                 RaSo = a["Raso1"].ToString(),
-                                NAzioni = Convert.ToInt32(a["AzOrd"]),
+                                NAzioni = Convert.ToDouble(a["AzOrd"]),
                                 Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString(),
                                 HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0 ? VOTATO_DBASE : VOTATO_NO,
                                 IDVotaz = IDVotazione

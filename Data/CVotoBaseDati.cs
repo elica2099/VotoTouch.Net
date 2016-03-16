@@ -44,22 +44,22 @@ namespace VotoTouch
         //  LETTURA CONFIGURAZIONE NEL DATABASE
         // --------------------------------------------------------------------------
 
-        virtual public int CaricaConfigDB(ref int BadgeLen, ref string CodImpianto)
+        virtual public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
             return 0;
         }
 
-        virtual public int DammiConfigTotem(string NomeTotem, ref TTotemConfig TotCfg)
+        virtual public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
         {
             return 0;
         }
 
-        virtual public int DammiConfigDatabase(ref TTotemConfig TotCfg)
+        virtual public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
             return 0;
         }
         
-        virtual public int SalvaConfigurazione(string ANomeTotem, ref TTotemConfig ATotCfg)
+        virtual public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
@@ -82,7 +82,8 @@ namespace VotoTouch
         //  METODI SUI BADGE
         // --------------------------------------------------------------------------
 
-        virtual public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
+//        virtual public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
+        virtual public bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
         {
             return true;
         }
@@ -125,7 +126,8 @@ namespace VotoTouch
         //  CONTROLLO DELLA VOTAZIONE
         // --------------------------------------------------------------------------
 
-        virtual public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
+//        virtual public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti FAzionisti)
+        virtual public int SalvaTutto(int AIDBadge, ref TListaAzionisti FAzionisti)
         {
             return 0;
         }
@@ -135,7 +137,7 @@ namespace VotoTouch
             return 0;
         }
 
-        virtual public int CheckStatoVoto(string NomeTotem)
+        virtual public int CheckStatoVoto(string ANomeTotem)
         {
             return 1;
         }
@@ -170,12 +172,12 @@ namespace VotoTouch
         //  REGISTRAZIONE NEL DATABASE
         // --------------------------------------------------------------------------
 
-        virtual public int RegistraTotem(string NomeTotem)
+        virtual public int RegistraTotem(string ANomeTotem)
         {
             return 0;
         }
 
-        virtual public int UnregistraTotem(string NomeTotem)
+        virtual public int UnregistraTotem(string ANomeTotem)
         {
             return 0;
         }

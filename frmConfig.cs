@@ -32,7 +32,7 @@ namespace VotoTouch
         public const string SEM_ASSIGN = "Semaforo Seriale";
         public const string NO_ASSIGN = "-";
         
-        public TTotemConfig TotCfg;
+        //public TTotemConfig TotCfg;
         private bool UsaLettore;
         private int ComPort;
         private bool UsaSemaforo;
@@ -42,11 +42,11 @@ namespace VotoTouch
         private bool NoPorte;
 
 
-        public frmConfig(TTotemConfig ATotCfg)
+        public frmConfig() //TTotemConfig ATotCfg)
         {
             InitializeComponent();
 
-            TotCfg = ATotCfg;
+            //TotCfg = ATotCfg;
 
             NoPorte = false;
 
@@ -57,37 +57,37 @@ namespace VotoTouch
         {
             // semaforo
             //grbSemaforo.Enabled = TotCfg.UsaSemaforo;
-            if (TotCfg.UsaSemaforo)
+            if (VTConfig.UsaSemaforo)
             {
                 // vedo il tipo di semaforo
-                if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_IP)
+                if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_IP)
                 {
-                    grbSemaforo.Text = "Configurazione Database Semaforo: IP " + TotCfg.IP_Com_Semaforo +
-                        "  Tipo: " + TotCfg.TipoSemaforo.ToString();
-                    txtSemIP.Text = TotCfg.IP_Com_Semaforo;
+                    grbSemaforo.Text = "Configurazione Database Semaforo: IP " + VTConfig.IP_Com_Semaforo +
+                        "  Tipo: " + VTConfig.TipoSemaforo.ToString();
+                    txtSemIP.Text = VTConfig.IP_Com_Semaforo;
                 }
-                if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_COM)
-                    grbSemaforo.Text = "Configurazione Database Semaforo: Seriale " + TotCfg.IP_Com_Semaforo +
-                        "  Tipo: " + TotCfg.TipoSemaforo.ToString();
+                if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_COM)
+                    grbSemaforo.Text = "Configurazione Database Semaforo: Seriale " + VTConfig.IP_Com_Semaforo +
+                        "  Tipo: " + VTConfig.TipoSemaforo.ToString();
             }
             else
             {
                 grbSemaforo.Text = "Nessun semaforo collegato - Semaforo ";
-                if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_IP)
+                if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_IP)
                     grbSemaforo.Text += "IP";
                 else
                     grbSemaforo.Text += "COM";
             }   
 
             // lettore
-            if (TotCfg.UsaLettore)
-                grbLettore.Text = "Prova Lettore Barcode collegato su COM" + TotCfg.PortaLettore.ToString();
+            if (VTConfig.UsaLettore)
+                grbLettore.Text = "Prova Lettore Barcode collegato su COM" + VTConfig.PortaLettore.ToString();
 
             else
                 grbLettore.Text = "Nessun lettore Barcode collegato";
 
             // se è il semaforo ip comunque disabilito il pulsante
-            if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_IP)
+            if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_IP)
                 btnAssegnaSem.Enabled = false;
             else
             {
@@ -150,15 +150,15 @@ namespace VotoTouch
                     //lvSeriali.Items[i].SubItems.Add(NO_ASSIGN);
 
                     // quali sono quelle assegnate alla pistola
-                    if (TotCfg.UsaLettore && lvSeriali.Items[i].Text == "COM" + TotCfg.PortaLettore.ToString())
+                    if (VTConfig.UsaLettore && lvSeriali.Items[i].Text == "COM" + VTConfig.PortaLettore.ToString())
                     {
                         lvSeriali.Items[i].SubItems[1].Text = BC_ASSIGN;
                     }
 
                     // quali sono assegnate al semaforo seriale
-                    if (TotCfg.UsaSemaforo && TotCfg.TipoSemaforo == VSDecl.SEMAFORO_COM)
+                    if (VTConfig.UsaSemaforo && VTConfig.TipoSemaforo == VSDecl.SEMAFORO_COM)
                     {
-                        if (lvSeriali.Items[i].Text == TotCfg.IP_Com_Semaforo)
+                        if (lvSeriali.Items[i].Text == VTConfig.IP_Com_Semaforo)
                         {
                             lvSeriali.Items[i].SubItems[1].Text = SEM_ASSIGN;
                         }
@@ -167,11 +167,11 @@ namespace VotoTouch
                 }
             }
 
-            UsaLettore = TotCfg.UsaLettore;
-            ComPort = TotCfg.PortaLettore;
-            UsaSemaforo = TotCfg.UsaSemaforo;
-            TipoSemaforo = TotCfg.TipoSemaforo;
-            SemComPort = TotCfg.IP_Com_Semaforo;
+            UsaLettore = VTConfig.UsaLettore;
+            ComPort = VTConfig.PortaLettore;
+            UsaSemaforo = VTConfig.UsaSemaforo;
+            TipoSemaforo = VTConfig.TipoSemaforo;
+            SemComPort = VTConfig.IP_Com_Semaforo;
             
         }
 
@@ -179,7 +179,7 @@ namespace VotoTouch
         {
             CaricaSeriali();
             // riporto la situazione a prima
-            if (ConfiguraLettore != null) { ConfiguraLettore(this, TotCfg.UsaLettore, TotCfg.PortaLettore); }
+            if (ConfiguraLettore != null) { ConfiguraLettore(this, VTConfig.UsaLettore, VTConfig.PortaLettore); }
         }
 
 
@@ -215,7 +215,7 @@ namespace VotoTouch
             }
             else
             {
-                ComPort = TotCfg.PortaLettore;
+                ComPort = VTConfig.PortaLettore;
                 UsaLettore = false;
                 // devo disabilitare l'oggetto
                 if (ConfiguraLettore != null) { ConfiguraLettore(this, UsaLettore, ComPort); }
@@ -266,7 +266,7 @@ namespace VotoTouch
             else
             {
                 UsaSemaforo = false;
-                SemComPort = TotCfg.IP_Com_Semaforo;
+                SemComPort = VTConfig.IP_Com_Semaforo;
                 // devo disabilitare l'oggetto
                 if (ConfiguraSemaforo != null) { ConfiguraSemaforo(this, UsaSemaforo,
                     SemComPort, TipoSemaforo);
@@ -309,7 +309,7 @@ namespace VotoTouch
             if (lvi.SubItems[1].Text == BC_ASSIGN)
             {
                 // libero la porta ed esco
-                ComPort = TotCfg.PortaLettore;
+                ComPort = VTConfig.PortaLettore;
                 UsaLettore = false;
                 lvi.SubItems[1].Text = NO_ASSIGN;
                 // devo disabilitare l'oggetto
@@ -322,7 +322,7 @@ namespace VotoTouch
             {
                 lvi.SubItems[1].Text = NO_ASSIGN;
                 UsaSemaforo = false;
-                SemComPort = TotCfg.IP_Com_Semaforo;
+                SemComPort = VTConfig.IP_Com_Semaforo;
                 // devo disabilitare l'oggetto
                 if (ConfiguraSemaforo != null) { ConfiguraSemaforo(this, UsaSemaforo, 
                     SemComPort, TipoSemaforo); }
@@ -338,8 +338,8 @@ namespace VotoTouch
         private void btnChiudi_Click(object sender, EventArgs e)
         {
             // prima testo se ci sono state variazioni non salvate
-            if (TotCfg.UsaLettore != UsaLettore || TotCfg.PortaLettore != ComPort ||
-                TotCfg.UsaSemaforo != UsaSemaforo || TotCfg.IP_Com_Semaforo != SemComPort)
+            if (VTConfig.UsaLettore != UsaLettore || VTConfig.PortaLettore != ComPort ||
+                VTConfig.UsaSemaforo != UsaSemaforo || VTConfig.IP_Com_Semaforo != SemComPort)
             {
                 if (MessageBox.Show("La configurazione del lettore è cambiata, vuoi chiudere la finestra senza salvarla?", "Question",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
@@ -356,13 +356,13 @@ namespace VotoTouch
             if (MessageBox.Show("Vuoi salvare la configurazione sul database?", "Question",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
             {
-                TotCfg.UsaLettore = UsaLettore;
-                TotCfg.PortaLettore = ComPort;
+                VTConfig.UsaLettore = UsaLettore;
+                VTConfig.PortaLettore = ComPort;
                 // posso solo modificare il semaforo com
-                if (TotCfg.TipoSemaforo == VSDecl.SEMAFORO_COM)
+                if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_COM)
                 {
-                    TotCfg.IP_Com_Semaforo = SemComPort;
-                    TotCfg.UsaSemaforo = UsaSemaforo;
+                    VTConfig.IP_Com_Semaforo = SemComPort;
+                    VTConfig.UsaSemaforo = UsaSemaforo;
                 }
                 if (SalvaConfigurazioneLettore != null) 
                 {

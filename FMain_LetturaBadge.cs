@@ -53,7 +53,7 @@ namespace VotoTouch
             // - codimpianto + badge
             // - com. particolari "999999"
             // faccio un unico test per vedere se è valido, non può superare la lunghezza totale 
-            if (dato.Length <= (TotCfg.BadgeLen + TotCfg.CodImpianto.Length))
+            if (dato.Length <= (VTConfig.BadgeLen + VTConfig.CodImpianto.Length))
             {
                 if (fConfig != null)
                     fConfig.BadgeLetto(dato);
@@ -76,7 +76,7 @@ namespace VotoTouch
 
             // allora prima di tutto controllo se c'è stato un comando di Reset Votazione
             // cioè 88889999
-            if (AText == VSDecl.RIPETIZ_VOTO && TotCfg.VotoAperto)
+            if (AText == VSDecl.RIPETIZ_VOTO && VTConfig.VotoAperto)
             {
                 CodiceRipetizioneVoto(AText);
                 return;
@@ -105,7 +105,7 @@ namespace VotoTouch
             // CONTINUO
             // ok, per prima cosa, se il voto è chiuso o la postazione non è attiva
             // esco direttamente
-            if (!TotCfg.VotoAperto && Stato == TAppStato.ssvBadge)
+            if (!VTConfig.VotoAperto && Stato == TAppStato.ssvBadge)
             {
                 FVSTest test = new FVSTest(AText);
                 test.ShowDialog();
@@ -116,7 +116,7 @@ namespace VotoTouch
             if ((frmVSMessage != null) && frmVSMessage.Visible) return;
 
             // se ho il badge il 999999 non esce fuori (doppia lettura)
-            if (Stato == TAppStato.ssvBadge && AText == TotCfg.CodiceUscita) return;
+            if (Stato == TAppStato.ssvBadge && AText == VTConfig.CodiceUscita) return;
 
             // stato iniziale, ho già filtrato le finestre
             if (Stato == TAppStato.ssvBadge)
@@ -126,14 +126,14 @@ namespace VotoTouch
                 codimp = "00";  // codice impianto universale
                 // ok, qua devo fare dei controlli sul codice impianto e sul badge
                 // se la lunghezza è giusta allora estraggo le due parti e controllo
-                if (AText.Length >= (TotCfg.BadgeLen + TotCfg.CodImpianto.Length))
+                if (AText.Length >= (VTConfig.BadgeLen + VTConfig.CodImpianto.Length))
                 {
                     // estraggo il badge, parto sempre da sinistra
-                    bbadge = AText.Substring(AText.Length - TotCfg.BadgeLen, TotCfg.BadgeLen);
+                    bbadge = AText.Substring(AText.Length - VTConfig.BadgeLen, VTConfig.BadgeLen);
 
                     // estraggo il cod impianto
-                    codimp = AText.Substring(AText.Length - TotCfg.BadgeLen -
-                        TotCfg.CodImpianto.Length, TotCfg.CodImpianto.Length);
+                    codimp = AText.Substring(AText.Length - VTConfig.BadgeLen -
+                        VTConfig.CodImpianto.Length, VTConfig.CodImpianto.Length);
                 }
                 else
                     bbadge = AText.Trim();
@@ -152,18 +152,19 @@ namespace VotoTouch
                 }
 
                 // controllo il codice impianto, uso 00 come codice normale
-                if ((codimp != "00") && (codimp != TotCfg.CodImpianto))
+                if ((codimp != "00") && (codimp != VTConfig.CodImpianto))
                     ErrorFlag = ErrorFlag | 0x10;
 
                 // se non ho trovato errori continuo, testo anche il codice uscita così mi
                 // evito un inutile lettura del db
                 // nota: quando avrò più codici mi bastera fare una funzione
-                if ((ErrorFlag == 0) && (AText != TotCfg.CodiceUscita))
+                if ((ErrorFlag == 0) && (AText != VTConfig.CodiceUscita))
                 {
                     // variabile
                     Badge_Letto = Badge_Lettura;
                     // ok ora iniziano i test
-                    bool Controllato = oDBDati.ControllaBadge(Badge_Lettura, TotCfg, ref ErrorFlag);
+//                    bool Controllato = oDBDati.ControllaBadge(Badge_Lettura, TotCfg, ref ErrorFlag);
+                    bool Controllato = oDBDati.ControllaBadge(Badge_Lettura, ref ErrorFlag);
 
                     // separo così mi evito un controllo in più
                     if (Controllato)
@@ -186,7 +187,7 @@ namespace VotoTouch
                 } // if (ErrorFlag == 0)
 
                 // ok, se ora qualcosa è andato storto ResultFlag è > 0
-                if (ErrorFlag > 0 || AText == TotCfg.CodiceUscita)
+                if (ErrorFlag > 0 || AText == VTConfig.CodiceUscita)
                 {
                     string messaggio = rm.GetString("SAPP_ERR_BDG") + Badge_Lettura.ToString();     //"Errore sul badge : "
                     // compongo il messaggio della finestra di errore
@@ -195,7 +196,7 @@ namespace VotoTouch
                     // 0x40 : Il Badge non esiste
                     if ((ErrorFlag & 0x40) == 0x40) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGEST");   // "\n - Il Badge non esiste";
                     // 0x02 : Badge non presente (controllo disabilitato)
-                    if (TotCfg.ControllaPresenze == VSDecl.PRES_CONTROLLA && (ErrorFlag & 0x01) != 0x01)
+                    if (VTConfig.ControllaPresenze == VSDecl.PRES_CONTROLLA && (ErrorFlag & 0x01) != 0x01)
                     {
                         if ((ErrorFlag & 0x02) == 0x02) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGPRES");   // "\n - Badge non presente.";
                     }
@@ -209,9 +210,9 @@ namespace VotoTouch
                     if ((ErrorFlag & 0x20) == 0x20) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGCONV");   // "\n - Errore nella conversione Badge";
 
                     // se il badge è 999999, metto un codice a parte
-                    if (AText == TotCfg.CodiceUscita)
+                    if (AText == VTConfig.CodiceUscita)
                     {
-                        messaggio = rm.GetString("SAPP_ERR_BDGUSCITA") + TotCfg.CodiceUscita + ")";
+                        messaggio = rm.GetString("SAPP_ERR_BDGUSCITA") + VTConfig.CodiceUscita + ")";
                     }
 
                     // evidenzio
@@ -238,7 +239,7 @@ namespace VotoTouch
             // la conferma di uscita
             if (Stato == TAppStato.ssvVotoFinito)
             {
-                if (AText == TotCfg.CodiceUscita) //"999999")
+                if (AText == VTConfig.CodiceUscita) //"999999")
                 {
                     Logging.WriteToLog("--> Voto " + Badge_Letto.ToString() + " terminato.");
                     TornaInizio();
@@ -248,7 +249,7 @@ namespace VotoTouch
             }
 
             // ora il codice di uscita in "mezzo" al voto
-            if (AText == TotCfg.CodiceUscita &&
+            if (AText == VTConfig.CodiceUscita &&
                 Stato != TAppStato.ssvVotoStart &&
                 Stato != TAppStato.ssvBadge)
             {
