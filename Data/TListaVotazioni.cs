@@ -104,19 +104,13 @@ namespace VotoTouch
 
         private CVotoBaseDati DBDati;
         private bool DemoMode = false;
-        // stringhe sql
-        private string qry_DammiVotazioniTotem = "";
 
 
-        public TListaVotazioni(CVotoBaseDati ADBDati, bool ADemoMode)
+        public TListaVotazioni(CVotoBaseDati ADBDati)
         {
             // costruttore
             DBDati = ADBDati;
             _Votazioni = new List<TNewVotazione>();
-            DemoMode = ADemoMode;
-
-            // load the query
-            qry_DammiVotazioniTotem = DBDati.getModelsQueryProcedure("DammiVotazioniTotem.sql");
 
             idxVotoCorrente = 0;
         }
@@ -164,23 +158,23 @@ namespace VotoTouch
 
             _Votazioni.Clear();
 
-            if (DemoMode)
-            {
-                CaricaDatiDemo(AData_path);
-                result = true;
-            }
-            else
-            {
+            //if (DemoMode)
+            //{
+            //    CaricaDatiDemo(AData_path);
+            //    result = true;
+            //}
+            //else
+            //{
                 // carica le votazioni dal database
-                if (CaricaVotazioniDaDatabase())
+                if (DBDati.CaricaVotazioniDaDatabase(ref _Votazioni))
                 {
                     // carica i dettagli delle votazioni
-                    if (CaricaListeDaDatabase())
+                    if (DBDati.CaricaListeDaDatabase(ref _Votazioni))
                     {
                         result = true;
                     }
                 }
-            }
+            //}
             // Calcolo l'area di voto per Candidati e multicandidati
             CalcolaAreaDiVotoCandidatiMultiCandidato();
             // ok, ora ordino le liste nel caso in cui siano di candidato
@@ -493,255 +487,6 @@ namespace VotoTouch
                 }  //if (FParVoto[i].TipoVoto == VSDecl.VOTO_CANDIDATO
             }  // for (i = 0; i < NVoti; i++)
         }
-
-        // --------------------------------------------------------------------------
-        //  Caricamento dati da database
-        // --------------------------------------------------------------------------
-
-        private bool CaricaVotazioniDaDatabase()
-        {
-            SqlConnection STDBConn = null;
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TNewVotazione v;
-            bool result = false; //, naz;
-
-            // testo la connessione
-            STDBConn = (SqlConnection)DBDati.DBConnect();
-            if (STDBConn == null) return false;
-
-            _Votazioni.Clear();
-
-            qryStd = new SqlCommand {Connection = STDBConn};
-            try
-            {
-                // ok ora carico le votazioni
-                qryStd.Parameters.Clear();
-                qryStd.CommandText = qry_DammiVotazioniTotem;
-                //qryStd.CommandText =   "SELECT * from VS_MatchVot_Totem with (NOLOCK)  where GruppoVotaz < 999 order by NumVotaz";
-                a = qryStd.ExecuteReader();
-                if (a.HasRows)
-                {
-                    while (a.Read())
-                    {
-                        v = new TNewVotazione  {
-                                IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                                IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                                TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                                TipoSubVoto = 0,
-                                Descrizione = a["Argomento"].ToString(),
-                                SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                                SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                                SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                                SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                                SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                                //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
-                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
-                                AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
-                            };
-                        _Votazioni.Add(v);
-                        // nota: esisteva nella vecchia versione voto e subvoto, ora tolti, il codice era
-                        //  // se è maggiore di 9 e minore di 99 contiene voto e subvoto
-                        //  fVoto[nv].TipoVoto = (Int32)Math.Floor((Decimal)TipoVoto / 10);
-                        //  fVoto[nv].TipoSubVoto = TipoVoto % 10;                   
-                    }
-                }
-                a.Close();
-                result = true;
-            }
-            catch (Exception objExc)
-            {
-                Logging.WriteToLog("Errore fn CaricaListeVotazioniDaDatabase: err: " + objExc.Message);
-                MessageBox.Show("Errore nella funzione CaricaListeVotazioniDaDatabase" + "\n\n" +
-                    "Chiamare operatore esterno.\n\n " +
-                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                qryStd.Dispose();
-                DBDati.DBDisconnect();
-            }
-            return result;
-        }
-
-        private bool CaricaListeDaDatabase()
-        {
-            SqlConnection STDBConn = null;
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TNewLista l;
-            bool result = false; //, naz;
-
-            // testo la connessione
-            STDBConn = (SqlConnection)DBDati.DBConnect();
-            if (STDBConn == null) return false;
-
-            qryStd = new SqlCommand {Connection = STDBConn};
-            try
-            {
-                // TODO: CaricaListeDaDatabase da vedere in futuro di fare un solo ciclo di caricamento senza ordine
-                // ciclo sulle votazioni e carico le liste
-                foreach (TNewVotazione votaz in _Votazioni)
-                {
-                    // ok ora carico le votazioni
-                    qryStd.Parameters.Clear();
-                    qryStd.CommandText = "SELECT * from VS_Liste_Totem with (NOLOCK) " +
-                                         "where NumVotaz = @IDVoto and Attivo = 1 ";
-                    // ecco, in funzione del tipo di voto
-                    switch (votaz.TipoVoto)
-                    {
-                        // se è lista ordino per l'id
-                        case VSDecl.VOTO_LISTA:
-                            qryStd.CommandText += " order by idlista";
-                            break;
-                        // se è candidato ordino in modo alfabetico
-                        case VSDecl.VOTO_CANDIDATO:
-                        case VSDecl.VOTO_CANDIDATO_SING:
-                        case VSDecl.VOTO_MULTICANDIDATO:
-                            qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
-                            break;
-                        default:
-                            qryStd.CommandText += " order by idlista";
-                            break;
-                    }
-                    qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votaz.IDVoto;
-                    a = qryStd.ExecuteReader();
-                    if (a.HasRows)
-                    {
-                        while (a.Read())
-                        {
-                            l = new TNewLista
-                                {
-                                    NumVotaz = Convert.ToInt32(a["NumVotaz"]),
-                                    IDLista = Convert.ToInt32(a["idLista"]),
-                                    IDScheda = Convert.ToInt32(a["idScheda"]),
-                                    DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),
-                                    TipoCarica = Convert.ToInt32(a["TipoCarica"]),
-                                    PresentatodaCDA = Convert.ToBoolean(a["PresentatodaCDA"]),
-                                    Presentatore = a.IsDBNull(a.GetOrdinal("Presentatore")) ? "" : a["Presentatore"].ToString(),
-                                    Capolista = a.IsDBNull(a.GetOrdinal("Capolista")) ? "" : a["Capolista"].ToString(),
-                                    ListaElenco = a.IsDBNull(a.GetOrdinal("ListaElenco")) ? "DESCRIZIONE" : a["ListaElenco"].ToString()
-                                };
-                            votaz.Liste.Add(l);
-                        }
-                    }
-                    a.Close();
-                }
-                result = true;
-            }
-            catch (Exception objExc)
-            {
-                Logging.WriteToLog("Errore fn CaricaListeDaDatabase: err: " + objExc.Message);
-                MessageBox.Show("Errore nella funzione CaricaListeDaDatabase" + "\n\n" +
-                    "Chiamare operatore esterno.\n\n " +
-                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                qryStd.Dispose();
-                DBDati.DBDisconnect();
-            }
-            return result;
-        }
-
-        // --------------------------------------------------------------------------
-        //  Area di votazione
-        // --------------------------------------------------------------------------
-
-        private void CaricaDatiDemo(string AData_path)
-        {
-            Demo_CaricaDatiVotazioni(AData_path);
-            Demo_CaricaDatiListe(AData_path);
-        }
-
-        private int Demo_CaricaDatiVotazioni(string AData_path)
-        {
-            int z;
-            DataTable dt = new DataTable();
-            TNewVotazione v;
-
-            dt.ReadXml(AData_path + "VS_MatchVot_Totem.xml");
-
-            foreach (DataRow a in dt.Rows)
-            {
-                v = new TNewVotazione
-                {
-                    IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                    IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                    TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                    TipoSubVoto = 0,
-                    Descrizione = a["Argomento"].ToString(),
-                    SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                    SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                    SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                    SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                    SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                    //PreIntermezzo = false,
-                    MaxScelte = Convert.ToInt32(a["MaxScelte"]),
-                    AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
-                };
-                _Votazioni.Add(v);
-            }
-
-            dt.Dispose();
-
-            return 0;
-        }
-
-        private int Demo_CaricaDatiListe(string AData_path)
-        {
-            DataTable dt = new DataTable();
-            TNewLista Lista;
-            int presCDA;
-            string ASort;
-
-            dt.ReadXml(AData_path + "VS_Liste_Totem.xml");
-            ASort = "idlista desc";
-            // cicla lungo le votazioni e carica le liste
-            foreach (TNewVotazione votaz in _Votazioni)
-            {
-                // faccio un sorting delle liste
-                switch (votaz.TipoVoto)
-                {
-                    // se è lista ordino per l'id
-                    case VSDecl.VOTO_LISTA:
-                        ASort = "idlista asc";
-                        break;
-                    // se è candidato ordino in modo alfabetico
-                    case VSDecl.VOTO_CANDIDATO:
-                    case VSDecl.VOTO_CANDIDATO_SING:
-                    case VSDecl.VOTO_MULTICANDIDATO:
-                        ASort = "PresentatoDaCdA desc, OrdineCarica, DescrLista asc";
-                        break;
-                }
-
-                presCDA = 0;
-                foreach (DataRow riga in dt.Select("NumVotaz = " +
-                    votaz.IDVoto.ToString(), ASort))
-                {
-                    Lista = new TNewLista
-                        {
-                            NumVotaz = Convert.ToInt32(riga["NumVotaz"]),
-                            IDLista = Convert.ToInt32(riga["idLista"]),
-                            IDScheda = Convert.ToInt32(riga["idScheda"]),
-                            DescrLista = riga["DescrLista"].ToString(),
-                            TipoCarica = Convert.ToInt32(riga["TipoCarica"]),
-                            PresentatodaCDA = Convert.ToBoolean(riga["PresentatodaCDA"]),
-                            Presentatore = riga["Presentatore"].ToString(),
-                            Capolista = riga["Capolista"].ToString(),
-                            ListaElenco = riga["ListaElenco"].ToString()
-                        };
-                    // aggiungo
-                    votaz.Liste.Add(Lista);
-                }
-            }
-
-            dt.Dispose();
-
-            return 0;
-        }
-
-
 
     }
 }

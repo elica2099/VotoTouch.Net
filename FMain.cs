@@ -21,6 +21,8 @@ namespace VotoTouch
 {
     // TODO: verificare multicandidato e pagine
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
+    // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
+    // TODO: Vedere in videata conferma i candidati tabellari
 
 	/// <summary>
 	/// Summary description for Form1.\
@@ -60,8 +62,6 @@ namespace VotoTouch
         public  CBaseSemaphore oSemaforo;       // classe del semaforo
         public  CNETActiveReader NewReader;
         public  CVotoImages oVotoImg;
-        // configurazione
-        //static public TTotemConfig VTConfig;             
         // strutture
         public ConfigDbData DBConfig;           // database
         public TAppStato Stato;                 // macchina a stato
@@ -206,16 +206,17 @@ namespace VotoTouch
 
             // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
             // questa versione la configurazione è centralizzata sul db
+            bool dataloc = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
             if (DemoVersion)
-                oDBDati = new CVotoFileDati();
+                oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
             else
-                oDBDati = new CVotoDBDati();
+                oDBDati = new CVotoDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
 
-            oDBDati.FDBConfig = DBConfig;
-            oDBDati.NomeTotem = NomeTotem;
-            // se è standalone prende i dati in locale
-            oDBDati.ADataLocal = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
-            oDBDati.AData_path = Data_Path;
+            //oDBDati.FDBConfig = DBConfig;
+            //oDBDati.NomeTotem = NomeTotem;
+            //// se è standalone prende i dati in locale
+            //oDBDati.ADataLocal = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
+            //oDBDati.AData_path = Data_Path;
             if (!oDBDati.CaricaConfig())
             {
                 Logging.WriteToLog("<dberror> Problemi nel caricamento della configurazione DB, mappatura");
@@ -241,7 +242,7 @@ namespace VotoTouch
                 if (VTConfig.VotoAperto) Logging.WriteToLog("Votazione già aperta");
 
                 // carica le votazioni, le carica comunque all'inizio
-                Votazioni = new TListaVotazioni(oDBDati, DemoVersion);
+                Votazioni = new TListaVotazioni(oDBDati);
                 Votazioni.CaricaListeVotazioni(Data_Path);
 
                 // ok, finisce
@@ -295,7 +296,7 @@ namespace VotoTouch
             // array dei voti temporanei
             FVotiExpr = new ArrayList();
             // azionisti
-            Azionisti = new TListaAzionisti(oDBDati, DemoVersion);
+            Azionisti = new TListaAzionisti(oDBDati);
             // Classe del TouchScreen
 		    oVotoTouch = new CVotoTouchScreen(); //ref TotCfg);
             oVotoTouch.PremutoVotaNormale += new ehPremutoVotaNormale(onPremutoVotaNormale);

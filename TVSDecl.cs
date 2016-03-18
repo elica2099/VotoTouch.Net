@@ -61,6 +61,19 @@ namespace VotoTouch
         // codici impianto
         static public int BadgeLen;
         static public string CodImpianto;
+
+        static VTConfig()
+        {
+            SalvaLinkVoto = true;
+            SalvaVotoNonConfermato = false;
+            IDSchedaUscitaForzata = VSDecl.VOTO_NONVOTO;
+            ModoPosizioneAreeTouch = VSDecl.MODO_POS_TOUCH_NORMALE;
+            ControllaPresenze = VSDecl.PRES_CONTROLLA;
+            AbilitaBottoneUscita = false;
+            AttivaAutoRitornoVoto = false;
+            TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
+            AbilitaDirittiNonVoglioVotare = false;           
+        }
     }
 
     // struttura di configurazione del database

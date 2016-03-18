@@ -24,11 +24,16 @@ namespace VotoTouch
         public string AData_path;
         public Boolean ADataLocal;
 
-        public CVotoBaseDati()		
+        public CVotoBaseDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path)
         {
+            FDBConfig = AFDBConfig;
+            AData_path = AAData_path;
+            NomeTotem = ANomeTotem;
+            ADataLocal = AADataLocal;
+
             // i file devono essere in locale nella cartella Data
-            AData_path = "c:" + VSDecl.DATA_PATH_ABS; // "c:\\data\\";
-            ADataLocal = false;
+            //AData_path = "c:" + VSDecl.DATA_PATH_ABS; // "c:\\data\\";
+            //ADataLocal = false;
         }
 
         // --------------------------------------------------------------------------
@@ -67,17 +72,18 @@ namespace VotoTouch
         // --------------------------------------------------------------------------
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------
-/*
-        virtual public int CaricaDatiVotazioni(ref int NVoti, ref TVotazione[] fVoto)
+
+        virtual public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
-            return 0;
+            return true;
         }
 
-        virtual public int CaricaDatiListe(ref int NVoti, ref TVotazione[] fVoto)
+        virtual public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+
         {
-            return 0;
+            return true;
         }
-*/
+
         // --------------------------------------------------------------------------
         //  METODI SUI BADGE
         // --------------------------------------------------------------------------
@@ -112,14 +118,10 @@ namespace VotoTouch
         //  LETTURA DATI AZIONISTA 
 		// --------------------------------------------------------------------------
 
-        virtual public int DammiDatiAzionistaOneShot(int AIDBadge, ref int ANAzionisti, ref ArrayList FAzionisti)
+        virtual public bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
+                                                          ref TAzionista ATitolare_badge, ref TListaVotazioni AVotazioni)
         {
-            return 0;
-        }
-
-        virtual public string DammiNomeAzionista(int AIDBadge)
-        {
-            return "";
+            return true;
         }
 
         // --------------------------------------------------------------------------

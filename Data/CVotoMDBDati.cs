@@ -5,14 +5,17 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Data;
+using System.Data.OleDb;
+using System.Windows.Forms;
+
 
 namespace VotoTouch
 {
 
-    public class CVotoFileDati : CVotoBaseDati
+    public class CVotoMDBDati : CVotoBaseDati
     {
 
-        public CVotoFileDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path) : 
+        public CVotoMDBDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path) :
             base(AFDBConfig, ANomeTotem, AADataLocal, AAData_path)
         {
             //
@@ -53,13 +56,13 @@ namespace VotoTouch
             FIDSeggio = 99;
             VTConfig.Attivo = true;
             VTConfig.VotoAperto = true;
-            VTConfig.ControllaPresenze = 1;
+            //VTConfig.ControllaPresenze = 1;
             VTConfig.UsaSemaforo = false;
             VTConfig.IP_Com_Semaforo = "127.0.0.1";
             VTConfig.TipoSemaforo = 1;
-            VTConfig.SalvaLinkVoto = true;
-            VTConfig.SalvaVotoNonConfermato = true;
-            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
+            //VTConfig.SalvaLinkVoto = true;
+            //VTConfig.SalvaVotoNonConfermato = true;
+            //VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "10.178.6.16";
             //TotCfg.IP_Com_Semaforo = "192.168.0.32";
@@ -76,12 +79,69 @@ namespace VotoTouch
 
         override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
-            VTConfig.SalvaLinkVoto = true;
-            VTConfig.SalvaVotoNonConfermato = true;
-            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
-            //TotCfg.TastoRicominciaDaCapo = false;
-            //TotCfg.AbilitaLogV = true;
-            return 0;
+            OleDbConnection conn = null;
+            OleDbCommand qryStd = null;
+            OleDbDataReader a = null;
+            int result = 0;
+
+            string source = AData_path + "DemoVotoTouchData.mdb";
+            // create the connection 
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
+
+            // create the command
+            qryStd = new OleDbCommand();
+            qryStd.Connection = conn;
+            qryStd.CommandText = "select * from CONFIG_CfgVotoSegreto where attivo = true";
+            try
+            {
+                // open the connection
+                conn.Open();
+                // open the query
+                a = qryStd.ExecuteReader();
+                if (a != null && a.HasRows)
+                {
+                    while (a.Read())
+                    {
+                        // carico
+                        VTConfig.ModoAssemblea = Convert.ToInt32(a["ModoAssemblea"]);
+                        // il link del voto
+                        VTConfig.SalvaLinkVoto = Convert.ToBoolean(a["SalvaLinkVoto"]);
+                        // il salvataggio del voto anche se non ha confermato
+                        VTConfig.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
+                        // l'id della scheda che deve essere salvata in caso di 999999
+                        VTConfig.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
+                        // ModoPosizioneAreeTouch
+                        VTConfig.ModoPosizioneAreeTouch = Convert.ToInt32(a["ModoPosizioneAreeTouch"]);
+                        // controllo delle presenze
+                        VTConfig.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]);
+                        // AbilitaBottoneUscita
+                        VTConfig.AbilitaBottoneUscita = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                        // AttivaAutoRitornoVoto
+                        VTConfig.AttivaAutoRitornoVoto = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                        // TimeAutoRitornoVoto
+                        VTConfig.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]);
+                        // AbilitaDirittiNonVoglioVotare
+                        VTConfig.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
+                    }
+                    a.Close();
+                }
+                result = 1;
+            }
+            catch (Exception objExc)
+            {
+                result = 1;
+                Logging.WriteToLog("<dberror> Errore nella funzione DammiConfigDatabase: " + objExc.Message);
+#if DEBUG
+                MessageBox.Show("Errore nella funzione DammiConfigDatabase" + "\n" + "Eccezione : \n" + objExc.Message, "Error");
+#endif
+            }
+            finally
+            {
+                if (qryStd != null) qryStd.Dispose();
+                conn.Close();
+            }
+
+            return result;
         }
 
         override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
@@ -99,40 +159,152 @@ namespace VotoTouch
 
         override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
-            int z;
-            DataTable dt = new DataTable();
+            OleDbConnection conn = null;
+            OleDbCommand qryStd = null;
+            OleDbDataReader a = null;
             TNewVotazione v;
+            bool result = false;
 
-            dt.ReadXml(AData_path + "VS_MatchVot_Totem.xml");
+            string source = AData_path + "DemoVotoTouchData.mdb";
+            // create the connection 
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
 
-            foreach (DataRow a in dt.Rows)
+            // create the command
+            qryStd = new OleDbCommand();
+            qryStd.Connection = conn;
+            qryStd.CommandText = "select * from VS_MatchVot_Totem where GruppoVotaz < 999 order by NumVotaz";
+            try
             {
-                v = new TNewVotazione
+                // open the connection
+                conn.Open();
+                // open the query
+                a = qryStd.ExecuteReader();
+                if (a != null && a.HasRows)
                 {
-                    IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                    IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                    TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                    TipoSubVoto = 0,
-                    Descrizione = a["Argomento"].ToString(),
-                    SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                    SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                    SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                    SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                    SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                    //PreIntermezzo = false,
-                    MaxScelte = Convert.ToInt32(a["MaxScelte"]),
-                    AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
-                };
-                AVotazioni.Add(v);
+                    while (a.Read())
+                    {
+                        v = new TNewVotazione
+                        {
+                            IDVoto = Convert.ToInt32(a["NumVotaz"]),
+                            IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
+                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                            TipoSubVoto = 0,
+                            Descrizione = a["Argomento"].ToString(),
+                            SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
+                            SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                            SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                            SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
+                            SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
+                            //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
+                            MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                            AbilitaBottoneUscita = VTConfig.AbilitaBottoneUscita
+                        };
+                        AVotazioni.Add(v);
+                    }
+                    a.Close();
+                }
+                result = true;
+            }
+            catch (Exception objExc)
+            {
+                result = false;
+                Logging.WriteToLog("<dberror> Errore nella funzione DammiConfigDatabaseMDB: " + objExc.Message);
+#if DEBUG
+                MessageBox.Show("Errore nella funzione DammiConfigDatabaseMDB" + "\n" + "Eccezione : \n" + objExc.Message, "Error");
+#endif
+            }
+            finally
+            {
+                if (qryStd != null) qryStd.Dispose();
+                conn.Close();
             }
 
-            dt.Dispose();
-
-            return true;
+            return result;
         }
 
         override public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
+            OleDbConnection conn = null;
+            OleDbCommand qryStd = null;
+            OleDbDataReader a = null;
+            TNewLista l;
+            bool result = false; //, naz;
+
+            string source = AData_path + "DemoVotoTouchData.mdb";
+            // create the connection 
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
+
+            qryStd = new OleDbCommand();
+            qryStd.Connection = conn;
+            try
+            {
+                // ciclo sulle votazioni e carico le liste
+                foreach (TNewVotazione votaz in AVotazioni)
+                {
+                    // ok ora carico le votazioni
+                    qryStd.Parameters.Clear();
+                    qryStd.CommandText = "SELECT * from VS_Liste_Totem  " +
+                                         "where NumVotaz = @IDVoto and Attivo = true ";
+                    // ecco, in funzione del tipo di voto
+                    switch (votaz.TipoVoto)
+                    {
+                        // se è lista ordino per l'id
+                        case VSDecl.VOTO_LISTA:
+                            qryStd.CommandText += " order by idlista";
+                            break;
+                        // se è candidato ordino in modo alfabetico
+                        case VSDecl.VOTO_CANDIDATO:
+                        case VSDecl.VOTO_CANDIDATO_SING:
+                        case VSDecl.VOTO_MULTICANDIDATO:
+                            qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
+                            break;
+                        default:
+                            qryStd.CommandText += " order by idlista";
+                            break;
+                    }
+                    qryStd.Parameters.AddWithValue("@IDVoto", votaz.IDVoto); // System.Data.SqlDbType.Int).Value = votaz.IDVoto;
+                    a = qryStd.ExecuteReader();
+                    if (a.HasRows)
+                    {
+                        while (a.Read())
+                        {
+                            l = new TNewLista
+                            {
+                                NumVotaz = Convert.ToInt32(a["NumVotaz"]),
+                                IDLista = Convert.ToInt32(a["idLista"]),
+                                IDScheda = Convert.ToInt32(a["idScheda"]),
+                                DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),
+                                TipoCarica = Convert.ToInt32(a["TipoCarica"]),
+                                PresentatodaCDA = Convert.ToBoolean(a["PresentatodaCDA"]),
+                                Presentatore = a.IsDBNull(a.GetOrdinal("Presentatore")) ? "" : a["Presentatore"].ToString(),
+                                Capolista = a.IsDBNull(a.GetOrdinal("Capolista")) ? "" : a["Capolista"].ToString(),
+                                ListaElenco = a.IsDBNull(a.GetOrdinal("ListaElenco")) ? "DESCRIZIONE" : a["ListaElenco"].ToString()
+                            };
+                            votaz.Liste.Add(l);
+                        }
+                    }
+                    a.Close();
+                }
+                result = true;
+            }
+            catch (Exception objExc)
+            {
+                Logging.WriteToLog("Errore fn CaricaListeDaDatabaseMDB: err: " + objExc.Message);
+                MessageBox.Show("Errore nella funzione CaricaListeDaDatabaseMDB" + "\n\n" +
+                    "Chiamare operatore esterno.\n\n " +
+                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                qryStd.Dispose();
+                conn.Close();
+            }
+            return result;
+           
+            
+            
+            
+            /*é
             DataTable dt = new DataTable();
             TNewLista Lista;
             int presCDA;
@@ -182,6 +354,7 @@ namespace VotoTouch
             dt.Dispose();
 
             return true;
+             */
         }
 
         #endregion
@@ -197,7 +370,7 @@ namespace VotoTouch
             AReturnFlags = 0;
             return true;
         }
-        
+
         override public bool BadgeAnnullato(int AIDBadge)
         {
             return false;
@@ -221,7 +394,7 @@ namespace VotoTouch
         #endregion
 
         // --------------------------------------------------------------------------
-		//  LETTURA DATI AZIONISTA
+        //  LETTURA DATI AZIONISTA
         // --------------------------------------------------------------------------
 
         #region METODI SUI BADGE
@@ -356,7 +529,7 @@ namespace VotoTouch
         // carica la configurazione 
         override public Boolean CaricaConfig()
         {
-                return true;
+            return true;
         }
 
     }

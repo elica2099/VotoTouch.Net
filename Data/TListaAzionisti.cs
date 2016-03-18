@@ -67,29 +67,19 @@ namespace VotoTouch
         protected List<TAzionista> ListaDiritti_VotoCorrente;
         protected int IDVotazione_VotoCorrente;
         // Oggetto titolare che contene il titolare del badge
-        public TAzionista Titolare_Badge { get; set; }
-
-        // stringhe sql
-        private string qry_DammiDirittiDiVoto_Deleganti = "";
-        private string qry_DammiDirittiDiVoto_Titolare = "";
-        private bool DemoMode = false;
+        public TAzionista Titolare_Badge;
 
         private CVotoBaseDati DBDati;
 
-        public TListaAzionisti(CVotoBaseDati ADBDati, bool ADemoMode)
+        public TListaAzionisti(CVotoBaseDati ADBDati)
         {
             // costruttore
             DBDati = ADBDati;
             _Azionisti = new List<TAzionista>();
             Titolare_Badge = new TAzionista();
-            DemoMode = ADemoMode;
 
             ListaDiritti_VotoCorrente = new List<TAzionista>();
             IDVotazione_VotoCorrente = -1;
-
-            // load the query
-            qry_DammiDirittiDiVoto_Deleganti = DBDati.getModelsQueryProcedure("DammiDirittiDiVoto_Deleganti.sql");
-            qry_DammiDirittiDiVoto_Titolare = DBDati.getModelsQueryProcedure("DammiDirittiDiVoto_Titolare.sql");
         }
 
         ~TListaAzionisti()
@@ -327,194 +317,10 @@ namespace VotoTouch
             // del idbadge, in pratica alla fine avrò una lista di diritti *per ogni votazione*
             // con l'indicazione se sono stati già espressi o no
 
-            // prima testo se sono in demo, carico dati finti
-            if (DemoMode)
-            {
-                CaricaDirittidiVotoDemo(AIDBadge, ref AVotazioni);
-                return true;
-            }
+            return DBDati.CaricaDirittidiVotoDaDatabase(AIDBadge, ref _Azionisti, ref Titolare_Badge, ref AVotazioni);
 
-            // ok, questa procedura mi carica tutti i dati
-		    SqlConnection STDBConn = null;
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TAzionista c;
-            int IDVotazione = -1;
-            bool result = false; //, naz;
-
-            // testo la connessione
-            STDBConn = (SqlConnection)DBDati.DBConnect();
-            if (STDBConn == null) return false;
-
-            _Azionisti.Clear();
-
-            qryStd = new SqlCommand {Connection = STDBConn};
-            try
-            {
-                // ciclo sul voto per crearmi l'array dei diritti di voto per ogni singola votazione
-                //for (int i = 0  ; i < NVoti; i++)
-                foreach (TNewVotazione voto in AVotazioni.Votazioni)
-                {
-                    IDVotazione = voto.IDVoto;
-
-                    // resetto la query
-                    qryStd.Parameters.Clear();
-
-                    // ok ora carico il titolare
-                    qryStd.CommandText = qry_DammiDirittiDiVoto_Titolare;
-                    qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
-                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                    a = qryStd.ExecuteReader();
-                    // in teoria non può non avere righe, testa anche se ha azioni, se no è un rappr
-                    if (a.HasRows && a.Read()) 
-                    {
-                        c = new TAzionista {
-                                CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
-                                IDAzion = Convert.ToInt32(a["IdAzion"]),
-                                IDBadge = AIDBadge,
-                                ProgDeleg = 0,
-                                RaSo = a["Raso1"].ToString(),
-                                NAzioni = Convert.ToDouble(a["AzOrd"]),
-                                Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString(),
-                                HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0 ? VOTATO_DBASE : VOTATO_NO,
-                                IDVotaz = IDVotazione
-                            };
-
-                        // ok, ora se è titolare e ha azioni l'aggiungo alla lista
-                        if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
-                            _Azionisti.Add(c);
-
-                        // poi lo salvo come titolare
-                        Titolare_Badge.CopyFrom(ref c);
-                    }
-                    a.Close();
-
-                    // resetto la query
-                    qryStd.Parameters.Clear();
-
-                    // ora carico i deleganti
-                    qryStd.CommandText = qry_DammiDirittiDiVoto_Deleganti;
-                    qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
-                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                    a = qryStd.ExecuteReader();
-                    if (a.HasRows)  
-                    {
-                        while (a.Read())        // qua posso avere più righe
-                        {
-                            // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
-                            if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
-                            {
-                                c = new TAzionista {
-                                        CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
-                                        IDAzion = Convert.ToInt32(a["IdAzion"]),
-                                        IDBadge = AIDBadge,
-                                        ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
-                                        RaSo = a["Raso1"].ToString(),
-                                        NAzioni = Convert.ToInt32(a["AzOrd"]),
-                                        Sesso = "N",
-                                        HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? VOTATO_DBASE : VOTATO_NO,
-                                        IDVotaz = IDVotazione
-                                    };
-                                _Azionisti.Add(c);
-                            }
-                        }   //while (a.Read()) 
-                    }   //if (a.HasRows)
-                    a.Close();
-
-                }   //for (int i = 0...
-                result = true;
-
-            }
-            catch (Exception objExc)
-            {
-                Logging.WriteToLog("Errore fn DammiDatiAzionistaOneShot: " + AIDBadge.ToString() + " err: " + objExc.Message);
-                MessageBox.Show("Errore nella funzione CaricaDirittidiVotoDaDatabase" + "\n\n" +
-                    "Chiamare operatore esterno.\n\n " +
-                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                qryStd.Dispose();
-                DBDati.DBDisconnect();
-            }
-            return result;
         }
 
-        // --------------------------------------------------------------------------
-        //  DEMO
-        // --------------------------------------------------------------------------
-
-        public bool CaricaDirittidiVotoDemo(int AIDBadge, ref TListaVotazioni AVotazioni)
-        {
-            int IDVotazione = -1;
-            _Azionisti.Clear();
-            TAzionista a;
-
-            foreach (TNewVotazione voto in AVotazioni.Votazioni)
-            {
-                IDVotazione = voto.IDVoto;
-                // un voto
-                if (AIDBadge == 1000)
-                {
-                    a = new TAzionista();
-                    a.CoAz = "10000";
-                    a.IDAzion = 10000;
-                    a.IDBadge = 1000;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = VOTATO_NO;
-                    _Azionisti.Add(a);
-                    // poi lo salvo come titolare
-                    Titolare_Badge.CopyFrom(ref a);
-                }
-                // tre voti
-                if (AIDBadge == 1001)
-                {
-                    a = new TAzionista();
-                    a.CoAz = "10001";
-                    a.IDAzion = 10001;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = VOTATO_NO;
-                    _Azionisti.Add(a);
-                    // poi lo salvo come titolare
-                    Titolare_Badge.CopyFrom(ref a);
-
-                    a = new TAzionista();
-                    a.CoAz = "10002";
-                    a.IDAzion = 10002;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 1;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 1";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = VOTATO_NO;
-                    _Azionisti.Add(a);
-
-                    a = new TAzionista();
-                    a.CoAz = "10003";
-                    a.IDAzion = 10003;
-                    a.IDBadge = 1003;
-                    a.ProgDeleg = 0;
-                    a.NAzioni = 1;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 2";
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = VOTATO_NO;
-                    _Azionisti.Add(a);
-                }
-            }
-
-            return true;
-        }
 
     }
 }
