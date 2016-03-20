@@ -48,7 +48,7 @@ namespace VotoTouch
             edtBadge.Text = "";
             // le labels
             // nome azionista
-            PrefNomeAz = Azionisti.Titolare_Badge.RaSo;
+            PrefNomeAz = Azionisti.Titolare_Badge.RaSo_Sesso;
 
             PrefNomeAz = UppercaseWords(PrefNomeAz.ToLower());
             lbNomeAzStart.Text = PrefNomeAz;
@@ -85,15 +85,26 @@ namespace VotoTouch
             SettaComponenti(false);
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
-            if (IsVotazioneDifferenziata)
-                lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER");      //"1 diritto di voto per";
-            else
-            {
-                if (!Azionisti.HaDirittiDiVotoMultipli())
-                    lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER");      //"1 diritto di voto per";
-                else
-                    lbConfermaNVoti.Text = Azionisti.DammiCountDirittiDiVoto_VotoCorrente() + rm.GetString("SAPP_VOTE_DIRITTIPER"); //" diritti di voto per";
-            }
+            int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
+            lbConfermaNVoti.Text = NDirittiAzioniConferma.ToString(); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
+
+            //if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
+            //{
+            //if (IsVotazioneDifferenziata)
+            //    lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
+            //else
+            //{
+            //    if (!Azionisti.HaDirittiDiVotoMultipli())
+            //        lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
+            //    else
+            //        lbConfermaNVoti.Text = Azionisti.DammiCountDirittiDiVoto_VotoCorrente() +
+            //                               rm.GetString("SAPP_VOTE_DIRITTIPER"); //" diritti di voto per";
+            //}
+            //}
+            //else
+            //{
+                
+            //}
 
             // ok, per ora distinguiamo tra i due metodi di voto, quello normale e quello multicandidato
             // che ha i voti salvati in una collection

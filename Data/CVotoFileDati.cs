@@ -224,7 +224,7 @@ namespace VotoTouch
 		//  LETTURA DATI AZIONISTA
         // --------------------------------------------------------------------------
 
-        #region METODI SUI BADGE
+        #region CaricaDirittidiVotoDaDatabase
 
         override public bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
                                                   ref TAzionista ATitolare_badge, ref TListaVotazioni AVotazioni)
@@ -246,7 +246,7 @@ namespace VotoTouch
                     a.ProgDeleg = 0;
                     a.RaSo = "Mario Rossi";
                     a.Sesso = "M";
-                    a.NAzioni = 1;
+                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 10000;
                     a.IDVotaz = IDVotazione;
                     a.HaVotato = TListaAzionisti.VOTATO_NO;
                     AAzionisti.Add(a);
@@ -263,7 +263,7 @@ namespace VotoTouch
                     a.ProgDeleg = 0;
                     a.RaSo = "Mario Rossi";
                     a.Sesso = "M";
-                    a.NAzioni = 1;
+                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 5000;
                     a.IDVotaz = IDVotazione;
                     a.HaVotato = TListaAzionisti.VOTATO_NO;
                     AAzionisti.Add(a);
@@ -277,7 +277,7 @@ namespace VotoTouch
                     a.ProgDeleg = 1;
                     a.Sesso = "M";
                     a.RaSo = "Mario Rossi - Delega 1";
-                    a.NAzioni = 1;
+                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 300;
                     a.IDVotaz = IDVotazione;
                     a.HaVotato = TListaAzionisti.VOTATO_NO;
                     AAzionisti.Add(a);
@@ -287,7 +287,7 @@ namespace VotoTouch
                     a.IDAzion = 10003;
                     a.IDBadge = 1003;
                     a.ProgDeleg = 0;
-                    a.NAzioni = 1;
+                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 1500;
                     a.Sesso = "M";
                     a.RaSo = "Mario Rossi - Delega 2";
                     a.IDVotaz = IDVotazione;

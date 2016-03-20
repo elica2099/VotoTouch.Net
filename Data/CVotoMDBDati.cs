@@ -532,6 +532,16 @@ namespace VotoTouch
             return true;
         }
 
+        // --------------------------------------------------------------------------
+        //  METODI Di TEST
+        // --------------------------------------------------------------------------
+
+        override public bool DammiTuttiIBadgeValidi(ref ArrayList badgelist)
+        {
+
+            return true;
+        }
+
     }
 
 }

@@ -92,7 +92,7 @@ namespace VotoTouch
             {
                 a = new TTZone();
                 // se c'è anche non voto devo spostarla
-                GetZone(ref a, 35, 75, 64, 92); // non la sposto sta in centro
+                GetZone(ref a, 35, 76, 64, 93); // non la sposto sta in centro
                 //if (!AVotazione.SkNonVoto)
                 //    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
                 //else
@@ -107,16 +107,16 @@ namespace VotoTouch
             {
                 // Contrario A Tutti
                 a = new TTZone();
-                GetZone(ref a, 3, 75, 26, 92); // non la sposto sta in centro
+                GetZone(ref a, 6, 76, 29, 93); // non la sposto sta in centro
                 a.expr = VSDecl.VOTO_CONTRARIO_TUTTI;
                 a.Text = ""; a.ev = TTEvento.steSkContrarioTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
                 // Astenuti A Tutti
                 a = new TTZone();
                 if (AVotazione.SkContrarioTutte)
-                    GetZone(ref a, 31, 75, 54, 92); 
+                    GetZone(ref a, 34, 76, 57, 93); 
                 else
-                    GetZone(ref a, 3, 75, 26, 92); 
+                    GetZone(ref a, 6, 76, 29, 93); 
                 a.expr = VSDecl.VOTO_ASTENUTO_TUTTI;
                 a.Text = ""; a.ev = TTEvento.steSkAstenutoTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);

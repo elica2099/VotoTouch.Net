@@ -124,9 +124,9 @@ namespace VotoTouch
             this.lbConfermaNVoti.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(195)))), ((int)(((byte)(0)))), ((int)(((byte)(3)))));
             this.lbConfermaNVoti.Location = new System.Drawing.Point(390, 502);
             this.lbConfermaNVoti.Name = "lbConfermaNVoti";
-            this.lbConfermaNVoti.Size = new System.Drawing.Size(180, 56);
+            this.lbConfermaNVoti.Size = new System.Drawing.Size(239, 56);
             this.lbConfermaNVoti.TabIndex = 92;
-            this.lbConfermaNVoti.Text = "12 voti";
+            this.lbConfermaNVoti.Text = "9999 voti";
             this.lbConfermaNVoti.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbConfermaNVoti.Visible = false;
             // 

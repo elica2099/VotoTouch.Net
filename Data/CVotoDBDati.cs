@@ -1332,6 +1332,54 @@ namespace VotoTouch
 
         }
 
+        // --------------------------------------------------------------------------
+        //  METODI Di TEST
+        // --------------------------------------------------------------------------
+
+        override public bool DammiTuttiIBadgeValidi(ref ArrayList badgelist)
+        {
+            if (badgelist == null) return false;
+
+            SqlDataReader a;
+            SqlCommand qryStd;
+            string bdg = "0";
+ 
+            badgelist.Clear();
+
+            // testo la connessione
+            if (!OpenConnection("DammiTuttiIBadgeValidi")) return false;
+
+            qryStd = new SqlCommand();
+            try
+            {
+                qryStd.Connection = STDBConn;
+                // Leggo ora da GEAS_Titolari	
+                qryStd.CommandText = "select T.badge, T.idazion from geas_titolari T  where T.Reale=1 and T.Annullato = 0 order by Badge";
+                a = qryStd.ExecuteReader();
+                if (a.HasRows)
+                {
+                    while (a.Read()) // qua posso avere più righe
+                    {
+                        bdg = a.IsDBNull(a.GetOrdinal("Badge")) ? "" : (a["Badge"]).ToString();
+                        badgelist.Add(bdg);
+                    }
+                }
+                a.Close();
+            }
+            catch (Exception objExc)
+            {
+                Logging.WriteToLog("<dberror> Errore nella funzione DammiTuttiIBadgeValidi: " + objExc.Message);
+                MessageBox.Show("Errore nella funzione DammiTuttiIBadgeValidi" + "\n" +
+                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                qryStd.Dispose();
+                CloseConnection("");
+            }
+
+            return true;
+        }
 
 	}
 }

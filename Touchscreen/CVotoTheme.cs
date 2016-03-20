@@ -30,6 +30,7 @@ namespace VotoTouch
         public Color AColor;
         public bool Shadow;
         public Font AFont;
+        public short Align;
     }
 
 
@@ -125,6 +126,8 @@ namespace VotoTouch
                         GetZone(ref a, Convert.ToInt32(r["ULeft"]), Convert.ToInt32(r["UTop"]),
                                        Convert.ToInt32(r["URight"]), Convert.ToInt32(r["UBottom"]));
                         c.ForeColor = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());
+                        //c.Visible = Convert.ToBoolean(r["Visible"]);
+                        c.TextAlign = GetTextAlignment(Convert.ToInt32(r["Align"]));
                         // font
                         FontStyle fs = FontStyle.Regular;
                         if (Convert.ToBoolean(r["Bold"])) fs = FontStyle.Bold;
@@ -181,6 +184,25 @@ namespace VotoTouch
                 th.AColor = Color.Black;
             }
             return ret;
+        }
+
+        private ContentAlignment GetTextAlignment(int AAlign)
+        {
+            switch (AAlign)
+            {
+                case 0:
+                    return ContentAlignment.MiddleCenter;
+                    break;
+                case 1:
+                    return ContentAlignment.MiddleLeft;
+                    break;
+                case 2:
+                    return ContentAlignment.MiddleRight;
+                    break;
+                default:
+                    return ContentAlignment.MiddleCenter;
+                    break;
+            }
         }
 
         //-----------------------------------------------------------------------------
@@ -266,11 +288,14 @@ namespace VotoTouch
                 th.AColor = Color.Firebrick;
             }
             e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            Brush myBrush1 = new System.Drawing.SolidBrush(Color.Gray);  //E3E3E3
             SizeF sf = e.Graphics.MeasureString(Diritti.ToString(), th.AFont);
             float fx = th.a.Left + ((th.a.Width - sf.Width) / 2);
-            float fy = th.a.Top + ((th.a.Height - sf.Height) /2);
-            e.Graphics.DrawString(Diritti.ToString(), th.AFont, myBrush1, fx + 1, fy + 1);//rr, stringFormat);
+            float fy = th.a.Top + ((th.a.Height - sf.Height) / 2);
+            if (th.Shadow)
+            {
+                Brush myBrush1 = new System.Drawing.SolidBrush(Color.Gray); //E3E3E3
+                e.Graphics.DrawString(Diritti.ToString(), th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
+            }
             Brush myBrush = new System.Drawing.SolidBrush(th.AColor);
             e.Graphics.DrawString(Diritti.ToString(), th.AFont, myBrush, fx, fy); //th.a, stringFormat);
             th.AFont.Dispose();

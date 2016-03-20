@@ -29,7 +29,27 @@ namespace VotoTouch
         public List<TVotoEspresso> VotiEspressi;
 
         // test se sk nonvoto
-        public bool HaNonVotato { get { return VotiEspressi.Count(v => v.VotoExp_IDScheda == VSDecl.VOTO_NONVOTO) > 0; } }
+        public bool HaNonVotato { 
+            get
+            {
+                if (VTConfig.AbilitaDirittiNonVoglioVotare)
+                    return VotiEspressi.Count(v => v.VotoExp_IDScheda == VSDecl.VOTO_NONVOTO) > 0;
+                else
+                    return false;
+            } 
+        }
+        // Raso con Sig
+        public string RaSo_Sesso
+        {
+            get
+            {
+                if (Sesso == "M")
+                    return "Sig. " + RaSo;
+                if (Sesso == "F")
+                    return "Sig.ra " + RaSo;
+                return RaSo;
+            }
+        }
 
         public TAzionista()
         {
@@ -112,9 +132,19 @@ namespace VotoTouch
             return _Azionisti.Count(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO);
         }
 
+        public int DammiTotaleAzioniRimanentiPerIDVotazione(int AIDVotazione)
+        {
+            return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+        }
+
         public int DammiTotaleDirittiRimanenti()
         {
             return _Azionisti.Count(a => a.HaVotato == VOTATO_NO);
+        }
+
+        public int DammiTotaleAzioniRimanenti()
+        {
+            return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
         }
 
         public int DammiQuantiDirittiSonoStatiVotati()
@@ -129,7 +159,7 @@ namespace VotoTouch
 
         public bool HaDirittiDiVotoMultipli()
         {
-            return (DammiMaxNumeroDirittiDiVotoTotali() > 0);
+            return (DammiMaxNumeroDirittiDiVotoTotali() > 1);
         }
 
         public int DammiMaxNumeroDirittiDiVotoTotali()
@@ -140,23 +170,35 @@ namespace VotoTouch
             // e prendo il numero maggiore
             if (_Azionisti == null || _Azionisti.Count == 0) return 0;
 
-            var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
-            if (AzionNoVotato.Count() > 0)
+            // qua modifico in funzione del parametro AbilitaDirittiNonVoglioVotare.
+            // se è no, prendo il count bvanale, altrimenti devo fare la media
+
+            if (!VTConfig.AbilitaDirittiNonVoglioVotare)
             {
-                var maxDiritti = AzionNoVotato 
-                   .GroupBy(n => n.IDVotaz)
-                   .Select(group =>
-                           new
-                           {
-                               IDVotaz = group.Key,
-                               //Diritti = group.ToList(),
-                               Count = group.Count()
-                           })
-                   .Max(n => n.Count);
-                return (int)maxDiritti;
+                var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
+                TAzionista v = listatemp.ElementAt(0);
+                return (int) Azionisti.Count(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz);
             }
             else
-                return 0;
+            {
+                var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+                if (AzionNoVotato.Count() > 0)
+                {
+                    var maxDiritti = AzionNoVotato
+                        .GroupBy(n => n.IDVotaz)
+                        .Select(group =>
+                                new
+                                    {
+                                        IDVotaz = group.Key,
+                                        //Diritti = group.ToList(),
+                                        Count = group.Count()
+                                    })
+                        .Max(n => n.Count);
+                    return (int) maxDiritti;
+                }
+                else
+                    return 0;
+            }
         }
 
         #endregion
@@ -228,6 +270,18 @@ namespace VotoTouch
                 return 0;
         }
 
+        public int DammiCountAzioniVoto_VotoCorrente()
+        {
+            // conta i diritti di voto relativi agli azionisti in votazione (lista sopra) 
+            if (ListaDiritti_VotoCorrente != null)
+            {
+                return (int)ListaDiritti_VotoCorrente.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+            }
+            else
+                return 0;
+        }
+
+
         public int DammiTotaleDirittiRimanenti_VotoCorrente()
         {
             if (ListaDiritti_VotoCorrente != null)
@@ -266,6 +320,31 @@ namespace VotoTouch
                 else
                     return "";
             }         
+        }
+
+        public int DammiDirittiAzioniDiVotoConferma(bool AIsVotazioneDifferenziata)
+        {
+            if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
+            {
+                if (AIsVotazioneDifferenziata)
+                    return 1; 
+                else
+                {
+                    if (!HaDirittiDiVotoMultipli())
+                        return 1; 
+                    else
+                        return DammiCountDirittiDiVoto_VotoCorrente(); //" diritti di voto per";
+                }
+                //return AIsVotazioneDifferenziata ? 1 : DammiCountDirittiDiVoto_VotoCorrente();
+            }
+
+            if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_SPA)
+            {
+                // devo ritornare le azioni
+                return DammiCountAzioniVoto_VotoCorrente();
+                //return AIsVotazioneDifferenziata ? 1 : DammiCountDirittiDiVoto_VotoCorrente();
+            }
+            return 0;
         }
 
         #endregion
@@ -316,6 +395,7 @@ namespace VotoTouch
             // ok, questa funziomne carica i diritti di voto in funzione
             // del idbadge, in pratica alla fine avrò una lista di diritti *per ogni votazione*
             // con l'indicazione se sono stati già espressi o no
+            _Azionisti.Clear();
 
             return DBDati.CaricaDirittidiVotoDaDatabase(AIDBadge, ref _Azionisti, ref Titolare_Badge, ref AVotazioni);
 

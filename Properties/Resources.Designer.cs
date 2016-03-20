@@ -417,7 +417,7 @@ namespace VotoTouch.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Si sta votando per:.
+        ///   Looks up a localized string similar to In voto:.
         /// </summary>
         internal static string SAPP_VOTE_D_RASO {
             get {

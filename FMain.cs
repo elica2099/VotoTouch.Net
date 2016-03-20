@@ -23,11 +23,12 @@ namespace VotoTouch
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
     // TODO: Vedere in videata conferma i candidati tabellari
+    // TODO: Mettere finestra riepilogo azionista
 
 	/// <summary>
 	/// Summary description for Form1.\
 	/// </summary>
-    public partial class frmMain : Form
+    public partial class frmMain : Form, IVotoTouchTestInterface
 	{
         public delegate void EventDataReceived(object source, string messaggio);
         public event EventDataReceived evtDataReceived;
@@ -208,7 +209,8 @@ namespace VotoTouch
             // questa versione la configurazione è centralizzata sul db
             bool dataloc = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
             if (DemoVersion)
-                oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
+                oDBDati = new CVotoMDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
+                //oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
             else
                 oDBDati = new CVotoDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
 
@@ -787,7 +789,7 @@ namespace VotoTouch
             }
 
             // Unità di test programma
-            if (e.Alt && e.KeyCode == Keys.U)
+            if (e.Alt && e.KeyCode == Keys.T)
             {
                 FTest formTest = new FTest(oDBDati);
                 formTest.ShowDialog();
@@ -1097,6 +1099,7 @@ namespace VotoTouch
 
         private void button2_Click(object sender, EventArgs e)
         {
+            StartTest();
             ////TListaAzionisti azio = new TListaAzionisti(oDBDati);
             ////azio.CaricaDirittidiVotoDaDatabase(10005, ref fVoto, NVoti);
 

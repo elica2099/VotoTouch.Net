@@ -12,11 +12,14 @@ namespace VotoTouch
     public partial class FTest : Form
     {
         private CVotoBaseDati DBDati;
-        
-        public FTest(CVotoBaseDati ADBDati)
+        private frmMain Mainform;
+        private bool TestRunning = false;
+
+        public FTest(CVotoBaseDati ADBDati, frmMain AMainform)
         {
             InitializeComponent();
             DBDati = ADBDati;
+            Mainform = AMainform;
 
             btnTestAssemblea.Visible = false;
 
@@ -29,6 +32,21 @@ namespace VotoTouch
         private void btnTestVideate_Click(object sender, EventArgs e)
         {
             // testa le videate ciclando su di esse
+
+        }
+
+        private void btnTestAssemblea_Click(object sender, EventArgs e)
+        {
+            if (!TestRunning)
+            {
+                TestRunning = true;
+                Mainform.StartTest();
+            }
+            else
+            {
+                TestRunning = false;
+                Mainform.StopTest();
+            }
 
         }
     }

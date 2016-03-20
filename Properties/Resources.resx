@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SAPP_VOTE_D_RASO" xml:space="preserve">
-    <value>Si sta votando per:</value>
+    <value>In voto:</value>
   </data>
   <data name="SAPP_START_ERRCOM2" xml:space="preserve">
     <value> non esiste o presenta problemi.\n Il lettore barcode è stato disabilitato, premere Ctrl+S per configurarlo nuovamente</value>

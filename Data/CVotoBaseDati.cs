@@ -232,5 +232,15 @@ namespace VotoTouch
             return ret;
         }
 
+        // --------------------------------------------------------------------------
+        //  METODI Di TEST
+        // --------------------------------------------------------------------------
+
+        virtual public bool DammiTuttiIBadgeValidi(ref ArrayList badgelist)
+        {
+
+            return true;
+        }
+
      }
 }

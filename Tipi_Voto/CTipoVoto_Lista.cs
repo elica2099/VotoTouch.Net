@@ -30,7 +30,7 @@ namespace VotoTouch
             if (AVotazione.NListe == 1)
             {
                 a = new TTZone();
-                GetZone(ref a, 16, 24, 85, 66); a.expr = 0; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 16, 24, 85, 68); a.expr = 0; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
             }
@@ -72,22 +72,22 @@ namespace VotoTouch
             {
                 // 1° Lista
                 a = new TTZone();
-                GetZone(ref a, 5, 23, 45, 43); a.expr = 0; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 5, 22, 45, 44); a.expr = 0; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
                 // 2° Lista
                 a = new TTZone();
-                GetZone(ref a, 54, 23, 94, 43); a.expr = 1; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 54, 22, 94, 44); a.expr = 1; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
                 // 3° Lista
                 a = new TTZone();
-                GetZone(ref a, 5, 48, 45, 68); a.expr = 2; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 5, 49, 45, 71); a.expr = 2; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
                 // 4° Lista
                 a = new TTZone();
-                GetZone(ref a, 54, 48, 94, 68); a.expr = 3; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 54, 49, 94, 71); a.expr = 3; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
             }

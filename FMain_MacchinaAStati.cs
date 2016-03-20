@@ -114,19 +114,21 @@ namespace VotoTouch
                     Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente());
                     // calibro il touch sul voto
                     oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
-                    // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare
-                    // da un'annulla
+                    // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare da un'annulla
                     SettaComponenti(false);
                     // cancello i voti temporanei correnti 
                     CancellaTempVotiCorrenti();
                     // ora metto in quadro l'immagine, che deve essere presa da un file composto da
                     oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
                     // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
-                    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
-                    lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
+                    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);                    
+                    lbNomeDisgiunto.Visible = true;
+                    //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
                     int dir_riman = IsVotazioneDifferenziata
                                         ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
                                         : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
+                    if (!IsVotazioneDifferenziata && dir_riman > 1)
+                        lbNomeDisgiunto.Text += " e altre " + (dir_riman -1).ToString() + " deleghe";
                     lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
                     lbDirittiDiVoto.Visible = true;
                     break;

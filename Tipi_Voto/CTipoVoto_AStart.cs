@@ -27,16 +27,28 @@ namespace VotoTouch
 
             if (ADiffer)
 			{
-				// differenziato tasto grande
-				a = new TTZone();
-				GetZone(ref a, 9, 45, 57, 90); a.expr = 0; a.pag = 0; a.Multi = 0;
-				a.Text = ""; a.ev = TTEvento.steVotaNormale;
-				Tz.Add(a);
-				// differenziato tasto piccolo
-				a = new TTZone();
-				GetZone(ref a, 62, 52, 93, 90); a.expr = 1; a.pag = 0; a.Multi = 0;
-				a.Text = ""; a.ev = TTEvento.steVotaDiffer;
-				Tz.Add(a);
+			        // differenziato tasto grande
+			        a = new TTZone();
+                    if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
+			            GetZone(ref a, 9, 45, 57, 90); 
+                    else
+                        GetZone(ref a, 12, 45, 64, 90);      // VSDecl.MODO_POS_TOUCH_MODERN
+                    a.expr = 0; a.pag = 0; a.Multi = 0;			        
+                    a.Text = "";
+			        a.ev = TTEvento.steVotaNormale;
+			        Tz.Add(a);
+			        // differenziato tasto piccolo
+			        a = new TTZone();
+                    if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE    )
+                        GetZone(ref a, 62, 52, 93, 90);
+                    else
+                        GetZone(ref a, 69, 52, 96, 90); // VSDecl.MODO_POS_TOUCH_MODERN
+                    a.expr = 1;
+			        a.pag = 0;
+			        a.Multi = 0;
+			        a.Text = "";
+			        a.ev = TTEvento.steVotaDiffer;
+			        Tz.Add(a);
 			}
 			else
 			{

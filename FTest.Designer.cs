@@ -53,6 +53,7 @@
             this.btnTestAssemblea.TabIndex = 1;
             this.btnTestAssemblea.Text = "Test Assemblea";
             this.btnTestAssemblea.UseVisualStyleBackColor = true;
+            this.btnTestAssemblea.Click += new System.EventHandler(this.btnTestAssemblea_Click);
             // 
             // button2
             // 

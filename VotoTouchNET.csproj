@@ -146,6 +146,9 @@
     <Compile Include="FMain_MacchinaAStati.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FMain_Test.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FTest.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -181,6 +184,7 @@
     <Compile Include="Data\CVotoDBDati.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Test\TestVotoTouch.cs" />
     <Compile Include="Tipi_Voto\CBaseTipoVoto.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_AConferma.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_AStart.cs" />
