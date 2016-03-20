@@ -50,11 +50,12 @@ namespace VotoTouch
 
         private static Mutex appMutex;
 
-        // finestre
+        // finestre e usercontrol
         public FVSMessage frmVSMessage;
         public frmConfig fConfig;
         public SplashScreen splash;
         public FVSStart frmStart;
+	    public LabelCandidati lbConferma;
 
 		// oggetti globali
 		public  CVotoTouchScreen oVotoTouch;    // classe del touch
@@ -204,6 +205,11 @@ namespace VotoTouch
             // identificazione DebugMode
             DebugMode = System.IO.File.Exists(Data_Path + "VTS_DEBUG.txt");
             PaintTouch = System.IO.File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
+
+            // classe lbConferma
+		    lbConferma = new LabelCandidati();
+		    lbConferma.Visible = false;
+		    lbConferma.Parent = this;
 
             // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
             // questa versione la configurazione è centralizzata sul db
@@ -791,7 +797,7 @@ namespace VotoTouch
             // Unità di test programma
             if (e.Alt && e.KeyCode == Keys.T)
             {
-                FTest formTest = new FTest(oDBDati);
+                FTest formTest = new FTest(oDBDati, this);
                 formTest.ShowDialog();
                 formTest = null;
             }

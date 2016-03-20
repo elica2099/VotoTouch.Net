@@ -145,6 +145,39 @@ namespace VotoTouch
             return ret;
         }
 
+        public bool ThemeToLabelCandidati(string ObjName, ref LabelCandidati c, ref Rectangle a)
+        {
+            bool ret = false;
+
+            try
+            {
+                if (IsThemed && dtTema.Rows.Count > 0)  // se ha il tema la cerco nella datatable
+                {
+                    foreach (DataRow r in dtTema.Select("Oggetto = '" + ObjName + "'"))
+                    {
+                        GetZone(ref a, Convert.ToInt32(r["ULeft"]), Convert.ToInt32(r["UTop"]),
+                                       Convert.ToInt32(r["URight"]), Convert.ToInt32(r["UBottom"]));
+                        c.ForeColor = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());
+                        //c.Visible = Convert.ToBoolean(r["Visible"]);
+                        //c.TextAlign = GetTextAlignment(Convert.ToInt32(r["Align"]));
+                        // font
+                        FontStyle fs = FontStyle.Regular;
+                        if (Convert.ToBoolean(r["Bold"])) fs = FontStyle.Bold;
+                        c.Font = new Font(r["Font"].ToString(), Convert.ToSingle(r["Point"]), fs);
+
+                        ret = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // non fare nulla, rimane come prima
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            return ret;
+        }
+
+
         public bool ThemeToPaint(string ObjName, ref TTheme th)
         {
             bool ret = false;
@@ -390,12 +423,12 @@ namespace VotoTouch
         }
 
 
-        public void SetTheme_lbConferma(ref Label c)
+        public void SetTheme_lbConferma(ref LabelCandidati c)
         {
             // questa è la label di conferma dove sono scritte chi ha votato (es. Pippo Franco, Gianni Rossi)
             Rectangle a = new Rectangle();
             GetZone(ref a, 15, 41, 85, 56);
-            if (IsThemed) { if (!ThemeToLabel("lbConferma", ref c, ref a)) GetZone(ref a, 15, 41, 85, 56); }
+            if (IsThemed) { if (!ThemeToLabelCandidati("lbConferma", ref c, ref a)) GetZone(ref a, 15, 41, 85, 56); }
             c.SetBounds(a.Left, a.Top, a.Width, a.Height);
         }
 

@@ -212,7 +212,7 @@ namespace VotoTouch
             // label del differenziato
             lbDirittiStart.Visible = AVisibile;
 
-            lbNome.Visible = AVisibile;
+            //lbNome.Visible = AVisibile;
             lbNomeDisgiunto.Visible = AVisibile;
             lbDisgiuntoRimangono.Visible = AVisibile;
             lbNomeAzStart.Visible = AVisibile;

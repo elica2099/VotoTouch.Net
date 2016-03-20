@@ -50,9 +50,8 @@ namespace VotoTouch
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
             this.lbDirittiDiVoto = new System.Windows.Forms.Label();
             this.lbDirittiStart = new System.Windows.Forms.Label();
-            this.lbConferma = new System.Windows.Forms.Label();
+            this.lbConferma_old2 = new System.Windows.Forms.Label();
             this.lbConfermaNVoti = new System.Windows.Forms.Label();
-            this.lbNome = new System.Windows.Forms.Label();
             this.lbNomeDisgiunto = new System.Windows.Forms.Label();
             this.lbDisgiuntoRimangono = new System.Windows.Forms.Label();
             this.Panel4 = new System.Windows.Forms.Panel();
@@ -104,18 +103,18 @@ namespace VotoTouch
             this.lbDirittiStart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbDirittiStart.Visible = false;
             // 
-            // lbConferma
+            // lbConferma_old2
             // 
-            this.lbConferma.BackColor = System.Drawing.Color.Transparent;
-            this.lbConferma.Font = new System.Drawing.Font("Arial", 21.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbConferma.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lbConferma.Location = new System.Drawing.Point(578, 455);
-            this.lbConferma.Name = "lbConferma";
-            this.lbConferma.Size = new System.Drawing.Size(308, 136);
-            this.lbConferma.TabIndex = 91;
-            this.lbConferma.Text = "dsfsd";
-            this.lbConferma.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lbConferma.Visible = false;
+            this.lbConferma_old2.BackColor = System.Drawing.Color.Transparent;
+            this.lbConferma_old2.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbConferma_old2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lbConferma_old2.Location = new System.Drawing.Point(285, 269);
+            this.lbConferma_old2.Name = "lbConferma_old2";
+            this.lbConferma_old2.Size = new System.Drawing.Size(197, 46);
+            this.lbConferma_old2.TabIndex = 91;
+            this.lbConferma_old2.Text = "lbConferma_old";
+            this.lbConferma_old2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbConferma_old2.Visible = false;
             // 
             // lbConfermaNVoti
             // 
@@ -130,29 +129,16 @@ namespace VotoTouch
             this.lbConfermaNVoti.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbConfermaNVoti.Visible = false;
             // 
-            // lbNome
-            // 
-            this.lbNome.BackColor = System.Drawing.Color.Transparent;
-            this.lbNome.Font = new System.Drawing.Font("Century Gothic", 35.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbNome.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(195)))), ((int)(((byte)(0)))), ((int)(((byte)(3)))));
-            this.lbNome.Location = new System.Drawing.Point(13, 429);
-            this.lbNome.Name = "lbNome";
-            this.lbNome.Size = new System.Drawing.Size(144, 56);
-            this.lbNome.TabIndex = 106;
-            this.lbNome.Text = "12 voti";
-            this.lbNome.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lbNome.Visible = false;
-            // 
             // lbNomeDisgiunto
             // 
             this.lbNomeDisgiunto.BackColor = System.Drawing.Color.Transparent;
-            this.lbNomeDisgiunto.Font = new System.Drawing.Font("Arial", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbNomeDisgiunto.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbNomeDisgiunto.ForeColor = System.Drawing.Color.Black;
-            this.lbNomeDisgiunto.Location = new System.Drawing.Point(206, 498);
+            this.lbNomeDisgiunto.Location = new System.Drawing.Point(286, 315);
             this.lbNomeDisgiunto.Name = "lbNomeDisgiunto";
             this.lbNomeDisgiunto.Size = new System.Drawing.Size(200, 51);
             this.lbNomeDisgiunto.TabIndex = 107;
-            this.lbNomeDisgiunto.Text = "label3";
+            this.lbNomeDisgiunto.Text = "lbNomeDisgiunto";
             this.lbNomeDisgiunto.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbNomeDisgiunto.Visible = false;
             // 
@@ -331,13 +317,13 @@ namespace VotoTouch
             // lbConfermaUp
             // 
             this.lbConfermaUp.BackColor = System.Drawing.Color.Transparent;
-            this.lbConfermaUp.Font = new System.Drawing.Font("Arial", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbConfermaUp.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbConfermaUp.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.lbConfermaUp.Location = new System.Drawing.Point(241, 288);
+            this.lbConfermaUp.Location = new System.Drawing.Point(258, 228);
             this.lbConfermaUp.Name = "lbConfermaUp";
             this.lbConfermaUp.Size = new System.Drawing.Size(255, 45);
             this.lbConfermaUp.TabIndex = 126;
-            this.lbConfermaUp.Text = "up";
+            this.lbConfermaUp.Text = "lbConfermaUp";
             this.lbConfermaUp.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbConfermaUp.Visible = false;
             // 
@@ -367,7 +353,7 @@ namespace VotoTouch
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(844, 566);
             this.Controls.Add(this.lbConfermaUp);
-            this.Controls.Add(this.lbConferma);
+            this.Controls.Add(this.lbConferma_old2);
             this.Controls.Add(this.pnSemaf);
             this.Controls.Add(this.Panel4);
             this.Controls.Add(this.pnBadge);
@@ -375,7 +361,6 @@ namespace VotoTouch
             this.Controls.Add(this.pbSalvaDati);
             this.Controls.Add(this.lbDisgiuntoRimangono);
             this.Controls.Add(this.lbNomeDisgiunto);
-            this.Controls.Add(this.lbNome);
             this.Controls.Add(this.lbConfermaNVoti);
             this.Controls.Add(this.lbDirittiStart);
             this.Controls.Add(this.lbDirittiDiVoto);
@@ -410,9 +395,8 @@ namespace VotoTouch
         private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Label lbDirittiDiVoto;
         private System.Windows.Forms.Label lbDirittiStart;
-		private System.Windows.Forms.Label lbConferma;
+		private System.Windows.Forms.Label lbConferma_old2;
         private System.Windows.Forms.Label lbConfermaNVoti;
-		private System.Windows.Forms.Label lbNome;
 		private System.Windows.Forms.Label lbNomeDisgiunto;
         private System.Windows.Forms.Label lbDisgiuntoRimangono;
         private System.Windows.Forms.Panel Panel4;

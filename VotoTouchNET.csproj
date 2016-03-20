@@ -146,7 +146,7 @@
     <Compile Include="FMain_MacchinaAStati.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FMain_Test.cs">
+    <Compile Include="Test\FMain_Test.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FTest.cs">
@@ -234,6 +234,12 @@
     <Compile Include="SplashScreen.Designer.cs">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
+    <Compile Include="Touchscreen\LabelCandidati.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Touchscreen\LabelCandidati.Designer.cs">
+      <DependentUpon>LabelCandidati.cs</DependentUpon>
+    </Compile>
     <Compile Include="TVSDecl.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -253,6 +259,9 @@
     <EmbeddedResource Include="Resources\bottone_selezCDA.png" />
     <EmbeddedResource Include="Data\Query\DammiDatiAzionista_Titolare.sql" />
     <EmbeddedResource Include="Data\Query\DammiDatiAzionista_Deleganti.sql" />
+    <EmbeddedResource Include="Touchscreen\LabelCandidati.resx">
+      <DependentUpon>LabelCandidati.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Resources\RGB_White Logo_Trans Bk200.jpg" />
     <None Include="Resources\RGB_Purple Logo_Trans Bk_small.png" />
     <EmbeddedResource Include="Resources\btn_alternativo_cda.png" />
