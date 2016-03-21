@@ -139,6 +139,15 @@ namespace VotoTouch
             return _Votazioni.Count != 0;
         }
 
+        // --------------------------------------------------------------------------
+        //  Ritorno dati / Settaggio voto corrente
+        // --------------------------------------------------------------------------
+
+        //public string DammiListaElencoPerIDVotazione(int AIDVoto, int AIDLista)
+        //{
+        //    var rit = _Votazioni.FirstOrDefault((a => a.IDVoto == AIDVoto);
+        //    return rit != null ? rit.
+        //}
 
         // --------------------------------------------------------------------------
         //  Caricamento dati

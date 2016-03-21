@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Drawing;
@@ -155,6 +156,10 @@ namespace VotoTouch
                 {
                     foreach (DataRow r in dtTema.Select("Oggetto = '" + ObjName + "'"))
                     {
+                        Debug.WriteLine(r["Oggetto"].ToString());
+                        Debug.WriteLine(r["Bold"].ToString());
+                        Debug.WriteLine(r["Point"].ToString());
+
                         GetZone(ref a, Convert.ToInt32(r["ULeft"]), Convert.ToInt32(r["UTop"]),
                                        Convert.ToInt32(r["URight"]), Convert.ToInt32(r["UBottom"]));
                         c.ForeColor = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());

@@ -111,6 +111,7 @@ namespace VotoTouch
             // in un secondo tempo dovrà essere unificato
             if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
             {
+                /*
                 // ciclo e metto i candidati
                 TVotoEspresso vt;
                 bool acapo = false;
@@ -135,7 +136,10 @@ namespace VotoTouch
                     }
                     acapo = !acapo;
                 }
-                oVotoTheme.SetTheme_lbConfermaUp_Cand(ref lbConfermaUp);
+                 * */
+                lbConferma.Text = VotoEspressoStrUp;
+                lbConferma.Visible = true;
+                //oVotoTheme.SetTheme_lbConfermaUp_Cand(ref lbConfermaUp);
             }
             else
             {

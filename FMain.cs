@@ -22,7 +22,6 @@ namespace VotoTouch
     // TODO: verificare multicandidato e pagine
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
-    // TODO: Vedere in videata conferma i candidati tabellari
     // TODO: Mettere finestra riepilogo azionista
 
 	/// <summary>
@@ -78,7 +77,6 @@ namespace VotoTouch
         public TListaAzionisti Azionisti;
 
         public bool IsVotazioneDifferenziata = false;
-
          // cpontrollo degli eventi di voto
 	    private bool AperturaVotoEsterno;
         // flag uscita in votazione
@@ -603,8 +601,8 @@ namespace VotoTouch
                         NumVotaz = Votazioni.VotoCorrente.IDVoto,
                         VotoExp_IDScheda = VTConfig.IDSchedaUscitaForzata,
                         TipoCarica = 0,
-                        Str_ListaElenco = "",
-                        StrUp_DescrLista = ""
+                        //Str_ListaElenco = "",
+                        //StrUp_DescrLista = ""
                     };
 
                 Azionisti.ConfermaVotiDaInterruzione(vz);

@@ -158,8 +158,8 @@ namespace VotoTouch
 
         private void SpostaLabel()
         {
-            Debug.WriteLine(this.Size.Width);
-            Debug.WriteLine(this.Size.Height);
+            //Debug.WriteLine(this.Size.Width);
+            //Debug.WriteLine(this.Size.Height);
             int ww = this.Width;
             int hh = this.Height;
             // evento resize 1 sola label
@@ -176,23 +176,25 @@ namespace VotoTouch
             // evento resize 3  label
             if (label1_Visible && label2_Visible && label3_Visible)
             {
-                label1.Left = 0;
-                label1.Top = 0;
-                label1.Width = this.Size.Width / 3;
-                label1.Height = this.Height;
-                label2.Left = this.Size.Width / 3; ;
-                label2.Top = 0;
-                label2.Width = this.Size.Width / 3;
-                label2.Height = this.Size.Height;
-                label3.Left = (this.Size.Width / 3) * 2; ;
-                label3.Top = 0;
-                label3.Width = this.Size.Width / 3;
-                label3.Height = this.Size.Height;
+                label1.SetBounds(0, 0, (ww / 3), hh);
+                label2.SetBounds((ww / 3), 0, (ww / 3), hh);
+                label3.SetBounds((ww / 3)*2, 0, (ww / 3), hh);                
+                //label1.Left = 0;
+                //label1.Top = 0;
+                //label1.Width = this.Size.Width / 3;
+                //label1.Height = this.Height;
+                //label2.Left = this.Size.Width / 3; ;
+                //label2.Top = 0;
+                //label2.Width = this.Size.Width / 3;
+                //label2.Height = this.Size.Height;
+                //label3.Left = (this.Size.Width / 3) * 2; ;
+                //label3.Top = 0;
+                //label3.Width = this.Size.Width / 3;
+                //label3.Height = this.Size.Height;
             }
             label1.Visible = label1_Visible;
             label2.Visible = label2_Visible;
             label3.Visible = label3_Visible;
-
         }
 
         //[Description("Test text displayed in the textbox"), Category("Data")]

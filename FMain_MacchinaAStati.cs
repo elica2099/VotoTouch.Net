@@ -139,7 +139,7 @@ namespace VotoTouch
                     MettiComponentiConferma();
                     // ora metto in quadro l'immagine, che deve essere presa da un file composto da
                     oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + VSDecl.IMG_voto_c);
-                    lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() == 1);
+                    lbNomeDisgiunto.Visible = true; // (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() == 1);
                     break;
 
                 case TAppStato.ssvVotoContinua:

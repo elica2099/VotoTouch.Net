@@ -66,7 +66,6 @@ namespace VotoTouch
         public void onPremutoVotoValido(object source, int VParam, bool ZParam)
         {
             // TODO: Usare IdScheda invece di indice in VParam
-            // TODO: Serve che TVotoEspresso abbia Str_ListaElenco o StrUp_DescrLista ? solo per i multi, risparmiamo spazio
 
             // ok, questo evento arriva quando, nella selezione del voto, è stata
             // premuta una zona valida devo veder in funzione della lista selezionata
@@ -88,8 +87,8 @@ namespace VotoTouch
                         NumVotaz = a.NumVotaz,
                         VotoExp_IDScheda = a.IDScheda,
                         TipoCarica = a.TipoCarica,
-                        Str_ListaElenco = a.ListaElenco,
-                        StrUp_DescrLista = a.DescrLista
+                        //Str_ListaElenco = a.ListaElenco,
+                        //StrUp_DescrLista = a.DescrLista
                     };
                 FVotiExpr.Add(VExp);
             }
@@ -106,8 +105,8 @@ namespace VotoTouch
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
-                    Str_ListaElenco = "",
-                    StrUp_DescrLista = "" //rm.GetString("SAPP_SKBIANCA")
+                    //Str_ListaElenco = "",
+                    //StrUp_DescrLista = "" //rm.GetString("SAPP_SKBIANCA")
                 };
                 FVotiExpr.Add(VExp);
             }
@@ -124,6 +123,8 @@ namespace VotoTouch
             TNewLista a;
             TVotoEspresso vt;
             int ct = Votazioni.VotoCorrente.Liste.Count;
+            VotoEspressoStr = "";
+            VotoEspressoStrUp = "";      // "Scheda Bianca";
             // ok, ora riempio la collection di voti
             for (int i = 0; i < voti.Count; i++)
             {
@@ -135,10 +136,13 @@ namespace VotoTouch
                             NumVotaz = a.NumVotaz,
                             TipoCarica = a.TipoCarica,
                             VotoExp_IDScheda = a.IDScheda,
-                            Str_ListaElenco = a.ListaElenco,
-                            StrUp_DescrLista = a.DescrLista
+                            //Str_ListaElenco = a.ListaElenco,
+                            //StrUp_DescrLista = a.DescrLista
                         };
                     FVotiExpr.Add(vt);
+                    // ora aggiungo il candidato
+                    VotoEspressoStr += a.ListaElenco + ";";
+                    VotoEspressoStrUp += a.DescrLista + ";";
                 }
             }
             // a questo punto vado in conferma con la stessa CurrVote
@@ -164,8 +168,8 @@ namespace VotoTouch
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
-                    Str_ListaElenco = "",
-                    StrUp_DescrLista = rm.GetString("SAPP_SKBIANCA")
+                    //Str_ListaElenco = "",
+                    //StrUp_DescrLista = rm.GetString("SAPP_SKBIANCA")
                 };
             FVotiExpr.Add(VExp);
             // a questo punto vado in conferma con la stessa CurrVote
@@ -185,8 +189,8 @@ namespace VotoTouch
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
                 VotoExp_IDScheda = VSDecl.VOTO_CONTRARIO_TUTTI,
                 TipoCarica = 0,
-                Str_ListaElenco = "",
-                StrUp_DescrLista = rm.GetString("SAPP_SKCONTRARIOTUTTI")
+                //Str_ListaElenco = "",
+                //StrUp_DescrLista = rm.GetString("SAPP_SKCONTRARIOTUTTI")
             };
             FVotiExpr.Add(VExp);
             // a questo punto vado in conferma con la stessa CurrVote
@@ -206,8 +210,8 @@ namespace VotoTouch
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
                 VotoExp_IDScheda = VSDecl.VOTO_ASTENUTO_TUTTI,
                 TipoCarica = 0,
-                Str_ListaElenco = "",
-                StrUp_DescrLista = rm.GetString("SAPP_SKASTENUTOTUTTI")
+                //Str_ListaElenco = "",
+                //StrUp_DescrLista = rm.GetString("SAPP_SKASTENUTOTUTTI")
             };
             FVotiExpr.Add(VExp);
             // a questo punto vado in conferma con la stessa CurrVote
@@ -228,8 +232,8 @@ namespace VotoTouch
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
                     VotoExp_IDScheda = VSDecl.VOTO_NONVOTO,
                     TipoCarica = 0,
-                    Str_ListaElenco = "",
-                    StrUp_DescrLista = rm.GetString("SAPP_NOVOTO")
+                    //Str_ListaElenco = "",
+                    //StrUp_DescrLista = rm.GetString("SAPP_NOVOTO")
                 };
             FVotiExpr.Add(VExp);
             // a questo punto vado in conferma con la stessa CurrVote

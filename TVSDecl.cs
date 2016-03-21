@@ -136,8 +136,8 @@ namespace VotoTouch
         public int NumVotaz;
         public int TipoCarica;
         public int VotoExp_IDScheda;
-        public string Str_ListaElenco;
-        public string StrUp_DescrLista;
+        //public string Str_ListaElenco;
+        //public string StrUp_DescrLista;
     }
 
     public class VSDecl
