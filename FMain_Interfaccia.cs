@@ -144,7 +144,9 @@ namespace VotoTouch
             else
             {
                 // se è sk bianca o non voto non metto i diritti
-                NODirittiLabel = (VotoEspresso == VSDecl.VOTO_SCHEDABIANCA || VotoEspresso == VSDecl.VOTO_NONVOTO);
+                //NODirittiLabel = (VotoEspresso == VSDecl.VOTO_SCHEDABIANCA || VotoEspresso == VSDecl.VOTO_NONVOTO);
+                if (VotoEspresso == VSDecl.VOTO_SCHEDABIANCA || VotoEspresso == VSDecl.VOTO_NONVOTO)
+                    lbConfermaNVoti.Text = "-";
                 // voto di lista/candidato              
                 lbConfermaUp.Text = VotoEspressoStrUp;
                 lbConferma.Text = VotoEspressoStr;
@@ -235,6 +237,7 @@ namespace VotoTouch
         private void TornaInizio()
         {
             // dall'inizio
+            timAutoRitorno.Enabled = false;
             Stato = TAppStato.ssvBadge;
             CambiaStato();
         }

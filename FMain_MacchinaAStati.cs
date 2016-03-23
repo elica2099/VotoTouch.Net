@@ -50,6 +50,7 @@ namespace VotoTouch
             switch (Stato)
             {
                 case TAppStato.ssvBadge:
+                    timAutoRitorno.Enabled = false;
                     oVotoTouch.CalcolaTouchSpecial(Stato, false);
                     SettaComponenti(false);
                     UscitaInVotazione = false;
@@ -164,17 +165,13 @@ namespace VotoTouch
                         TornaInizio();
                     }
                     else
-                        oVotoImg.LoadImages(VSDecl.IMG_fine);
-
-                    // ora devo vediricare se è attivo AttivaAutoRitornoVoto
-                    if (VTConfig.AttivaAutoRitornoVoto)
                     {
-                        System.Windows.Forms.Timer timAutoRitorno = new System.Windows.Forms.Timer
-                            {
-                                Enabled = true,
-                                Interval = VTConfig.TimeAutoRitornoVoto * 1000
-                            };
-                        timAutoRitorno.Tick += timAutoRitorno_Tick;
+                        oVotoImg.LoadImages(VSDecl.IMG_fine);
+                        // ora devo vediricare se è attivo AttivaAutoRitornoVoto
+                        if (VTConfig.AttivaAutoRitornoVoto)
+                        {
+                            timAutoRitorno.Enabled = true;
+                        }
                     }
 
                     break;
@@ -227,8 +224,7 @@ namespace VotoTouch
 
         private void timAutoRitorno_Tick(object sender, EventArgs e)
         {
-            System.Windows.Forms.Timer timer = sender as System.Windows.Forms.Timer;
-            if (timer != null) timer.Enabled = false;
+            timAutoRitorno.Enabled = false;
 
             // esco
             TornaInizio();

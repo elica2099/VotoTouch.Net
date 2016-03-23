@@ -36,6 +36,7 @@ namespace VotoTouch
         private System.Windows.Forms.Timer timLetturaBadge;
         private System.Windows.Forms.Timer timCambiaStato;
         private System.Windows.Forms.Timer timConfigura;
+        private System.Windows.Forms.Timer timAutoRitorno;
 
         // Modo Debug
         public bool DebugMode;
@@ -347,7 +348,13 @@ namespace VotoTouch
             timConfigura.Enabled = false;
             timConfigura.Interval = 30;
             timConfigura.Tick += timConfigura_Tick;
-		    pnSemaf.BackColor = Color.Transparent;
+            // timer di autoritorno
+            timAutoRitorno = new System.Windows.Forms.Timer();
+            timAutoRitorno.Enabled = false;
+            timAutoRitorno.Interval = VTConfig.TimeAutoRitornoVoto * 1000;
+            timAutoRitorno.Tick += timAutoRitorno_Tick;
+
+            pnSemaf.BackColor = Color.Transparent;
 
             splash.SetSplash(90, rm.GetString("SAPP_START_INITVAR"));   //"Inizializzo variabili...");
             // scrive la configurazione nel log

@@ -86,7 +86,7 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
             // create the command
             qryStd = new OleDbCommand();
@@ -125,7 +125,7 @@ namespace VotoTouch
                     }
                     a.Close();
                 }
-                result = 1;
+                result = 0;
             }
             catch (Exception objExc)
             {
@@ -167,7 +167,7 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
             // create the command
             qryStd = new OleDbCommand();
@@ -232,12 +232,14 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.ACE.OLEDB.12.0;Mode=Read;Data Source=" + source);
+            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
             qryStd = new OleDbCommand();
             qryStd.Connection = conn;
             try
             {
+                // open the connection
+                conn.Open();
                 // ciclo sulle votazioni e carico le liste
                 foreach (TNewVotazione votaz in AVotazioni)
                 {
