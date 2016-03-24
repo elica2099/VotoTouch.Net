@@ -153,7 +153,7 @@ namespace VotoTouch
         //  Caricamento dati
         // --------------------------------------------------------------------------
 
-        public bool CaricaListeVotazioni(string AData_path)
+        public bool CaricaListeVotazioni(string AData_path, Rectangle AFormRect, bool AInLoading)
         {
             // questa routine serve a caricara/ricaricare le votazioni / liste
             // dal database ai file
@@ -188,6 +188,9 @@ namespace VotoTouch
             CalcolaAreaDiVotoCandidatiMultiCandidato();
             // ok, ora ordino le liste nel caso in cui siano di candidato
             OrdinaListeInPagineCandidatiMultiCandidato();
+            // calcolo le zone touch
+            if (!AInLoading)
+                CalcolaTouchZoneVotazioni(AFormRect);
 
             // NOTA: Nelle liste il nome può contenere anche la data di nascita, inserita
             // come token tra ( e ). Serve nel caso di omonimia. La routine di disegno riconoscerà

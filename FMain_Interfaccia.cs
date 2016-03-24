@@ -53,9 +53,18 @@ namespace VotoTouch
             PrefNomeAz = UppercaseWords(PrefNomeAz.ToLower());
             lbNomeAzStart.Text = PrefNomeAz;
             lbNomeAzStart.Visible = true;
-            // diritti di voto    
-            lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");      // " Diritti di voto";
-            lbDirittiStart.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString();
+            // diritti di voto  
+            if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
+            {
+                lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString() +
+                                       rm.GetString("SAPP_VOTE_D_DIRITTI"); // " Diritti di voto";
+                lbDirittiStart.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString();
+            }
+            else
+            {
+                lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroAzioniTotali().ToString();
+                lbDirittiStart.Text = Azionisti.DammiMaxNumeroAzioniTotali().ToString();
+            }
             // in funzione del n. di deleghe metto
             if (Azionisti.HaDirittiDiVotoMultipli())
             {
@@ -67,6 +76,8 @@ namespace VotoTouch
             {
                 // immagine di 1 voto
                 oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
+                if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_SPA)
+                    lbDirittiStart.Visible = true;
             }
         }
 
@@ -196,13 +207,14 @@ namespace VotoTouch
         {
             Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
 
+            lbDirittiStart.BackColor = PaintTouch ? Color.Tan : Color.Transparent;
+            lbDirittiDiVoto.BackColor = PaintTouch ? Color.Coral : Color.Transparent;
             // il pannello della conferma
             lbConferma.BackColor = PaintTouch ? Color.Red : Color.Transparent;
             lbConfermaUp.BackColor = PaintTouch ? Color.Turquoise : Color.Transparent;
             lbConfermaNVoti.BackColor = PaintTouch ? Color.GreenYellow : Color.Transparent;
 
             if (DebugMode) pnBadge.Visible = true;
-
         }
 
         // ----------------------------------------------------------------

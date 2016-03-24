@@ -108,10 +108,10 @@ namespace VotoTouch
         }
 
         // --------------------------------------------------------------------------
-        //  Ritorno dati Normali
+        //  Ritorno Diritti di voto
         // --------------------------------------------------------------------------
 
-        #region Ritorno dati Normali 
+        #region Ritorno Diritti di voto 
 
         public List<TAzionista> DammiDirittiDiVotoPerIDVotazione(int AIDVotazione, bool ASoloDaVotare)
         {
@@ -132,19 +132,9 @@ namespace VotoTouch
             return _Azionisti.Count(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO);
         }
 
-        public int DammiTotaleAzioniRimanentiPerIDVotazione(int AIDVotazione)
-        {
-            return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
-        }
-
         public int DammiTotaleDirittiRimanenti()
         {
             return _Azionisti.Count(a => a.HaVotato == VOTATO_NO);
-        }
-
-        public int DammiTotaleAzioniRimanenti()
-        {
-            return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
         }
 
         public int DammiQuantiDirittiSonoStatiVotati()
@@ -195,6 +185,66 @@ namespace VotoTouch
                                     })
                         .Max(n => n.Count);
                     return (int) maxDiritti;
+                }
+                else
+                    return 0;
+            }
+        }
+
+        #endregion
+
+        // --------------------------------------------------------------------------
+        //  Ritorno Numero di Azioni
+        // --------------------------------------------------------------------------
+
+        #region Ritorno Numero di Azioni
+
+        public int DammiTotaleAzioniRimanentiPerIDVotazione(int AIDVotazione)
+        {
+            return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+        }
+
+        public int DammiTotaleAzioniRimanenti()
+        {
+            return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+        }
+
+        public int DammiMaxNumeroAzioniTotali()
+        {
+            // questa funzione non è banale, perchè deve estrarre il numero massimo di ritti di voto, 
+            // che nel caso normale è semplice, ma in caso di votazioni differenziate già espresse
+            // può essere difficoltoso. In pratica seleziono il conteggio dei diritti per IDVotazioni
+            // e prendo il numero maggiore
+            if (_Azionisti == null || _Azionisti.Count == 0) return 0;
+
+            // qua modifico in funzione del parametro AbilitaDirittiNonVoglioVotare.
+            // se è no, prendo il count bvanale, altrimenti devo fare la media
+
+            if (!VTConfig.AbilitaDirittiNonVoglioVotare)
+            {
+                var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
+                TAzionista v = listatemp.ElementAt(0);
+                return (int)Azionisti.Where(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz).Sum(n => n.NAzioni);
+                //return (int)Azionisti.Count(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz);
+            }
+            else
+            {
+                // TODO: ATTENZIONEEEEEEEEEE SPA DammiMaxNumeroAzioniTotali NON è IMPLEMENTATO SE AbilitaDirittiNonVoglioVotare
+
+                var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+                if (AzionNoVotato.Count() > 0)
+                {
+                    var maxDiritti = AzionNoVotato
+                        .GroupBy(n => n.IDVotaz)
+                        .Select(group =>
+                                new
+                                {
+                                    IDVotaz = group.Key,
+                                    //Diritti = group.ToList(),
+                                    Count = group.Count()
+                                })
+                        .Max(n => n.Count);
+                    return (int)maxDiritti;
                 }
                 else
                     return 0;

@@ -23,6 +23,7 @@ namespace VotoTouch
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
     // TODO: Mettere finestra riepilogo azionista
+    // TODO: nelle azioni mettere la formattazione
 
 	/// <summary>
 	/// Summary description for Form1.\
@@ -249,8 +250,9 @@ namespace VotoTouch
                 if (VTConfig.VotoAperto) Logging.WriteToLog("Votazione già aperta");
 
                 // carica le votazioni, le carica comunque all'inizio
+                Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
                 Votazioni = new TListaVotazioni(oDBDati);
-                Votazioni.CaricaListeVotazioni(Data_Path);
+                Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, true);
 
                 // ok, finisce
                 if (DBOk == 0)
@@ -334,25 +336,21 @@ namespace VotoTouch
 
             // i timer di disaccoppiamento funzioni (non potendo usare WM_USER!!!!)
             // timer di lettura badge
-            timLetturaBadge = new System.Windows.Forms.Timer();
-            timLetturaBadge.Enabled = false;
-            timLetturaBadge.Interval = 30;
-            timLetturaBadge.Tick += timLetturaBadge_Tick;
+            timLetturaBadge = new System.Windows.Forms.Timer {Enabled = false, Interval = 30};
+		    timLetturaBadge.Tick += timLetturaBadge_Tick;
             // timer di cambio stato
-            timCambiaStato = new System.Windows.Forms.Timer();
-            timCambiaStato.Enabled = false;
-            timCambiaStato.Interval = 30;
-            timCambiaStato.Tick += timCambiaStato_Tick;
+            timCambiaStato = new System.Windows.Forms.Timer {Enabled = false, Interval = 30};
+		    timCambiaStato.Tick += timCambiaStato_Tick;
             // timer di configurazione
-            timConfigura = new System.Windows.Forms.Timer();
-            timConfigura.Enabled = false;
-            timConfigura.Interval = 30;
-            timConfigura.Tick += timConfigura_Tick;
+            timConfigura = new System.Windows.Forms.Timer {Enabled = false, Interval = 30};
+		    timConfigura.Tick += timConfigura_Tick;
             // timer di autoritorno
-            timAutoRitorno = new System.Windows.Forms.Timer();
-            timAutoRitorno.Enabled = false;
-            timAutoRitorno.Interval = VTConfig.TimeAutoRitornoVoto * 1000;
-            timAutoRitorno.Tick += timAutoRitorno_Tick;
+            timAutoRitorno = new System.Windows.Forms.Timer
+                {
+                    Enabled = false,
+                    Interval = VTConfig.TimeAutoRitornoVoto*1000
+                };
+		    timAutoRitorno.Tick += timAutoRitorno_Tick;
 
             pnSemaf.BackColor = Color.Transparent;
 
@@ -496,7 +494,10 @@ namespace VotoTouch
                 {
                     // faccio il paint del numero di diritti di voto nel bottone in basso a sx , 
                     // in questo caso uso un paint e non una label per un problema grafico di visibilità
-                    oVotoTheme.PaintDirittiDiVoto(sender, e, Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
+                    int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
+                                   ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
+                                   : Azionisti.DammiMaxNumeroAzioniTotali();
+                    oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
                 }
             }
 
@@ -974,7 +975,8 @@ namespace VotoTouch
                     "dal database?\n Vuoi veramente continuare?", "Question",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
-                    bool pippo = Votazioni.CaricaListeVotazioni(Data_Path);
+                    Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
+                    bool pippo = Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, false);
                     if (pippo)
                         MessageBox.Show("Liste/votazioni caricate correttamente.", "information",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1110,7 +1112,7 @@ namespace VotoTouch
 
         private void button2_Click(object sender, EventArgs e)
         {
-            StartTest();
+            //StartTest();
             ////TListaAzionisti azio = new TListaAzionisti(oDBDati);
             ////azio.CaricaDirittidiVotoDaDatabase(10005, ref fVoto, NVoti);
 
