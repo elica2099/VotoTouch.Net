@@ -1,7 +1,6 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +10,8 @@ using System.Media;
 
 namespace VotoTouch
 {
+    // DR16 - Classe intera
+
     // eventi di pressione scheda
     public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
         steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
@@ -128,7 +129,6 @@ namespace VotoTouch
 
         public CVotoTouchScreen() //ref TTotemConfig ATotCfg)
 		{
-            // DR11 OK
             // inizializzo
             FFormRect = new Rectangle();       
     
@@ -139,30 +139,36 @@ namespace VotoTouch
 
             // ora mi creo il bottone in bmp
             Assembly myAssembly = Assembly.GetExecutingAssembly();
-            Stream myStream;
-            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottonetrasp_ok.png");
-            btnBmpCandSing = new Bitmap(myStream);
+            Stream myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottonetrasp_ok.png");
+            btnBmpCandSing = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo.png");
-            btnBmpCand = new Bitmap(myStream);
+            btnBmpCand = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpCand = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_cds.png");
-            btnBmpCandCda = new Bitmap(myStream);
+            btnBmpCandCda = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpCandCda = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_selez.png");
-            btnBmpCandSelez = new Bitmap(myStream);
+            btnBmpCandSelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpCandSelez = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_selezCDS.png");
-            btnBmpCandSelezCda = new Bitmap(myStream);
+            btnBmpCandSelezCda = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpCandSelezCda = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.tab.png");
-            btnBmpTab = new Bitmap(myStream);
+            btnBmpTab = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpTab = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.tab_rev.png");
-            btnBmpTabSelez = new Bitmap(myStream);
+            btnBmpTabSelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpTabSelez = new Bitmap(myStream);
 
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottone_selezCDS.png");
-            btnBmpCDASelez = new Bitmap(myStream);
+            btnBmpCDASelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
+            //btnBmpCDASelez = new Bitmap(myStream);
 
             //ClasseTipoVotoStartNorm = new CTipoVoto_AStart(FFormRect);
             //ClasseTipoVotoStartDiff = new CTipoVoto_AStart(FFormRect);
@@ -178,14 +184,10 @@ namespace VotoTouch
             TouchEnabled = true;
             TouchWatch = 0;
             // ora i timer
-            timTouch = new Timer();
-            timTouch.Enabled = false;
-            timTouch.Interval = TIMER_TOUCH_INTERVAL;
+            timTouch = new Timer {Enabled = false, Interval = TIMER_TOUCH_INTERVAL};
             timTouch.Tick += timTouch_Tick;
 
-            timTouchWatchDog = new Timer();
-            timTouchWatchDog.Enabled = false;
-            timTouchWatchDog.Interval = TIMER_TOUCHWATCH_INTERVAL;
+            timTouchWatchDog = new Timer {Enabled = false, Interval = TIMER_TOUCHWATCH_INTERVAL};
             timTouchWatchDog.Tick += timTouchWatchDog_Tick;
 		}
 
@@ -257,7 +259,7 @@ namespace VotoTouch
         public int CalcolaTouchSpecial(CBaseTipoVoto ASpecial)
         {
             Tz = null;
-            if (ASpecial != null)
+            if (ASpecial != null && ASpecial.TouchZone != null)
                 Tz = ASpecial.TouchZone;
             return 0;
         }
@@ -265,7 +267,7 @@ namespace VotoTouch
         public int CalcolaTouchVote(TNewVotazione FVotaz)
         {
             Tz = null;
-            if (FVotaz != null)
+            if (FVotaz != null && FVotaz.TouchZoneVoto != null && FVotaz.TouchZoneVoto.TouchZone != null)
             {
                 Tz = FVotaz.TouchZoneVoto.TouchZone;
                 MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
@@ -377,7 +379,7 @@ namespace VotoTouch
         #region Touch Eventi
 
         // metodo chiamato al tocco dello schermo
-        public int TastoPremuto(object sender, System.Windows.Forms.MouseEventArgs e, TAppStato Stato)
+        public int TastoPremuto(object sender, MouseEventArgs e, TAppStato Stato)
         {
             // DR12 OK
             // prima di tutto testo se TouchEnabled è false, se lo è, vuol dire che non è ancora
@@ -403,6 +405,7 @@ namespace VotoTouch
 
             if (Tz == null || Tz.Count == 0) return 0;
 
+            // TODO: CVotoToucscreen|TastoPremuto - da rivedere il ciclo è arzigogolato
             // dunque, ciclo lungo la collection attiva per vedere se le coordinate corrispondono
             for (int i = 0; i < Tz.Count; i++)
             {
@@ -469,11 +472,19 @@ namespace VotoTouch
                     case TTEvento.steMultiAvanti:
                         // ricostruisco chi è stato votato, per trasmetterlo alla routine sopra
                         List<int> votis = new List<int>();
-                        TTZone b;
+                        //TTZone b;
                         int nvt = 0;
-                        for (int i = 0; i < Tz.Count; i++)
+                        //for (int i = 0; i < Tz.Count; i++)
+                        //{
+                        //    b = (TTZone)Tz[i];
+                        //    if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
+                        //    {
+                        //        votis.Add(b.expr);
+                        //        nvt++;
+                        //    }
+                        //}
+                        foreach (TTZone b in Tz)
                         {
-                            b = (TTZone)Tz[i];
                             if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
                             {
                                 votis.Add(b.expr);
@@ -577,13 +588,16 @@ namespace VotoTouch
         private void ElementoMulti(int Trovato)
         {
             // questa routine serve per settare/resettare l'elemento selezionato nelle multivotazioni.
-            TTZone a, b;
+            //TTZone b;
             // se TTZone.Multi <> 0, lo mette a 0
             // se TTZone.Multi == 0 conta le Multi di ogni botttone attivo e verifica se sono già arrivate al massimo
             // nel cui caso non fa nulla, altrimenti mette le  TTZone.Multi = 1 o nella versione successiva, la subvotazione
             // vedi caso BPM con più subvoti nella stessa pagina
-            a = (TTZone)Tz[Trovato];
+            // controllo
+            if (Tz == null) return;
+            if (Trovato >= Tz.Count) return;
 
+            TTZone a = (TTZone)Tz[Trovato];
             // se è maggiore di 0 faccio che metterlo a 0
             if (a.Multi > 0)
             {
@@ -593,9 +607,14 @@ namespace VotoTouch
             {
                 // devo contare quante sono selezionate
                 int fount = 0;
-                for (int i = 0; i < Tz.Count; i++)
+                //for (int i = 0; i < Tz.Count; i++)
+                //{
+                //    b = (TTZone)Tz[i];
+                //    if (b.ev == TTEvento.steMultiValido)
+                //        if (b.Multi > 0) fount++;
+                //}
+                foreach (TTZone b in Tz)
                 {
-                    b = (TTZone)Tz[i];
                     if (b.ev == TTEvento.steMultiValido)
                         if (b.Multi > 0) fount++;
                 }
@@ -639,7 +658,6 @@ namespace VotoTouch
 
         private void timTouchWatchDog_Tick(object sender, EventArgs e)
         {
-            // DR11 Ok
             if (!TouchEnabled)
             {
                 TouchWatch++;
@@ -669,16 +687,16 @@ namespace VotoTouch
 
             if (PaintTouchOnScreen)
             {
-                TTZone a;
+                //TTZone a;
                 Graphics g = e.Graphics;
-                Pen p = new Pen(Color.DarkGray);
-                p.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
+                Pen p = new Pen(Color.DarkGray) {DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot};
 
-                for (int i = 0; i < Tz.Count; i++)
+                //for (int i = 0; i < Tz.Count; i++)
+                foreach (TTZone a in Tz)
                 {
-                    a = (TTZone)Tz[i];
+                    //a = (TTZone)t;
                     if (a.pag == 0 || a.pag == CurrPag)
-                        g.DrawRectangle(p, a.x, a.y, (a.r - a.x), (a.b - a.y)); 
+                        g.DrawRectangle(p, a.x, a.y, (a.r - a.x), (a.b - a.y));
                 }
 
             }
@@ -688,7 +706,7 @@ namespace VotoTouch
         {
             // ok questo metodo viene chiamato da paint della finestra principale 
             // per disegnare i bottoni dei candidati
-            TTZone a;
+            //TTZone a;
             Graphics g = e.Graphics;
             string ss;
 
@@ -698,7 +716,6 @@ namespace VotoTouch
             Font myFont22 = new System.Drawing.Font("Arial", ABaseFontCandidato, FontStyle.Regular);  
             Font myFont23 = new System.Drawing.Font("Arial", ABaseFontCandidato + 2, FontStyle.Regular);  
             //Font myFont24 = new System.Drawing.Font("Arial", 24, FontStyle.Regular);
-
 
             Font myFont = null; // = new System.Drawing.Font("Arial", 24, FontStyle.Regular);
             Font myFont2 = new System.Drawing.Font("Arial", 20, FontStyle.Regular);
@@ -712,9 +729,10 @@ namespace VotoTouch
 
             SolidBrush whiteBrush = new SolidBrush(Color.White);
 
-            for (int i = 0; i < Tz.Count; i++)
+            //for (int i = 0; i < Tz.Count; i++)
+            foreach (TTZone a in Tz)
             {
-                a = (TTZone)Tz[i];
+                //a = (TTZone)Tz[i];
                 // se è maggiore di 0 vuol dire che è un oggetto da stampare
                 if (a.expr >= 0 && !a.MultiNoPrint )
                 {
@@ -754,25 +772,31 @@ namespace VotoTouch
                                 // disegnomil bottone facendo attenzione al multicandidato
                                 if (!Multi) // no multicandidato
                                 {
-                                    if (a.cda)
-                                        e.Graphics.DrawImage(btnBmpCandCda, r);
-                                    else
-                                        e.Graphics.DrawImage(btnBmpCand, r);
+                                    e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
+                                    //if (a.cda)
+                                    //    e.Graphics.DrawImage(btnBmpCandCda, r);
+                                    //else
+                                    //    e.Graphics.DrawImage(btnBmpCand, r);
+
                                 }
                                 else
                                 {
                                     if (a.Multi == 0)
                                     {
-                                        if (a.cda)
-                                            e.Graphics.DrawImage(btnBmpCandCda, r);
-                                        else
-                                            e.Graphics.DrawImage(btnBmpCand, r);
+                                        e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
+                                        //if (a.cda)
+                                        //    e.Graphics.DrawImage(btnBmpCandCda, r);
+                                        //else
+                                        //    e.Graphics.DrawImage(btnBmpCand, r);
                                     }
                                     else
-                                        if (a.cda)
-                                            e.Graphics.DrawImage(btnBmpCandSelezCda, r);
-                                        else
-                                            e.Graphics.DrawImage(btnBmpCandSelez, r);
+                                    {
+                                        e.Graphics.DrawImage(a.cda ? btnBmpCandSelezCda : btnBmpCandSelez, r);
+                                        //if (a.cda)
+                                        //    e.Graphics.DrawImage(btnBmpCandSelezCda, r);
+                                        //else
+                                        //    e.Graphics.DrawImage(btnBmpCandSelez, r);
+                                    }
                                 }
                                 // ok, prima di disegnare il nome devo controllare la mpresenza della data
                                 // di nascita < >
@@ -790,17 +814,16 @@ namespace VotoTouch
                                 }
                                 // disegno il nome
                                 int ls = a.Text.Length;
-                                if (ls <= 16)
-                                    myFont = myFont23;
-                                else
-                                    myFont = myFont22;
-
+                                myFont = ls <= 16 ? myFont23 : myFont22;
+                                //if (ls <= 16)
+                                //    myFont = myFont23;
+                                //else
+                                //    myFont = myFont22;
                                 e.Graphics.DrawString(a.Text, myFont, Brushes.DarkSlateGray,
                                         new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4), stringFormat);
 
                             }  // if (a.pag == CurrPag || a.pag == 0)
                             break;
-
                     }
                 
                 }  //  if (a.expr >= 0)

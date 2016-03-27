@@ -1,26 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Resources;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using System.Data;
-using System.IO;
-using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using Microsoft.Win32;
-using System.Threading;
-using System.Media;
-using System.Reflection;
 
 namespace VotoTouch
 {
     public partial class frmMain : Form
     {
+        // DR16 - Classe intera
 
         //******************************************************************************
         // ----------------------------------------------------------------
@@ -28,7 +13,7 @@ namespace VotoTouch
         // ----------------------------------------------------------------
         //******************************************************************************
 
-        private void frmMain_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void frmMain_MouseUp(object sender, MouseEventArgs e)
         {
             // chiamo il metodo in CTouchscreen che mi ritornerà eventi diversi a seconda del caso
             oVotoTouch.TastoPremuto(sender, e, Stato);
@@ -43,7 +28,6 @@ namespace VotoTouch
         private void MettiComponentiStartVoto()
         {
             string PrefNomeAz = "";
-            // DR->OK11	
             // start del voto
             SettaComponenti(false);
             edtBadge.Text = "";
@@ -92,7 +76,7 @@ namespace VotoTouch
 
         private void MettiComponentiConferma()
         {
-            bool NODirittiLabel = false;
+            //bool NODirittiLabel = false;
 
             // crea la pagina di conferma
             SettaComponenti(false);
@@ -167,10 +151,10 @@ namespace VotoTouch
             }
 
             // attenzione, se ho una sk bianca o non voto non metto i diritii
-            if (NODirittiLabel)
-            {
-                lbConfermaNVoti.Text = "";
-            }
+            //if (NODirittiLabel)
+            //{
+            //    lbConfermaNVoti.Text = "";
+            //}
 
             // ok, ora le mostro
             lbConferma.Visible = true;
@@ -207,7 +191,7 @@ namespace VotoTouch
 
         private void InizializzaControlli()
         {
-            Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
+            //Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
 
             lbDirittiStart.BackColor = PaintTouch ? Color.Tan : Color.Transparent;
             lbDirittiDiVoto.BackColor = PaintTouch ? Color.Coral : Color.Transparent;
@@ -225,7 +209,6 @@ namespace VotoTouch
 
         private void SettaComponenti(bool AVisibile)
         {
-            // DR->OK				
             lbConferma.Visible = AVisibile;
             lbConfermaUp.Visible = AVisibile;
             lbConfermaNVoti.Visible = AVisibile;

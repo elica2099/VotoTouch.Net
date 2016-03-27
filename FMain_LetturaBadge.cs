@@ -1,20 +1,5 @@
 ﻿using System;
-using System.Resources;
-using System.Drawing;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows;
 using System.Windows.Forms;
-using System.Data;
-using System.IO;
-using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using Microsoft.Win32;
-using System.Threading;
-using System.Media;
-using System.Reflection;
 
 namespace VotoTouch
 {

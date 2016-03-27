@@ -1,21 +1,11 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Resources;
 using System.Drawing;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows; 
 using System.Windows.Forms;
-using System.Data;
 using System.IO;
-using System.Text;
-using System.Net;
-using System.Net.Sockets;
-using Microsoft.Win32;
 using System.Threading;
-using System.Media;
-using System.Reflection;
 
 namespace VotoTouch
 {
@@ -502,7 +492,7 @@ namespace VotoTouch
                 try
                 {
                     System.Drawing.Drawing2D.GraphicsState gs = e.Graphics.Save();
-                    Font fn = new Font("Tahoma", 90, System.Drawing.FontStyle.Bold);
+                    Font fn = new Font("Tahoma", 90, FontStyle.Bold);
                     string str = rm.GetString("SAPP_DEMO");
                     StringFormat sf = (StringFormat)StringFormat.GenericTypographic.Clone();
                     sf.Alignment = StringAlignment.Center;

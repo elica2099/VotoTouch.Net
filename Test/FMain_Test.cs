@@ -43,9 +43,7 @@ namespace VotoTouch
 
         public void StartTest()
         {
-            timTest = new System.Windows.Forms.Timer();
-            timTest.Enabled = false;
-            timTest.Interval = 1000;
+            timTest = new System.Windows.Forms.Timer {Enabled = false, Interval = 700};
             timTest.Tick += timTest_Tick;
 
             badgelst = new ArrayList();
