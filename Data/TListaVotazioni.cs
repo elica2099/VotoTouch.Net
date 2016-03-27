@@ -286,7 +286,7 @@ namespace VotoTouch
             if (ClasseTipoVotoStartDiff != null)
                 ClasseTipoVotoStartDiff.FFormRect = AFormRect;
             else
-                ClasseTipoVotoStartDiff = new CTipoVoto_AConferma(AFormRect);
+                ClasseTipoVotoStartDiff = new CTipoVoto_AStart(AFormRect);
             ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true, false);
 
             // start conferma

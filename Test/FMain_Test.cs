@@ -28,6 +28,7 @@ namespace VotoTouch
         private System.Windows.Forms.Timer timTest;
         private bool TestOK = true;
         private int b_pos = 0;
+        private int voti_altri = 1;
 
         // questa è la routine di test
         // ci sarà un timer che batte ogni secondo e vede lo stato della finestra
@@ -43,7 +44,7 @@ namespace VotoTouch
 
         public void StartTest()
         {
-            timTest = new System.Windows.Forms.Timer {Enabled = false, Interval = 700};
+            timTest = new System.Windows.Forms.Timer {Enabled = false, Interval = 900};
             timTest.Tick += timTest_Tick;
 
             badgelst = new ArrayList();
@@ -119,10 +120,59 @@ namespace VotoTouch
                     if (nliste > 1)
                     {
                         Random rListe = new Random();
-                        liselez = rListe.Next(1, nliste) - 1;
+                        int gg = rListe.Next(1, nliste + 1);
+                        if (gg >= nliste) gg = nliste;
+                        liselez = gg - 1;
                     }
+                    // ok, ora devo vedere gli altri tasti, do un 30% di voti altri
+                    Random rListe2 = new Random();
+                    int altri = rListe2.Next(1, 100);
+                    if (altri > 70)
+                    {
+                        int max_v = 1;
+                        bool tipovotobianca = Votazioni.VotoCorrente.SkBianca;
+                        if (tipovotobianca)
+                        {
+                            switch (voti_altri)
+                            {
+                                case 1:
+                                    onPremutoSchedaBianca(null, VSDecl.VOTO_SCHEDABIANCA);
+                                    break;
+                                case 2:
+                                    onPremutoNonVoto(null, VSDecl.VOTO_NONVOTO);
+                                    break;
+                            }
+                            if (Votazioni.VotoCorrente.SkNonVoto)
+                                max_v = 2;
 
-                    onPremutoVotoValido(null, liselez, false);
+                            voti_altri++;
+                            if (voti_altri > max_v)
+                                voti_altri = 1;
+                        }
+                        else
+                        {
+                            switch (voti_altri)
+                            {
+                                case 1:
+                                    onPremutoContrarioTutti(null, VSDecl.VOTO_CONTRARIO_TUTTI);
+                                    break;
+                                case 2:
+                                    onPremutoAstenutoTutti(null, VSDecl.VOTO_ASTENUTO_TUTTI);
+                                    break;
+                                case 3:
+                                    onPremutoNonVoto(null, VSDecl.VOTO_NONVOTO);
+                                    break;
+                            }
+                            if (Votazioni.VotoCorrente.SkNonVoto)
+                                max_v = 3;
+
+                            voti_altri++;
+                            if (voti_altri > max_v)
+                                voti_altri = 1;
+                        }
+                    }
+                    else
+                        onPremutoVotoValido(null, liselez, false);
                     // devo vedere
                    
 
