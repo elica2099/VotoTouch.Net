@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Resources;
 using System.Drawing;
 using System.Collections;
@@ -56,14 +57,15 @@ namespace VotoTouch
             // diritti di voto  
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {
-                lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString() +
-                                       rm.GetString("SAPP_VOTE_D_DIRITTI"); // " Diritti di voto";
-                lbDirittiStart.Text = Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString();
+                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
+                lbDirittiDiVoto.Text = ss + rm.GetString("SAPP_VOTE_D_DIRITTI"); // " Diritti di voto";
+                lbDirittiStart.Text = ss;
             }
             else
             {
-                lbDirittiDiVoto.Text = Azionisti.DammiMaxNumeroAzioniTotali().ToString();
-                lbDirittiStart.Text = Azionisti.DammiMaxNumeroAzioniTotali().ToString();
+                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroAzioniTotali());
+                lbDirittiDiVoto.Text = ss;
+                lbDirittiStart.Text = ss;
             }
             // in funzione del n. di deleghe metto
             if (Azionisti.HaDirittiDiVotoMultipli())
@@ -97,7 +99,7 @@ namespace VotoTouch
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
-            lbConfermaNVoti.Text = NDirittiAzioniConferma.ToString(); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
+            lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
 
             //if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             //{

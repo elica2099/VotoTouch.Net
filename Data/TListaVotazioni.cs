@@ -105,6 +105,11 @@ namespace VotoTouch
         private CVotoBaseDati DBDati;
         private bool DemoMode = false;
 
+        // oggetti conferma e inizio voto
+        public CBaseTipoVoto ClasseTipoVotoStartNorm = null;
+        public CBaseTipoVoto ClasseTipoVotoStartDiff = null;
+        public CBaseTipoVoto ClasseTipoVotoConferma = null;
+
 
         public TListaVotazioni(CVotoBaseDati ADBDati)
         {
@@ -190,13 +195,26 @@ namespace VotoTouch
             OrdinaListeInPagineCandidatiMultiCandidato();
             // calcolo le zone touch
             if (!AInLoading)
+            {
+                // votazioni
                 CalcolaTouchZoneVotazioni(AFormRect);
+                // speciali
+                CalcolaTouchZoneSpeciali(AFormRect);
+            }
 
             // NOTA: Nelle liste il nome può contenere anche la data di nascita, inserita
             // come token tra ( e ). Serve nel caso di omonimia. La routine di disegno riconoscerà
             // questo e lo tratterà come scritta piccola a lato
 
             return result;
+        }
+
+        public void ResizeZoneVotazioni(Rectangle AFormRect)
+        {
+            // votazioni
+            CalcolaTouchZoneVotazioni(AFormRect);
+            // speciali
+            CalcolaTouchZoneSpeciali(AFormRect);
         }
 
         // --------------------------------------------------------------------------
@@ -209,7 +227,9 @@ namespace VotoTouch
             {
                 // prima cancello eventuali oggetti se ci sono
                 if (voto.TouchZoneVoto != null)
+                {
                     voto.TouchZoneVoto.FFormRect = AFormRect;
+                }
                 else
                 {
                     switch (voto.TipoVoto)
@@ -234,21 +254,48 @@ namespace VotoTouch
                                 voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoNew(AFormRect);
                             break;
 
-                        #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                            #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+
                         case VSDecl.VOTO_CANDIDATO_SING:
-                                // chiamo la classe del voto apposito
+                            // chiamo la classe del voto apposito
                             voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
                             break;
-                        #endregion
+
+                            #endregion
 
                         default:
                             voto.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
                             break;
                     }
-                    // calcolo le zone
-                    voto.TouchZoneVoto.GetTouchVoteZone(voto);
                 }
+                // calcolo le zone
+                voto.TouchZoneVoto.GetTouchVoteZone(voto);
             }
+        }
+
+        public void CalcolaTouchZoneSpeciali(Rectangle AFormRect)
+        {
+            // start normale
+            if (ClasseTipoVotoStartNorm != null)
+                ClasseTipoVotoStartNorm.FFormRect = AFormRect;
+            else
+                ClasseTipoVotoStartNorm = new CTipoVoto_AStart(AFormRect);
+            ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart, false, false);
+
+            // start diff
+            if (ClasseTipoVotoStartDiff != null)
+                ClasseTipoVotoStartDiff.FFormRect = AFormRect;
+            else
+                ClasseTipoVotoStartDiff = new CTipoVoto_AConferma(AFormRect);
+            ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true, false);
+
+            // start conferma
+            if (ClasseTipoVotoConferma != null)
+                ClasseTipoVotoConferma.FFormRect = AFormRect;
+            else
+                ClasseTipoVotoConferma = new CTipoVoto_AConferma(AFormRect);
+            ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, VTConfig.AbilitaBottoneUscita);
+
         }
 
         // --------------------------------------------------------------------------

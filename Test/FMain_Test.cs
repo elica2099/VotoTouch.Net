@@ -126,8 +126,7 @@ namespace VotoTouch
 
                     onPremutoVotoValido(null, liselez, false);
                     // devo vedere
-                    
-
+                   
 
 
                     //onPremutoNonVoto(null, 0);

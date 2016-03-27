@@ -39,12 +39,12 @@ namespace VotoTouch
             {
                 // 1° Lista
                 a = new TTZone();
-                GetZone(ref a, 9, 24, 43, 68); a.expr = 0; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 8, 24, 43, 68); a.expr = 0; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
                 // 2° Lista
                 a = new TTZone();
-                GetZone(ref a, 56, 24, 90, 68); a.expr = 1; a.pag = 0; a.Multi = 0;
+                GetZone(ref a, 56, 24, 92, 68); a.expr = 1; a.pag = 0; a.Multi = 0;
                 a.Text = ""; a.ev = TTEvento.steVotoValido;
                 Tz.Add(a);
             }

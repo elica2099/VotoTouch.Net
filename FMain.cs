@@ -23,7 +23,7 @@ namespace VotoTouch
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
     // TODO: Mettere finestra riepilogo azionista
-    // TODO: nelle azioni mettere la formattazione
+    // TODO: verificare le azioni nel differenziato
 
 	/// <summary>
 	/// Summary description for Form1.\
@@ -126,8 +126,8 @@ namespace VotoTouch
 			
             // finestra di start
             frmStart = new FVSStart();
-            this.AddOwnedForm(frmStart);
-            if (frmStart.ShowDialog() != System.Windows.Forms.DialogResult.Yes)
+            AddOwnedForm(frmStart);
+            if (frmStart.ShowDialog() != DialogResult.Yes)
             {
                 CtrlPrimoAvvio = false;
                 return;
@@ -141,7 +141,7 @@ namespace VotoTouch
             splash.Update();
 
 			// Massimizzo la finestra
-            this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Maximized;
 
             // inizializzo il splashscreen
             splash.SetSplash(10, rm.GetString("SAPP_START_IMGSEARCH")); //Ricerco immagini...
@@ -159,10 +159,10 @@ namespace VotoTouch
             oVotoImg.MainForm = this;
             CtrlPrimoAvvio = oVotoImg.CheckDataFolder(ref Data_Path);
 
-            btnCancVoti.Visible = System.IO.File.Exists(Data_Path + "VTS_ADMIN.txt");
+            btnCancVoti.Visible = File.Exists(Data_Path + "VTS_ADMIN.txt");
 
             // identificazione della versione demo, nella cartella data o nella sua cartella
-            if (System.IO.File.Exists(Data_Path + "VTS_DEMO.txt"))
+            if (File.Exists(Data_Path + "VTS_DEMO.txt"))
             {
                 // Ok è la versione demo
                 DemoVersion = true;
@@ -177,7 +177,7 @@ namespace VotoTouch
                 // ok, qua devo vedere i due casi:
                 // il primo è VTS_STANDALONE.txt presente il che vuol dire che ho la configurazione
                 // in locale, caricando comunque un file GEAS.sql da data
-                if (System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt"))
+                if (File.Exists(Data_Path + "VTS_STANDALONE.txt"))
                 {
                     Logging.generateInternalLogFileName(Data_Path, "VotoTouch_" + NomeTotem);
                     Logging.WriteToLog("---- STANDALONE MODE ----");
@@ -185,7 +185,7 @@ namespace VotoTouch
                 else
                 {
                     // verifica della mappatura
-                    if (!System.IO.Directory.Exists(@"M:\"))
+                    if (!Directory.Exists(@"M:\"))
                     {
                         MessageBox.Show(rm.GetString("SAPP_START_ERRMAP"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         CtrlPrimoAvvio = false;
@@ -193,8 +193,8 @@ namespace VotoTouch
                     }
 
                     // Inizializzo il log
-                    if (!System.IO.Directory.Exists(@"M:\LST\VotoTouch\"))
-                        System.IO.Directory.CreateDirectory(@"M:\LST\VotoTouch\");
+                    if (!Directory.Exists(@"M:\LST\VotoTouch\"))
+                        Directory.CreateDirectory(@"M:\LST\VotoTouch\");
                     Logging.generateInternalLogFileName(@"M:\LST\VotoTouch\", "VotoTouch_" + NomeTotem);
                 }
             }
@@ -203,8 +203,8 @@ namespace VotoTouch
             splash.SetSplash(20, rm.GetString("SAPP_START_INITDB"));    // "Inizializzo database...");
 
             // identificazione DebugMode
-            DebugMode = System.IO.File.Exists(Data_Path + "VTS_DEBUG.txt");
-            PaintTouch = System.IO.File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
+            DebugMode = File.Exists(Data_Path + "VTS_DEBUG.txt");
+            PaintTouch = File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
 
             // classe lbConferma
 		    lbConferma = new LabelCandidati();
@@ -213,7 +213,7 @@ namespace VotoTouch
 
             // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
             // questa versione la configurazione è centralizzata sul db
-            bool dataloc = System.IO.File.Exists(Data_Path + "VTS_STANDALONE.txt");
+            bool dataloc = File.Exists(Data_Path + "VTS_STANDALONE.txt");
             if (DemoVersion)
                 oDBDati = new CVotoMDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
                 //oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
@@ -250,7 +250,7 @@ namespace VotoTouch
                 if (VTConfig.VotoAperto) Logging.WriteToLog("Votazione già aperta");
 
                 // carica le votazioni, le carica comunque all'inizio
-                Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
+                Rectangle FFormRect = new Rectangle(0, 0, Width, Height);
                 Votazioni = new TListaVotazioni(oDBDati);
                 Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, true);
 
@@ -361,7 +361,7 @@ namespace VotoTouch
             Logging.WriteToLog("   Usalettore: " + VTConfig.UsaLettore.ToString());
             Logging.WriteToLog("   Porta: " + VTConfig.PortaLettore.ToString());
             Logging.WriteToLog("   UsaSemaforo: " + VTConfig.UsaSemaforo.ToString());
-            Logging.WriteToLog("   IPSemaforo: " + VTConfig.IP_Com_Semaforo.ToString());
+            Logging.WriteToLog("   IPSemaforo: " + VTConfig.IP_Com_Semaforo);
             Logging.WriteToLog("   IDSeggio: " + VTConfig.IDSeggio.ToString());
             Logging.WriteToLog("   NomeComputer: " + NomeTotem);
             Logging.WriteToLog("   ControllaPresenze: " + VTConfig.ControllaPresenze.ToString());
@@ -402,12 +402,7 @@ namespace VotoTouch
 			Application.Run(new frmMain());
 		}
 
-		private void button1_Click(object sender, System.EventArgs e)
-		{
-			Application.Exit();
-		}
-
-		private void frmMain_Closed(object sender, System.EventArgs e)
+	    private void frmMain_Closed(object sender, EventArgs e)
 		{
             timVotoApero.Enabled = false;
 			// alcune cose sul database
@@ -415,12 +410,12 @@ namespace VotoTouch
             NewReader.Close();
 		}
 
-		private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		private void frmMain_Closing(object sender, CancelEventArgs e)
 		{
             //
         }
 
-		private void frmMain_Load(object sender, System.EventArgs e)
+		private void frmMain_Load(object sender, EventArgs e)
 		{
             // testo 
             if (!CtrlPrimoAvvio)
@@ -539,10 +534,10 @@ namespace VotoTouch
             Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
 
             // devo dire alla nuova touch le dimensioni della finestra
-            if (oVotoTouch != null)
-            {
-                oVotoTouch.CalcolaVotoTouch(FFormRect);
-            }
+            //if (oVotoTouch != null)
+            //{
+            //    oVotoTouch.CalcolaVotoTouch(FFormRect);
+            //}
             // lo stesso faccio per la classe del thema che si occupa di disegnare 
             // le label di informazione
             if (oVotoTheme != null)
@@ -553,7 +548,8 @@ namespace VotoTouch
             // ok ora le votazioni
             if (Votazioni != null)
             {
-                Votazioni.CalcolaTouchZoneVotazioni(FFormRect);
+                Votazioni.ResizeZoneVotazioni(FFormRect);
+                //Votazioni.CalcolaTouchZoneVotazioni(FFormRect);
             }
             
             // ok, ora se è in demo mode faccio il resize dei controlli

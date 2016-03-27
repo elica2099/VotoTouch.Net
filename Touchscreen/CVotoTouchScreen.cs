@@ -98,10 +98,10 @@ namespace VotoTouch
         public Rectangle FFormRect;         
         private ArrayList Tz;
 
-        // oggetti conferma e inizio voto
-        CBaseTipoVoto ClasseTipoVotoStartNorm = null;
-        CBaseTipoVoto ClasseTipoVotoStartDiff = null;
-        CBaseTipoVoto ClasseTipoVotoConferma = null;
+        //// oggetti conferma e inizio voto
+        //CBaseTipoVoto ClasseTipoVotoStartNorm = null;
+        //CBaseTipoVoto ClasseTipoVotoStartDiff = null;
+        //CBaseTipoVoto ClasseTipoVotoConferma = null;
 
         public Bitmap btnBmpCand;
         public Bitmap btnBmpCandCda;
@@ -164,9 +164,9 @@ namespace VotoTouch
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottone_selezCDS.png");
             btnBmpCDASelez = new Bitmap(myStream);
 
-            ClasseTipoVotoStartNorm = new CTipoVoto_AStart(FFormRect);
-            ClasseTipoVotoStartDiff = new CTipoVoto_AStart(FFormRect);
-            ClasseTipoVotoConferma = new CTipoVoto_AConferma(FFormRect);
+            //ClasseTipoVotoStartNorm = new CTipoVoto_AStart(FFormRect);
+            //ClasseTipoVotoStartDiff = new CTipoVoto_AStart(FFormRect);
+            //ClasseTipoVotoConferma = new CTipoVoto_AConferma(FFormRect);
 
             // gestione delle pagine
             //CurrPag = 1;
@@ -193,6 +193,7 @@ namespace VotoTouch
         //  CALCOLO DEL RESIZE
         // --------------------------------------------------------------
 
+        /*
         public void CalcolaVotoTouch(Rectangle AFormRect)
         {
             // viene richiamata ad ogni resize della finestra
@@ -218,28 +219,24 @@ namespace VotoTouch
             }
         }
 
-        public int CalcolaTouchSpecial(TAppStato Stato, bool AIsVotazioneDifferenziata)
+        public int CalcolaTouchSpecial(TNewVotazione FVotaz, TAppStato Stato, bool AIsVotazioneDifferenziata)
         {
             Tz = null;
             // switcho in funzione dello stato
             switch (Stato)
             {
-                case TAppStato.ssvBadge:
-                    // non fare nulla
-                    break;
-
                 case TAppStato.ssvVotoStart:
                     // chiamo la classe apposita
                     if (AIsVotazioneDifferenziata)
-                        Tz = ClasseTipoVotoStartDiff.TouchZone;
+                        Tz = FVotaz.ClasseTipoVotoStartDiff.TouchZone;
                     else
-                        Tz = ClasseTipoVotoStartNorm.TouchZone;
+                        Tz = FVotaz.ClasseTipoVotoStartNorm.TouchZone;
                     break;
 
                 // conferma del voto
                 case TAppStato.ssvVotoConferma:
                     // chiamo la classe apposita
-                    Tz = ClasseTipoVotoConferma.TouchZone;
+                    Tz = FVotaz.ClasseTipoVotoConferma.TouchZone;
                     break;
 
                 // salvataggio/fine del voto
@@ -256,11 +253,23 @@ namespace VotoTouch
             return 0;
         }
 
+*/
+        public int CalcolaTouchSpecial(CBaseTipoVoto ASpecial)
+        {
+            Tz = null;
+            if (ASpecial != null)
+                Tz = ASpecial.TouchZone;
+            return 0;
+        }
+
         public int CalcolaTouchVote(TNewVotazione FVotaz)
         {
             Tz = null;
-            Tz = FVotaz.TouchZoneVoto.TouchZone;
-            MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
+            if (FVotaz != null)
+            {
+                Tz = FVotaz.TouchZoneVoto.TouchZone;
+                MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
+            }
             return 0;
         }
 
