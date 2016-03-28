@@ -193,14 +193,14 @@ namespace VotoTouch
         {
             //Font MyFont = new Font(VSDecl.BTN_FONT_NAME, VSDecl.BTN_FONT_SIZE, FontStyle.Bold);
 
-            lbDirittiStart.BackColor = PaintTouch ? Color.Tan : Color.Transparent;
-            lbDirittiDiVoto.BackColor = PaintTouch ? Color.Coral : Color.Transparent;
+            lbDirittiStart.BackColor = VTConfig.IsPaintTouch ? Color.Tan : Color.Transparent;
+            lbDirittiDiVoto.BackColor = VTConfig.IsPaintTouch ? Color.Coral : Color.Transparent;
             // il pannello della conferma
-            lbConferma.BackColor = PaintTouch ? Color.Red : Color.Transparent;
-            lbConfermaUp.BackColor = PaintTouch ? Color.Turquoise : Color.Transparent;
-            lbConfermaNVoti.BackColor = PaintTouch ? Color.GreenYellow : Color.Transparent;
+            lbConferma.BackColor = VTConfig.IsPaintTouch ? Color.Red : Color.Transparent;
+            lbConfermaUp.BackColor = VTConfig.IsPaintTouch ? Color.Turquoise : Color.Transparent;
+            lbConfermaNVoti.BackColor = VTConfig.IsPaintTouch ? Color.GreenYellow : Color.Transparent;
 
-            if (DebugMode) pnBadge.Visible = true;
+            if (VTConfig.IsDebugMode) pnBadge.Visible = true;
         }
 
         // ----------------------------------------------------------------
@@ -220,7 +220,7 @@ namespace VotoTouch
             lbDisgiuntoRimangono.Visible = AVisibile;
             lbNomeAzStart.Visible = AVisibile;
 
-            if (DemoVersion)
+            if (VTConfig.IsDemoMode)
             {
                 if (btnBadgeUnVoto != null)
                     btnBadgeUnVoto.Visible = (Stato == TAppStato.ssvBadge);

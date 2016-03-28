@@ -31,9 +31,8 @@ namespace VotoTouch
 	/// </summary>
     public class CVotoDBDati : CVotoBaseDati
 	{
-
-		private string DriveM = @"M:\";
-		// connessione database
+	    private const string DriveM = @"M:\";
+	    // connessione database
 		private SqlConnection STDBConn;
 
         // stringhe sql
@@ -41,8 +40,8 @@ namespace VotoTouch
 	    private string qry_DammiDirittiDiVoto_Deleganti = "";
         private string qry_DammiVotazioniTotem = "";
 
-        public CVotoDBDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path) : 
-            base(AFDBConfig, ANomeTotem, AADataLocal, AAData_path)
+        public CVotoDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) : 
+            base(AFDBConfig, AADataLocal, AAData_path)
 		{
 			//
 			STDBConn = new SqlConnection();
@@ -152,22 +151,18 @@ namespace VotoTouch
 
         override public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
-            // DROK 13
             // mi dice la lunghezza del badge e il codice impianto per il lettore
             SqlDataReader a;
-            SqlCommand qryStd;
-            int Tok;
 
             // testo la connessione
             if (!OpenConnection("CaricaConfigDB")) return 0;
 
             ABadgeLen = 8;
             ACodImpianto = "00";
-            Tok = 0;
-            qryStd = new SqlCommand();
+            int Tok = 0;
+            SqlCommand qryStd = new SqlCommand() { Connection = STDBConn };
             try
             {
-                qryStd.Connection = STDBConn;
                 // Leggo ora da GEAS_Titolari	
                 qryStd.CommandText = "select * from CONFIG_cfgParametri with (nolock)";
                 a = qryStd.ExecuteReader();
@@ -201,27 +196,25 @@ namespace VotoTouch
             return Tok;
         }
 
-        override public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
+        override public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
             SqlDataReader a;
-            SqlCommand qryStd;
-            SqlTransaction traStd;
-            int result;
-            bool inserisci;
 
             // testo la connessione
             if (!OpenConnection("DammiConfigTotem")) return 0;
             
-            result = 0;
+            int result = 0;
             // preparo gli oggetti
-            qryStd = new SqlCommand();
-            qryStd.Connection = STDBConn;
+            SqlCommand qryStd = new SqlCommand
+                {
+                    Connection = STDBConn,
+                    CommandText =
+                        "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + VTConfig.NomeTotem + "'"
+                };
             // registra il totem aggiungendo il record in CONFIG_POSTAZIONI, e chiaramente verifica che ci sia già
-            qryStd.CommandText = "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + ANomeTotem + "'";
-            
-            traStd = STDBConn.BeginTransaction();
+            SqlTransaction traStd = STDBConn.BeginTransaction();
             qryStd.Transaction = traStd;
-            inserisci = false;
+            bool inserisci = false;
 
             try
             {
@@ -234,9 +227,9 @@ namespace VotoTouch
                     // carico
                     VTConfig.Postazione = a["Postazione"].ToString();
                     // faccio un  ulteriore controllo
-                    if (ANomeTotem != VTConfig.Postazione) VTConfig.Postazione = ANomeTotem;
+                    if (VTConfig.NomeTotem != VTConfig.Postazione) VTConfig.Postazione = VTConfig.NomeTotem;
 
-                    VTConfig.Descrizione = a.IsDBNull(a.GetOrdinal("Descrizione")) ? ANomeTotem : a["Descrizione"].ToString();
+                    VTConfig.Descrizione = a.IsDBNull(a.GetOrdinal("Descrizione")) ? VTConfig.NomeTotem : a["Descrizione"].ToString();
                     VTConfig.IDSeggio = Convert.ToInt32(a["IdSeggio"]);
                     FIDSeggio = Convert.ToInt32(a["IdSeggio"]);
 
@@ -266,12 +259,12 @@ namespace VotoTouch
                         "(Postazione, Descrizione, IdSeggio, Attivo, VotoAperto, UsaSemaforo, "+
                         " IPCOMSemaforo, TipoSemaforo, UsaLettore, PortaLettore, CodiceUscita, " +
                         " UsaController, IPController, Sala) " +
-                        " VALUES ('" + ANomeTotem + "', 'Desc_" + ANomeTotem + "', 999, 1, 0, 0, " +
+                        " VALUES ('" + VTConfig.NomeTotem + "', 'Desc_" + VTConfig.NomeTotem + "', 999, 1, 0, 0, " +
                         "'127.0.0.1', 2, 0, 1, '999999', 0, '127.0.0.1', 1)";
                     
                     // metto in quadro i valori
-                    VTConfig.Postazione = ANomeTotem;
-                    VTConfig.Descrizione = ANomeTotem;
+                    VTConfig.Postazione = VTConfig.NomeTotem;
+                    VTConfig.Descrizione = VTConfig.NomeTotem;
                     VTConfig.IDSeggio = 999;
                     FIDSeggio = 999;
                     VTConfig.Attivo = true;
@@ -286,7 +279,7 @@ namespace VotoTouch
                     // poi bisognerà fare un wizard di configurazione
                     VTConfig.TipoSemaforo = VSDecl.SEMAFORO_COM;
                     // ora scrivo
-                    int NumberofRows = qryStd.ExecuteNonQuery();
+                    qryStd.ExecuteNonQuery();
                 }
 
                 // chiudo la transazione
@@ -314,18 +307,18 @@ namespace VotoTouch
         override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
             SqlDataReader a;
-            SqlCommand qryStd;
             int result = 0;
 
             // testo la connessione
             if (!OpenConnection("DammiConfigDatabase")) return 0;
 
             // preparo gli oggetti
-            qryStd = new SqlCommand();
-            qryStd.Connection = STDBConn;
+            SqlCommand qryStd = new SqlCommand
+                {
+                    Connection = STDBConn,
+                    CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock) where attivo = 1"
+                };
             // la configurazione ci deve essere, non è necessario inserirla
-            qryStd.CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock) where attivo = 1";
-
             try
             {
                 a = qryStd.ExecuteReader();
@@ -398,24 +391,18 @@ namespace VotoTouch
             return result;
         }
         
-        override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
+        override public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
-            SqlCommand qryStd;
-            SqlTransaction traStd;
-            int NumberofRows, result;
-            short usal, usas;
-
             // testo la connessione
             if (!OpenConnection("SalvaConfigurazione")) return 0;
 
-            result = 0;
+            int result = 0;
             // preparo gli oggetti
-            if (VTConfig.UsaLettore) usal = 1; else usal = 0;
-            if (VTConfig.UsaSemaforo) usas = 1; else usas = 0;
-            qryStd = new SqlCommand();
-            qryStd.Connection = STDBConn;
-             // devo inserirlo
-            traStd = STDBConn.BeginTransaction();
+            int usal = VTConfig.UsaLettore ? 1 : 0;
+            int usas = VTConfig.UsaSemaforo ? 1 : 0;
+            SqlCommand qryStd = new SqlCommand {Connection = STDBConn};
+            // devo inserirlo
+            SqlTransaction traStd = STDBConn.BeginTransaction();
             try
             {
                 qryStd.Transaction = traStd;
@@ -424,8 +411,8 @@ namespace VotoTouch
                         ", PortaLettore = " + VTConfig.PortaLettore.ToString() +
                         ", UsaSemaforo = " + usas.ToString() +
                         ", IPCOMSemaforo = '" + VTConfig.IP_Com_Semaforo + "'" +
-                        " where Postazione = '" + ANomeTotem + "'";
-                NumberofRows = qryStd.ExecuteNonQuery();
+                        " where Postazione = '" + VTConfig.NomeTotem + "'";
+                qryStd.ExecuteNonQuery();
                 traStd.Commit();
                 result = 1;
             }
@@ -452,6 +439,8 @@ namespace VotoTouch
         // --------------------------------------------------------------------------
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------
+
+        #region Caricamento dati votazioni
 
         override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
@@ -595,7 +584,9 @@ namespace VotoTouch
             }
             return result;
         }
-        
+
+        #endregion
+
         // --------------------------------------------------------------------------
 		//  METODI SUI BADGE
 		// --------------------------------------------------------------------------
@@ -613,16 +604,14 @@ namespace VotoTouch
             // naturalmente true indica che il controllo è andato a buon fine e può continuare
 
             SqlDataReader a;
-            SqlCommand qryStd;
             SqlTransaction traStd = null;
-            bool result, Presente, resCons, BAnnull, BNonEsiste;
+            bool Presente, resCons, BAnnull, BNonEsiste;
 
             // testo la connessione
             if (!OpenConnection("ControllaBadge")) return false;
 
-            result = true;
-            qryStd = new SqlCommand();
-            qryStd.Connection = STDBConn;
+            bool result = true;
+            SqlCommand qryStd = new SqlCommand {Connection = STDBConn};
             // apro una transazione atomica
             // metto sotto try
             try
@@ -751,7 +740,7 @@ namespace VotoTouch
             finally
             {
                 qryStd.Dispose();
-                traStd.Dispose();
+                if (traStd != null) traStd.Dispose();
                 CloseConnection("");
             }
 
@@ -843,6 +832,7 @@ namespace VotoTouch
             {
                 // ciclo sul voto per crearmi l'array dei diritti di voto per ogni singola votazione
                 //for (int i = 0  ; i < NVoti; i++)
+                // TODO: CVotoDBDati|CaricaDirittidiVotoDaDatabase - Inutile chiamare n volte la query
                 foreach (TNewVotazione voto in AVotazioni.Votazioni)
                 {
                     IDVotazione = voto.IDVoto;
@@ -952,7 +942,7 @@ namespace VotoTouch
 
             SqlCommand qryStd = null, qryVoti = null;
             SqlTransaction traStd = null;
-            int result = 0; int TopRand = VSDecl.MAX_ID_RANDOM;
+            int result = 0; const int TopRand = VSDecl.MAX_ID_RANDOM;
             double PNAzioni = 0;
             Random random;
 
@@ -979,7 +969,7 @@ namespace VotoTouch
                                          " (@Badge, @idSeggio, { fn NOW() }, @NomeComputer)";
                     qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                     qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
-                    qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = NomeTotem;
+                    qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = VTConfig.NomeTotem;
                     qryStd.ExecuteNonQuery();
                 }
 
@@ -1001,9 +991,8 @@ namespace VotoTouch
                         qryStd.Parameters.Add("@IdAzion", System.Data.SqlDbType.Int).Value = az.IDAzion;
                         qryStd.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
                         qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
-                        qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = NomeTotem;
+                        qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = VTConfig.NomeTotem;
                         qryStd.ExecuteNonQuery();
-
                         // 
                         foreach (TVotoEspresso vt in az.VotiEspressi)
                         {
@@ -1012,11 +1001,8 @@ namespace VotoTouch
                             int AIDBadge_OK = AIDBadge;
                             if (!VTConfig.SalvaLinkVoto)
                                 AIDBadge_OK = random.Next(1, TopRand);
-
-                            if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
-                                PNAzioni = 1;
-                            else
-                                PNAzioni = az.NAzioni;
+                            // salvo i voti o le azioni a seconda del modo assemblea
+                            PNAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : az.NAzioni;
 
                             // salvo nel db
                             qryVoti.Parameters.Clear();
@@ -1054,7 +1040,7 @@ namespace VotoTouch
             {
                 qryStd.Dispose();
                 qryVoti.Dispose();
-                traStd.Dispose();
+                if (traStd != null) traStd.Dispose();
                 CloseConnection("");
             }
             return result;
@@ -1282,7 +1268,6 @@ namespace VotoTouch
 		// carica la configurazione 
         override public Boolean CaricaConfig()
 		{
-            //DR11 OK
 			string ss = "", GeasFileName = "";
 
             // verifica se è locale oppure no
@@ -1326,7 +1311,7 @@ namespace VotoTouch
             }
             catch (Exception e)
             {
-                Logging.WriteToLog("<dberror> fn CaricaConfig: " + NomeTotem + " err: " + e.Message);
+                Logging.WriteToLog("<dberror> fn CaricaConfig: " + VTConfig.NomeTotem + " err: " + e.Message);
                 return false;
             }		
 
@@ -1341,7 +1326,6 @@ namespace VotoTouch
             if (badgelist == null) return false;
 
             SqlDataReader a;
-            SqlCommand qryStd;
             string bdg = "0";
  
             badgelist.Clear();
@@ -1349,10 +1333,9 @@ namespace VotoTouch
             // testo la connessione
             if (!OpenConnection("DammiTuttiIBadgeValidi")) return false;
 
-            qryStd = new SqlCommand();
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
-                qryStd.Connection = STDBConn;
                 // Leggo ora da GEAS_Titolari	
                 qryStd.CommandText = "select T.badge, T.idazion from geas_titolari T  where T.Reale=1 and T.Annullato = 0 order by Badge";
                 a = qryStd.ExecuteReader();

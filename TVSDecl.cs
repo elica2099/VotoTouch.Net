@@ -14,7 +14,6 @@
 
 
 using System;
-using System.Collections;
 
 namespace VotoTouch
 {
@@ -31,6 +30,12 @@ namespace VotoTouch
 //    static public class TTotemConfig
     static public class VTConfig
     {
+        // CONFIGURAZIONE DINAMICA
+        public static bool IsDemoMode;
+        public static string NomeTotem;
+        public static bool IsDebugMode;
+        public static bool IsPaintTouch;
+
         // CONFIGURAZIONE GENERALE
         static public int ModoAssemblea;
         static public bool SalvaLinkVoto;
@@ -72,7 +77,9 @@ namespace VotoTouch
             AbilitaBottoneUscita = false;
             AttivaAutoRitornoVoto = false;
             TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
-            AbilitaDirittiNonVoglioVotare = false;           
+            AbilitaDirittiNonVoglioVotare = false;
+            IsDemoMode = false;
+            NomeTotem = "";
         }
     }
 
@@ -143,7 +150,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.0 01/03/2016";
+        public const string VTS_VERSION = "4.0RC1 01/03/2016";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string CONFIGURA = "88889990";

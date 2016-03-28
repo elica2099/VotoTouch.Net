@@ -156,19 +156,25 @@ namespace VotoTouch
 
             // qua modifico in funzione del parametro AbilitaDirittiNonVoglioVotare.
             // se è no, prendo il count bvanale, altrimenti devo fare la media
-
             if (!VTConfig.AbilitaDirittiNonVoglioVotare)
             {
                 var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
-                TAzionista v = listatemp.ElementAt(0);
-                return (int) Azionisti.Count(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz);
+                IEnumerable<TAzionista> azionistas = listatemp as IList<TAzionista> ?? listatemp.ToList();
+                if (azionistas.Any())
+                {
+                    TAzionista v = azionistas.ElementAt(0);
+                    return (int) Azionisti.Count(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz);
+                }
+                else
+                    return 0;
             }
             else
             {
                 var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
-                if (AzionNoVotato.Count() > 0)
+                IEnumerable<TAzionista> azionistas = AzionNoVotato as IList<TAzionista> ?? AzionNoVotato.ToList();
+                if (azionistas.Any())
                 {
-                    var maxDiritti = AzionNoVotato
+                    var maxDiritti = azionistas
                         .GroupBy(n => n.IDVotaz)
                         .Select(group =>
                                 new
@@ -255,22 +261,25 @@ namespace VotoTouch
 
         public bool EstraiAzionisti_VotoCorrente(bool ADifferenziato)
         {
+            // **** questo è il vero cuore del voto ****
             // estrae l'azionista  (se diff o se ha 1 solo diritto) o l'elenco di azionisti che sono in voto
             // tipicamente prende i primi della lista che non hanno votato:
             // - Se normale prende il gruppo che non ha votato di una singola votazione
             // - Se differenziato prende il primo record che non ha votato indipendentemente dalla votazione
+
+            // resetta la lista dei diritti di voto correnti
+            ListaDiritti_VotoCorrente.Clear();
            
             // ritorna true se ce ne sono, false se è finito il voto
             if (_Azionisti != null && _Azionisti.Count > 0)
             {
-                // resetta la lista dei diritti di voto correnti
-                ListaDiritti_VotoCorrente.Clear();
                 if (ADifferenziato)
                 {
                     // LINQ Prende il primo e lo trasferisce nella lista correnti
                     var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
                     //var azionistas = listatemp as IList<TAzionista> ?? listatemp.ToList();
                     //ListaDiritti_VotoCorrente = azionistas.ToList();
+                    // ce ne sarà sempre solo uno
                     foreach (TAzionista c in listatemp)
                         ListaDiritti_VotoCorrente.Add(c);
                 }
@@ -278,15 +287,15 @@ namespace VotoTouch
                 {
                     // LINQ Prende i primi n con idvotazioni contigui partendo dal primo
                     var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
-                    //var azionistas = listatemp as IList<TAzionista> ?? listatemp.ToList();
-                    //if (azionistas.Any())
-                    if (listatemp.Count() > 0)
+                    var azionistas = listatemp as IList<TAzionista> ?? listatemp.ToList();
+                    if (azionistas.Any())
+                    //if (listatemp.Count() > 0)
                     {
                         // estrae la votazione del primo
-                        //TAzionista v = azionistas.ElementAt(0);
-                        TAzionista v = listatemp.ElementAt(0);
-                        listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO && a.IDVotaz == v.IDVotaz);
-                        foreach (TAzionista c in listatemp)
+                        TAzionista v = azionistas.ElementAt(0);
+                        //TAzionista v = listatemp.ElementAt(0);
+                        var listatemp2 = _Azionisti.Where(a => a.HaVotato == VOTATO_NO && a.IDVotaz == v.IDVotaz);
+                        foreach (TAzionista c in listatemp2)
                             ListaDiritti_VotoCorrente.Add(c);
                     }
                 }

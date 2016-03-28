@@ -19,16 +19,16 @@ namespace VotoTouch
         public Boolean FConnesso;
         public int FIDSeggio;
         //public string LogNomeFile;
-        public string NomeTotem;
+        //public string NomeTotem;
 
         public string AData_path;
         public Boolean ADataLocal;
 
-        public CVotoBaseDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path)
+        public CVotoBaseDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path)
         {
             FDBConfig = AFDBConfig;
             AData_path = AAData_path;
-            NomeTotem = ANomeTotem;
+            //NomeTotem = ANomeTotem;
             ADataLocal = AADataLocal;
 
             // i file devono essere in locale nella cartella Data
@@ -54,7 +54,7 @@ namespace VotoTouch
             return 0;
         }
 
-        virtual public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
+        virtual public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
             return 0;
         }
@@ -64,7 +64,7 @@ namespace VotoTouch
             return 0;
         }
         
-        virtual public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
+        virtual public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }

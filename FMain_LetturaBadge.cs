@@ -3,6 +3,8 @@ using System.Windows.Forms;
 
 namespace VotoTouch
 {
+    // DR16 - Classe intera
+
     public partial class frmMain : Form
     {
 
@@ -63,7 +65,7 @@ namespace VotoTouch
             // cioè 88889999
             if (AText == VSDecl.RIPETIZ_VOTO && VTConfig.VotoAperto)
             {
-                CodiceRipetizioneVoto(AText);
+                CodiceRipetizioneVoto();
                 return;
             } // if (AText == VSDecl.RIPETIZ_VOTO && TotCfg.VotoAperto)
 
@@ -242,7 +244,7 @@ namespace VotoTouch
             }  // if (AText == TotCfg.CodiceUscita && Stato
         }
 
-        private void CodiceRipetizioneVoto(string AText)
+        private void CodiceRipetizioneVoto()
         {
             // qua è un casino, perché ho due casi:
             // 1. è stato digitato un badge, quindi c'è il messaggio "ha già votato"
@@ -250,11 +252,11 @@ namespace VotoTouch
             if (Stato == TAppStato.ssvBadge)
             {
                 if (MessageBox.Show(VSDecl.MSG_CANC_VOTO + Badge_Letto, "Cancellazione Voto", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
                     // ulteriore conferma
                     if (MessageBox.Show(VSDecl.MSG_CANC_VOTO_C + Badge_Letto, "Conferma Cancellazione Voto", MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                        MessageBoxIcon.Exclamation) == DialogResult.Yes)
                     {
                         Logging.WriteToLog("--> Voto " + Badge_Letto.ToString() + " Cancellati voti (88889999).");
                         oDBDati.CancellaBadgeVotazioni(Badge_Letto);
@@ -266,12 +268,12 @@ namespace VotoTouch
             if (Stato != TAppStato.ssvVotoFinito)
             {
                 if (MessageBox.Show(VSDecl.MSG_RIPETIZ_VOTO + Badge_Letto.ToString(), "Annullamento Voto", MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
                     // ritorna all'inizio
                     // ulteriore conferma
                     if (MessageBox.Show(VSDecl.MSG_RIPETIZ_VOTO_C + Badge_Letto, "Conferma Annullamento Voto", MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.Yes)
+                        MessageBoxIcon.Exclamation) == DialogResult.Yes)
                     {
                         Logging.WriteToLog("--> Voto " + Badge_Letto.ToString() + " Annullato (88889999).");
                         TornaInizio();

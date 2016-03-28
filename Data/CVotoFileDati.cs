@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Data;
 
 namespace VotoTouch
@@ -12,8 +8,8 @@ namespace VotoTouch
     public class CVotoFileDati : CVotoBaseDati
     {
 
-        public CVotoFileDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path) : 
-            base(AFDBConfig, ANomeTotem, AADataLocal, AAData_path)
+        public CVotoFileDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) : 
+            base(AFDBConfig, AADataLocal, AAData_path)
         {
             //
         }
@@ -45,9 +41,9 @@ namespace VotoTouch
             return 0;
         }
 
-        override public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
+        override public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
-            VTConfig.Postazione = NomeTotem;
+            VTConfig.Postazione = VTConfig.NomeTotem;
             // faccio un  ulteriore controllo
             VTConfig.IDSeggio = 99;
             FIDSeggio = 99;
@@ -84,7 +80,7 @@ namespace VotoTouch
             return 0;
         }
 
-        override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
+        override public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
@@ -99,7 +95,7 @@ namespace VotoTouch
 
         override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
-            int z;
+            //int z;
             DataTable dt = new DataTable();
             TNewVotazione v;
 
@@ -135,11 +131,9 @@ namespace VotoTouch
         {
             DataTable dt = new DataTable();
             TNewLista Lista;
-            int presCDA;
-            string ASort;
 
             dt.ReadXml(AData_path + "VS_Liste_Totem.xml");
-            ASort = "idlista desc";
+            string ASort = "idlista desc";
             // cicla lungo le votazioni e carica le liste
             foreach (TNewVotazione votaz in AVotazioni)
             {
@@ -158,7 +152,6 @@ namespace VotoTouch
                         break;
                 }
 
-                presCDA = 0;
                 foreach (DataRow riga in dt.Select("NumVotaz = " +
                     votaz.IDVoto.ToString(), ASort))
                 {
@@ -239,16 +232,18 @@ namespace VotoTouch
                 // un voto
                 if (AIDBadge == 1000)
                 {
-                    a = new TAzionista();
-                    a.CoAz = "10000";
-                    a.IDAzion = 10000;
-                    a.IDBadge = 1000;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 10000;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10000",
+                            IDAzion = 10000,
+                            IDBadge = 1000,
+                            ProgDeleg = 0,
+                            RaSo = "Mario Rossi",
+                            Sesso = "M",
+                            NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 10000,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                     // poi lo salvo come titolare
                     ATitolare_badge.CopyFrom(ref a);
@@ -256,42 +251,48 @@ namespace VotoTouch
                 // tre voti
                 if (AIDBadge == 1001)
                 {
-                    a = new TAzionista();
-                    a.CoAz = "10001";
-                    a.IDAzion = 10001;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 5000;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10001",
+                            IDAzion = 10001,
+                            IDBadge = 1001,
+                            ProgDeleg = 0,
+                            RaSo = "Mario Rossi",
+                            Sesso = "M",
+                            NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 5000,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                     // poi lo salvo come titolare
                     ATitolare_badge.CopyFrom(ref a);
 
-                    a = new TAzionista();
-                    a.CoAz = "10002";
-                    a.IDAzion = 10002;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 1;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 1";
-                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 300;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10002",
+                            IDAzion = 10002,
+                            IDBadge = 1001,
+                            ProgDeleg = 1,
+                            Sesso = "M",
+                            RaSo = "Mario Rossi - Delega 1",
+                            NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 300,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
 
-                    a = new TAzionista();
-                    a.CoAz = "10003";
-                    a.IDAzion = 10003;
-                    a.IDBadge = 1003;
-                    a.ProgDeleg = 0;
-                    a.NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 1500;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 2";
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10003",
+                            IDAzion = 10003,
+                            IDBadge = 1003,
+                            ProgDeleg = 0,
+                            NAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : 1500,
+                            Sesso = "M",
+                            RaSo = "Mario Rossi - Delega 2",
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                 }
             }

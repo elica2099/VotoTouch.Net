@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Data;
 using System.Data.OleDb;
 using System.Windows.Forms;
 
@@ -15,8 +11,8 @@ namespace VotoTouch
     public class CVotoMDBDati : CVotoBaseDati
     {
 
-        public CVotoMDBDati(ConfigDbData AFDBConfig, string ANomeTotem, Boolean AADataLocal, string AAData_path) :
-            base(AFDBConfig, ANomeTotem, AADataLocal, AAData_path)
+        public CVotoMDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) :
+            base(AFDBConfig, AADataLocal, AAData_path)
         {
             //
         }
@@ -48,9 +44,9 @@ namespace VotoTouch
             return 0;
         }
 
-        override public int DammiConfigTotem(string ANomeTotem) //, ref TTotemConfig TotCfg)
+        override public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
-            VTConfig.Postazione = NomeTotem;
+            VTConfig.Postazione = VTConfig.NomeTotem;
             // faccio un  ulteriore controllo
             VTConfig.IDSeggio = 99;
             FIDSeggio = 99;
@@ -86,12 +82,14 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
+            conn = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
             // create the command
-            qryStd = new OleDbCommand();
-            qryStd.Connection = conn;
-            qryStd.CommandText = "select * from CONFIG_CfgVotoSegreto where attivo = true";
+            qryStd = new OleDbCommand
+                {
+                    Connection = conn,
+                    CommandText = "select * from CONFIG_CfgVotoSegreto where attivo = true"
+                };
             try
             {
                 // open the connection
@@ -137,14 +135,14 @@ namespace VotoTouch
             }
             finally
             {
-                if (qryStd != null) qryStd.Dispose();
+                qryStd.Dispose();
                 conn.Close();
             }
 
             return result;
         }
 
-        override public int SalvaConfigurazione(string ANomeTotem) //, ref TTotemConfig ATotCfg)
+        override public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
@@ -167,12 +165,14 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
+            conn = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
             // create the command
-            qryStd = new OleDbCommand();
-            qryStd.Connection = conn;
-            qryStd.CommandText = "select * from VS_MatchVot_Totem where GruppoVotaz < 999 order by NumVotaz";
+            qryStd = new OleDbCommand
+                {
+                    Connection = conn,
+                    CommandText = "select * from VS_MatchVot_Totem where GruppoVotaz < 999 order by NumVotaz"
+                };
             try
             {
                 // open the connection
@@ -215,7 +215,7 @@ namespace VotoTouch
             }
             finally
             {
-                if (qryStd != null) qryStd.Dispose();
+                qryStd.Dispose();
                 conn.Close();
             }
 
@@ -232,10 +232,9 @@ namespace VotoTouch
 
             string source = AData_path + "DemoVotoTouchData.mdb";
             // create the connection 
-            conn = new System.Data.OleDb.OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
+            conn = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Mode=Read;Data Source=" + source);
 
-            qryStd = new OleDbCommand();
-            qryStd.Connection = conn;
+            qryStd = new OleDbCommand {Connection = conn};
             try
             {
                 // open the connection
@@ -414,16 +413,18 @@ namespace VotoTouch
                 // un voto
                 if (AIDBadge == 1000)
                 {
-                    a = new TAzionista();
-                    a.CoAz = "10000";
-                    a.IDAzion = 10000;
-                    a.IDBadge = 1000;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10000",
+                            IDAzion = 10000,
+                            IDBadge = 1000,
+                            ProgDeleg = 0,
+                            RaSo = "Mario Rossi",
+                            Sesso = "M",
+                            NAzioni = 1,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                     // poi lo salvo come titolare
                     ATitolare_badge.CopyFrom(ref a);
@@ -431,42 +432,48 @@ namespace VotoTouch
                 // tre voti
                 if (AIDBadge == 1001)
                 {
-                    a = new TAzionista();
-                    a.CoAz = "10001";
-                    a.IDAzion = 10001;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 0;
-                    a.RaSo = "Mario Rossi";
-                    a.Sesso = "M";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10001",
+                            IDAzion = 10001,
+                            IDBadge = 1001,
+                            ProgDeleg = 0,
+                            RaSo = "Mario Rossi",
+                            Sesso = "M",
+                            NAzioni = 1,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                     // poi lo salvo come titolare
                     ATitolare_badge.CopyFrom(ref a);
 
-                    a = new TAzionista();
-                    a.CoAz = "10002";
-                    a.IDAzion = 10002;
-                    a.IDBadge = 1001;
-                    a.ProgDeleg = 1;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 1";
-                    a.NAzioni = 1;
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10002",
+                            IDAzion = 10002,
+                            IDBadge = 1001,
+                            ProgDeleg = 1,
+                            Sesso = "M",
+                            RaSo = "Mario Rossi - Delega 1",
+                            NAzioni = 1,
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
 
-                    a = new TAzionista();
-                    a.CoAz = "10003";
-                    a.IDAzion = 10003;
-                    a.IDBadge = 1003;
-                    a.ProgDeleg = 0;
-                    a.NAzioni = 1;
-                    a.Sesso = "M";
-                    a.RaSo = "Mario Rossi - Delega 2";
-                    a.IDVotaz = IDVotazione;
-                    a.HaVotato = TListaAzionisti.VOTATO_NO;
+                    a = new TAzionista
+                        {
+                            CoAz = "10003",
+                            IDAzion = 10003,
+                            IDBadge = 1003,
+                            ProgDeleg = 0,
+                            NAzioni = 1,
+                            Sesso = "M",
+                            RaSo = "Mario Rossi - Delega 2",
+                            IDVotaz = IDVotazione,
+                            HaVotato = TListaAzionisti.VOTATO_NO
+                        };
                     AAzionisti.Add(a);
                 }
             }

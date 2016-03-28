@@ -13,7 +13,7 @@ namespace VotoTouch
     // TODO: In caso di Votazione con AbilitaDiritti... mettere sulla videata di inizio lo stato dei diritti espressi
     // TODO: ModoAssemblea, salvare azioni o voti, mostrare azioni o voti
     // TODO: Mettere finestra riepilogo azionista
-    // TODO: verificare le azioni nel differenziato
+    // TODO: Unificare pop e agm in TListaAzionisti
 
 	/// <summary>
 	/// Summary description for Form1.\
@@ -30,10 +30,10 @@ namespace VotoTouch
         private System.Windows.Forms.Timer timAutoRitorno;
 
         // Modo Debug
-        public bool DebugMode;
-        public bool PaintTouch;
-        // VersioneDemo
-        public bool DemoVersion;
+        //public bool DebugMode;
+        //public bool PaintTouch;
+        //// VersioneDemo
+        //public bool DemoVersion;
         // oggetti demo
         private Button btnBadgeUnVoto;
         private Button btnBadgePiuVoti;
@@ -59,7 +59,7 @@ namespace VotoTouch
         public ConfigDbData DBConfig;           // database
         public TAppStato Stato;                 // macchina a stato
         public string Data_Path;                // path della cartella data
-        public string   NomeTotem;              // nome della macchina
+        //public string   NomeTotem;              // nome della macchina
         public string   LogVotiNomeFile;        // nome file del log
         public bool CtrlPrimoAvvio;             // serve per chiudere la finestra in modo corretto
         
@@ -102,9 +102,9 @@ namespace VotoTouch
             SetStyle(ControlStyles.UserPaint, true);
 
             // variabili demo e debug
-            DebugMode = false;
-		    PaintTouch = false;
-            DemoVersion = false;
+            VTConfig.IsDebugMode = false;
+            VTConfig.IsPaintTouch = false;
+            VTConfig.IsDemoMode = false;
 
             CtrlPrimoAvvio = PrimoAvvio;
             if (!CtrlPrimoAvvio)
@@ -138,10 +138,10 @@ namespace VotoTouch
            
             // ritrovo il nome della macchina che mi servirà per interrogare il db
 			int i;
-			NomeTotem = System.Security.Principal.WindowsIdentity.GetCurrent().Name.ToString();
-			for (i = 0; i< NomeTotem.Length; i++)
-				if (NomeTotem[i] == '\\' ) break;
-			NomeTotem = NomeTotem.Remove(0, i+1);
+            VTConfig.NomeTotem = System.Security.Principal.WindowsIdentity.GetCurrent().Name.ToString();
+            for (i = 0; i < VTConfig.NomeTotem.Length; i++)
+                if (VTConfig.NomeTotem[i] == '\\') break;
+            VTConfig.NomeTotem = VTConfig.NomeTotem.Remove(0, i + 1);
 
             // ok, per prima cosa verifico se c'è la cartella c:\data, se si ok
             // sennò devo considerare la cartella dell'applicazione, se non c'è esco
@@ -155,12 +155,12 @@ namespace VotoTouch
             if (File.Exists(Data_Path + "VTS_DEMO.txt"))
             {
                 // Ok è la versione demo
-                DemoVersion = true;
+                VTConfig.IsDemoMode = true;
                 // start the logging
-                Logging.generateInternalLogFileName(Data_Path, "VotoTouch_" + NomeTotem);
+                Logging.generateInternalLogFileName(Data_Path, "VotoTouch_" + VTConfig.NomeTotem);
                 Logging.WriteToLog("---- DEMO MODE ----");
                 // ok, ora creo la classe che logga i voti
-                LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(Data_Path, "VotoT_" + NomeTotem);
+                LogVotiNomeFile = LogVote.GenerateDefaultLogFileName(Data_Path, "VotoT_" + VTConfig.NomeTotem);
             }
             else
             {
@@ -169,7 +169,7 @@ namespace VotoTouch
                 // in locale, caricando comunque un file GEAS.sql da data
                 if (File.Exists(Data_Path + "VTS_STANDALONE.txt"))
                 {
-                    Logging.generateInternalLogFileName(Data_Path, "VotoTouch_" + NomeTotem);
+                    Logging.generateInternalLogFileName(Data_Path, "VotoTouch_" + VTConfig.NomeTotem);
                     Logging.WriteToLog("---- STANDALONE MODE ----");
                 }
                 else
@@ -185,7 +185,7 @@ namespace VotoTouch
                     // Inizializzo il log
                     if (!Directory.Exists(@"M:\LST\VotoTouch\"))
                         Directory.CreateDirectory(@"M:\LST\VotoTouch\");
-                    Logging.generateInternalLogFileName(@"M:\LST\VotoTouch\", "VotoTouch_" + NomeTotem);
+                    Logging.generateInternalLogFileName(@"M:\LST\VotoTouch\", "VotoTouch_" + VTConfig.NomeTotem);
                 }
             }
             // loggo l'inizio dell'applicazione
@@ -193,8 +193,8 @@ namespace VotoTouch
             splash.SetSplash(20, rm.GetString("SAPP_START_INITDB"));    // "Inizializzo database...");
 
             // identificazione DebugMode
-            DebugMode = File.Exists(Data_Path + "VTS_DEBUG.txt");
-            PaintTouch = File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
+            VTConfig.IsDebugMode = File.Exists(Data_Path + "VTS_DEBUG.txt");
+            VTConfig.IsPaintTouch = File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
 
             // classe lbConferma
 		    lbConferma = new LabelCandidati();
@@ -204,11 +204,11 @@ namespace VotoTouch
             // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
             // questa versione la configurazione è centralizzata sul db
             bool dataloc = File.Exists(Data_Path + "VTS_STANDALONE.txt");
-            if (DemoVersion)
-                oDBDati = new CVotoMDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
+            if (VTConfig.IsDemoMode)
+                oDBDati = new CVotoMDBDati(DBConfig, dataloc, Data_Path);
                 //oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
             else
-                oDBDati = new CVotoDBDati(DBConfig, NomeTotem, dataloc, Data_Path);
+                oDBDati = new CVotoDBDati(DBConfig, dataloc, Data_Path);
 
             //oDBDati.FDBConfig = DBConfig;
             //oDBDati.NomeTotem = NomeTotem;
@@ -234,7 +234,7 @@ namespace VotoTouch
                 // leggo la configurazione generale
                 DBOk += oDBDati.DammiConfigDatabase(); //ref TotCfg);
                 // leggo la configurazione del singolo totem
-                DBOk += oDBDati.DammiConfigTotem(NomeTotem); //, ref TotCfg);
+                DBOk += oDBDati.DammiConfigTotem(); //, ref TotCfg);
                 splash.SetSplash(50, rm.GetString("SAPP_START_INITVOT"));  //"Carico liste e votazioni..."
 
                 if (VTConfig.VotoAperto) Logging.WriteToLog("Votazione già aperta");
@@ -342,7 +342,7 @@ namespace VotoTouch
                 };
 		    timAutoRitorno.Tick += timAutoRitorno_Tick;
 
-            pnSemaf.BackColor = Color.Transparent;
+            //pnSemaf.BackColor = Color.Transparent;
 
             splash.SetSplash(90, rm.GetString("SAPP_START_INITVAR"));   //"Inizializzo variabili...");
             // scrive la configurazione nel log
@@ -353,7 +353,7 @@ namespace VotoTouch
             Logging.WriteToLog("   UsaSemaforo: " + VTConfig.UsaSemaforo.ToString());
             Logging.WriteToLog("   IPSemaforo: " + VTConfig.IP_Com_Semaforo);
             Logging.WriteToLog("   IDSeggio: " + VTConfig.IDSeggio.ToString());
-            Logging.WriteToLog("   NomeComputer: " + NomeTotem);
+            Logging.WriteToLog("   NomeComputer: " + VTConfig.NomeTotem);
             Logging.WriteToLog("   ControllaPresenze: " + VTConfig.ControllaPresenze.ToString());
             Logging.WriteToLog("** CodiceUscita: " + VTConfig.CodiceUscita);
             Logging.WriteToLog("");
@@ -361,7 +361,7 @@ namespace VotoTouch
             // inizializzo i componenti
 			InizializzaControlli();
             // Se è in demo mode metto i controlli
-            if (DemoVersion)
+            if (VTConfig.IsDemoMode)
                 InizializzaControlliDemo();
 
 			// ora inizializzo la macchina a stati
@@ -371,13 +371,10 @@ namespace VotoTouch
             splash.Hide();
 
             // se sono in debug evidenzio le zone sensibili
-            oVotoTouch.PaintTouchOnScreen = PaintTouch;
+            oVotoTouch.PaintTouchOnScreen = VTConfig.IsPaintTouch;
 
             // se la votazione è aperta il timer di controllo voto batte di meno
-            if (VTConfig.VotoAperto)
-                timVotoApero.Interval = VSDecl.TIM_CKVOTO_MAX;
-            else
-                timVotoApero.Interval = VSDecl.TIM_CKVOTO_MIN;
+            timVotoApero.Interval = VTConfig.VotoAperto ? VSDecl.TIM_CKVOTO_MAX : VSDecl.TIM_CKVOTO_MIN;
 
             // Attivo la macchina a stati (in FMain_MacchinaAStati.cs)
             CambiaStato();
@@ -487,7 +484,7 @@ namespace VotoTouch
             }
 
             // se è demo devo stampare una label
-            if (DemoVersion)
+            if (VTConfig.IsDemoMode)
             {
                 try
                 {
@@ -543,7 +540,7 @@ namespace VotoTouch
             }
             
             // ok, ora se è in demo mode faccio il resize dei controlli
-            if (DemoVersion)
+            if (VTConfig.IsDemoMode)
             {
                 // bottone un voto
                 if (btnBadgeUnVoto != null)
@@ -657,7 +654,7 @@ namespace VotoTouch
                 VTConfig.IP_Com_Semaforo = ASemComPort;
             }
             // salva la configurazione sul database
-            if (oDBDati.SalvaConfigurazione(NomeTotem) == 1)
+            if (oDBDati.SalvaConfigurazione() == 1)
                 MessageBox.Show("Configurazione salvata sul database", "Information",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             //// aggiorna il componente (non serve)
@@ -724,10 +721,10 @@ namespace VotoTouch
 
         private void SemaforoOKImg(bool bok)
         {
-            if (bok)
-                pnSemaf.BackColor = Color.LimeGreen;
-            else
-                pnSemaf.BackColor = Color.Red;
+            //if (bok)
+            //    pnSemaf.BackColor = Color.LimeGreen;
+            //else
+            //    pnSemaf.BackColor = Color.Red;
         }
         
         private static bool PrimoAvvio
@@ -839,7 +836,7 @@ namespace VotoTouch
         private void MostraPannelloStato()
         {
             TNewLista a;
-            int i, z;
+            int z;
             
             //lbVersion.Visible = true;
             Panel4.Left = this.Width - Panel4.Width - 5;
@@ -854,7 +851,7 @@ namespace VotoTouch
             lbVersion.Items.Add("Configurazione");
             lbVersion.Items.Add("Usalettore: " + VTConfig.UsaLettore.ToString() + " Porta: " + VTConfig.PortaLettore.ToString());
             lbVersion.Items.Add("UsaSemaforo: " + VTConfig.UsaSemaforo.ToString() + " IP: " + VTConfig.IP_Com_Semaforo.ToString());
-            lbVersion.Items.Add("IDSeggio: " + VTConfig.IDSeggio.ToString() + " NomeComputer: " + NomeTotem);
+            lbVersion.Items.Add("IDSeggio: " + VTConfig.IDSeggio.ToString() + " NomeComputer: " + VTConfig.NomeTotem);
             lbVersion.Items.Add("ControllaPresenze: " + VTConfig.ControllaPresenze.ToString() +
                 " CodiceUscita: " + VTConfig.CodiceUscita);
             lbVersion.Items.Add("SalvaLinkVoto: " + VTConfig.SalvaLinkVoto.ToString());
@@ -886,7 +883,6 @@ namespace VotoTouch
 
         private void MostaPannelloStatoAzionista()
         {
-            int i;
             Panel4.Left = this.Width - Panel4.Width - 5;
             Panel4.Top = 5;
             label1.Text = "Informazioni sull'Azionista";
@@ -909,7 +905,7 @@ namespace VotoTouch
 
         private void edtBadge_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (DebugMode)
+            if (VTConfig.IsDebugMode)
             {
                 // il tasto più aumenta di uno edtBadge
                 if (e.KeyChar == '+')

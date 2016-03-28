@@ -7,6 +7,7 @@ namespace VotoTouch
 
     public partial class frmMain : Form
     {
+        // DR16 - Classe intera
 
         //******************************************************************************
         // ----------------------------------------------------------------
@@ -30,7 +31,7 @@ namespace VotoTouch
 
         private void CambiaStatoDaTimer()
         {
-            TAzionista c;
+            //TAzionista c;
             // gestione degli stati della votazione
             switch (Stato)
             {
@@ -64,10 +65,7 @@ namespace VotoTouch
                         // ok, ora setto la variabile locale di configurazione
                         VTConfig.VotoAperto = AperturaVotoEsterno;
                         // se la votazione è aperta il timer di controllo voto batte di meno
-                        if (VTConfig.VotoAperto)
-                            timVotoApero.Interval = VSDecl.TIM_CKVOTO_MAX;
-                        else
-                            timVotoApero.Interval = VSDecl.TIM_CKVOTO_MIN;
+                        timVotoApero.Interval = VTConfig.VotoAperto ? VSDecl.TIM_CKVOTO_MAX : VSDecl.TIM_CKVOTO_MIN;
                     }
 
                     // a seconda dello stato, mostro il semaforo e metto l'immagine corretta
@@ -84,10 +82,9 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvVotoStart:
-                    if (Azionisti.HaDirittiDiVotoMultipli())
-                        oVotoTouch.CalcolaTouchSpecial(Votazioni.ClasseTipoVotoStartDiff);
-                    else
-                        oVotoTouch.CalcolaTouchSpecial(Votazioni.ClasseTipoVotoStartNorm);
+                    oVotoTouch.CalcolaTouchSpecial(Azionisti.HaDirittiDiVotoMultipli()
+                                                       ? Votazioni.ClasseTipoVotoStartDiff
+                                                       : Votazioni.ClasseTipoVotoStartNorm);
                     //oVotoTouch.CalcolaTouchSpecial(Stato, Azionisti.HaDirittiDiVotoMultipli());
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
@@ -102,28 +99,40 @@ namespace VotoTouch
 
                     // ok, ora estraggo l'azionista o il gruppo di azionisti (se non è differenziato) che devono votare
                     // in Azionisti.AzionistiInVotoCorrente ho l'elenco dei diritti
-                    Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata);
                     // setto il voto corrente sul primo item dell'oggetto
-                    Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente());
-                    // calibro il touch sul voto
-                    oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
-                    // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare da un'annulla
-                    SettaComponenti(false);
-                    // cancello i voti temporanei correnti 
-                    CancellaTempVotiCorrenti();
-                    // ora metto in quadro l'immagine, che deve essere presa da un file composto da
-                    oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
-                    // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
-                    lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" + Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);                    
-                    lbNomeDisgiunto.Visible = true;
-                    //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
-                    int dir_riman = IsVotazioneDifferenziata
-                                        ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
-                                        : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
-                    if (!IsVotazioneDifferenziata && dir_riman > 1)
-                        lbNomeDisgiunto.Text += " e altre " + (dir_riman -1).ToString() + " deleghe";
-                    lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
-                    lbDirittiDiVoto.Visible = true;
+                    if (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata) &&
+                        Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente()))
+                    {
+                        // calibro il touch sul voto
+                        oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
+                        // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare da un'annulla
+                        SettaComponenti(false);
+                        // cancello i voti temporanei correnti 
+                        CancellaTempVotiCorrenti();
+                        // ora metto in quadro l'immagine, che deve essere presa da un file composto da
+                        oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
+                        // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
+                        lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" +
+                                               Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
+                        lbNomeDisgiunto.Visible = true;
+                        //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
+                        int dir_riman = IsVotazioneDifferenziata
+                                            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
+                                            : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
+                        if (!IsVotazioneDifferenziata && dir_riman > 1)
+                            lbNomeDisgiunto.Text += " e altre " + (dir_riman - 1).ToString() + " deleghe";
+                        lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
+                        lbDirittiDiVoto.Visible = true;
+                    }
+                    else
+                    {
+                        // si sono verificati dei problemi, lo segnalo
+                        Logging.WriteToLog("Errore fn Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata), zero ");
+                        MessageBox.Show("Si è verificato un errore (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata))" + "\n\n" +
+                            "Chiamare operatore esterno.\n\n ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Stato = TAppStato.ssvBadge;
+                        CambiaStato();
+                    }
                     break;
 
                 case TAppStato.ssvVotoConferma:
@@ -186,7 +195,6 @@ namespace VotoTouch
                     oSemaforo.SemaforoFineOccupato();
                     Stato = TAppStato.ssvVotoFinito;
                     CambiaStato();
-
                     break;
             }
         }
@@ -195,13 +203,12 @@ namespace VotoTouch
         {
             // dr11 ok
             bool vtaperto;
-            int getvtaperto;
             // devo verificare sul database se il voto per questa postazione è aperto
-            getvtaperto = oDBDati.CheckStatoVoto(NomeTotem);
+            int getvtaperto = oDBDati.CheckStatoVoto(VTConfig.NomeTotem);
             // se sono in una condizione di errore (es db non risponde) lascio il valore precedente
             if (getvtaperto != -1)
             {
-                if (getvtaperto == 1) vtaperto = true; else vtaperto = false;
+                vtaperto = getvtaperto == 1;
                 // se sono diversi e sono all'inizio allora cambio lo stato
                 if (VTConfig.VotoAperto != vtaperto)
                 {

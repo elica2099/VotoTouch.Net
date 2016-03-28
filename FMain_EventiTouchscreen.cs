@@ -7,6 +7,7 @@ namespace VotoTouch
 
     public partial class frmMain : Form
     {
+        // DR16 - Classe intera
 
         //******************************************************************************
         // ----------------------------------------------------------------
@@ -65,7 +66,7 @@ namespace VotoTouch
             int ct = Votazioni.VotoCorrente.Liste.Count;
             if (VParam >= 0 && VParam < ct)
             {
-                a = (TNewLista)Votazioni.VotoCorrente.Liste[VParam];
+                a = Votazioni.VotoCorrente.Liste[VParam];
                 VotoEspresso = a.IDScheda;
                 VotoEspressoStr = a.ListaElenco;
                 VotoEspressoStrUp = a.DescrLista;
@@ -113,7 +114,7 @@ namespace VotoTouch
             {
                 if (voti[i] >= 0 && voti[i] < ct)
                 {
-                    a = (TNewLista)Votazioni.VotoCorrente.Liste[voti[i]];
+                    a = Votazioni.VotoCorrente.Liste[voti[i]];
                     vt = new TVotoEspresso
                         {
                             NumVotaz = a.NumVotaz,
@@ -200,8 +201,7 @@ namespace VotoTouch
             VotoEspresso = VSDecl.VOTO_NONVOTO;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
-            // nuova versione array, qua, essendo un non voglio votare, devo vedere
-            // se posso salvarlo o no, a seconda di AbilitaDirittiNonVoglioVotare
+            // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
@@ -242,7 +242,7 @@ namespace VotoTouch
             // ok, questo evento arriva quando, nella conferma del voto, è stata scelta l'opzione
             //  conferma, cioè il salvataggio del voto
 
-            // CHiamo la funzione di Conferma Voti di Azionisti
+            // CHiamo la funzione di Conferma Voti di Azionisti con l'array di voti espressi
             Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
 
             // cambio stato

@@ -11,6 +11,8 @@ using System.Windows.Forms;
 
 namespace VotoTouch
 {
+    // DR16 - Classe intera
+
     // struttura per le votazioni
     public class TNewVotazione
     {
@@ -136,12 +138,21 @@ namespace VotoTouch
 
         public bool SetVotoCorrente(int AIDVoto)
         {
-            if (_Votazioni.Count > 0)
+            if (_Votazioni.Count > 0 && AIDVoto >= 0)
             {
                 //TNewVotazione voto = _Votazioni.First(v => v.IDVoto == AIDVoto);
-                idxVotoCorrente = _Votazioni.IndexOf(_Votazioni.First(v => v.IDVoto == AIDVoto));
+                TNewVotazione vot = _Votazioni.First(v => v.IDVoto == AIDVoto);
+                if (vot != null)
+                {
+                    idxVotoCorrente = _Votazioni.IndexOf(vot);
+                    return true;
+                }
+                else
+                    return false;
             }
-            return _Votazioni.Count != 0;
+            else
+                return false;
+            //return _Votazioni.Count != 0;
         }
 
         // --------------------------------------------------------------------------
@@ -448,7 +459,7 @@ namespace VotoTouch
             // - campo Pagind che contiene l'indice enciclopedico della pagina 
             //   (es A - CG, CH - TF, TG - Z)
 
-            int i, z, pg, pgind;
+            int z, pg, pgind;
             string sp;
             TNewLista li;
             TIndiceListe idx; //, idx1;

@@ -71,7 +71,6 @@ namespace VotoTouch
             this.pbSalvaDati = new System.Windows.Forms.PictureBox();
             this.lbConfermaUp = new System.Windows.Forms.Label();
             this.lbNomeAzStart = new System.Windows.Forms.Label();
-            this.pnSemaf = new System.Windows.Forms.Panel();
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).BeginInit();
@@ -340,13 +339,6 @@ namespace VotoTouch
             this.lbNomeAzStart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbNomeAzStart.Visible = false;
             // 
-            // pnSemaf
-            // 
-            this.pnSemaf.Location = new System.Drawing.Point(0, 0);
-            this.pnSemaf.Name = "pnSemaf";
-            this.pnSemaf.Size = new System.Drawing.Size(10, 10);
-            this.pnSemaf.TabIndex = 129;
-            // 
             // frmMain
             // 
             this.BackColor = System.Drawing.SystemColors.Control;
@@ -354,7 +346,6 @@ namespace VotoTouch
             this.ClientSize = new System.Drawing.Size(844, 566);
             this.Controls.Add(this.lbConfermaUp);
             this.Controls.Add(this.lbConferma_old2);
-            this.Controls.Add(this.pnSemaf);
             this.Controls.Add(this.Panel4);
             this.Controls.Add(this.pnBadge);
             this.Controls.Add(this.lbNomeAzStart);
@@ -417,6 +408,5 @@ namespace VotoTouch
         private Label lbNomeAzStart;
         private Button btnRipetiz;
         private Button button2;
-        private Panel pnSemaf;
     }
 }
