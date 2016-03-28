@@ -434,6 +434,47 @@ namespace VotoTouch
             return result;
         }
 
+        override public int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
+        {
+            // testo la connessione
+            if (!OpenConnection("SalvaConfigurazionePistolaBarcode")) return 0;
+
+            int result = 0;
+            // preparo gli oggetti
+            int usal = VTConfig.UsaLettore ? 1 : 0;
+            int usas = VTConfig.UsaSemaforo ? 1 : 0;
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
+            // devo inserirlo
+            SqlTransaction traStd = STDBConn.BeginTransaction();
+            try
+            {
+                qryStd.Transaction = traStd;
+                qryStd.CommandText = "update CONFIG_POSTAZIONI_TOTEM with (rowlock) set " +
+                        "  UsaLettore = " + usal.ToString() +
+                        ", PortaLettore = " + VTConfig.PortaLettore.ToString() +
+                        " where Postazione = '" + VTConfig.NomeTotem + "'";
+                qryStd.ExecuteNonQuery();
+                traStd.Commit();
+                result = 1;
+            }
+            catch (Exception objExc)
+            {
+                traStd.Rollback();
+                result = 0;
+                Logging.WriteToLog("<dberror> Errore nella funzione SalvaConfigurazionePistolaBarcode: " + objExc.Message);
+                MessageBox.Show("Errore nella funzione SalvaConfigurazionePistolaBarcode" + "\n" +
+                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                qryStd.Dispose();
+                traStd.Dispose();
+                CloseConnection("");
+            }
+
+            return result;
+        }
+
         #endregion       
         
         // --------------------------------------------------------------------------

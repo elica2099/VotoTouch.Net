@@ -60,6 +60,13 @@ namespace VotoTouch.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap barcode_red {
+            get {
+                object obj = ResourceManager.GetObject("barcode_red", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap RGB_Purple_Logo_Trans_Bk_small {
             get {
                 object obj = ResourceManager.GetObject("RGB_Purple Logo_Trans Bk_small", resourceCulture);
@@ -444,6 +451,13 @@ namespace VotoTouch.Properties {
         internal static System.Drawing.Bitmap Save_icon1 {
             get {
                 object obj = ResourceManager.GetObject("Save-icon1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Semaforo_red {
+            get {
+                object obj = ResourceManager.GetObject("Semaforo_red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

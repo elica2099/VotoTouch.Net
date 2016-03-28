@@ -85,6 +85,11 @@ namespace VotoTouch
             return 0;
         }
 
+        override public int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
+        {
+            return 0;
+        }
+
         #endregion
 
         // --------------------------------------------------------------------------

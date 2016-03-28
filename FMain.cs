@@ -266,22 +266,31 @@ namespace VotoTouch
 
             splash.SetSplash(60, rm.GetString("SAPP_START_INITBARCODE"));   //"inizializzo lettore barcode...");
             // A questo punto la configurazione è attiva e caricata centralmente, posso continuare
-            // il lettore del badge
-            NewReader = new CNETActiveReader();
-            NewReader.ADataRead += ObjDataReceived;
-            evtDataReceived += new EventDataReceived(onDataReceived);
-            // lo attiverà nel load
-            if (VTConfig.UsaLettore)
-            {
-                NewReader.PortName = "COM" + VTConfig.PortaLettore.ToString();
-            }
+            //// il lettore del badge
+            //NewReader = new CNETActiveReader();
+            //NewReader.ADataRead += ObjDataReceived;
+            //evtDataReceived += new EventDataReceived(onDataReceived);
+            //// ora cerco se c'è qualche porta che va bene
+            //string ComPort = ""; 
+            //string ComDescr = "";
+            //int ComPortInt = 0;
+            //bool foundsomething = NewReader.AutodiscoverBarcode(ref ComPort, ref ComDescr, ref ComPortInt);
+            //// lo attiverà nel load
+            //if (VTConfig.UsaLettore)
+            //{
+            //    NewReader.PortName = "COM" + VTConfig.PortaLettore.ToString();
+            //}
+            //else
+            //{
+            //    // se ho trovato qualcosa allora lo salvo
+            //}
 
             splash.SetSplash(70, rm.GetString("SAPP_START_INITSEM"));       //"Inizializzo Semaforo..."
             // il semaforo, ora fa tutto lei
-            SemaforoOKImg(VTConfig.UsaSemaforo);
+            //SemaforoOKImg(VTConfig.UsaSemaforo);
             // ok, in funzione del tipo di semaforo faccio
+            // USARE SEMPRE CIPThreadSemaphore
             if (VTConfig.TipoSemaforo == VSDecl.SEMAFORO_IP)
-                // USARE SEMPRE CIPThreadSemaphore
                 oSemaforo = new CIPThreadSemaphore();
             else
                 oSemaforo = new CComSemaphore();
@@ -415,23 +424,73 @@ namespace VotoTouch
             frmVSMessage = new FVSMessage();
             this.AddOwnedForm(frmVSMessage);
 
+            //if (VTConfig.UsaLettore)
+            //{
+            //    if (!NewReader.Open())
+            //    {
+            //        // ci sono stati errori con la com all'apertura
+            //        VTConfig.UsaLettore = false;
+            //        MessageBox.Show(
+            //            rm.GetString("SAPP_START_ERRCOM1") + VTConfig.PortaLettore + rm.GetString("SAPP_START_ERRCOM2"),
+            //            "Error",
+            //            MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //        imgERBarcode.Visible = true;
+            //    }
+            //    else
+            //        imgERSemaf.Visible = false;
+            //}
+            timVotoApero.Enabled = true;
+        }
+
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            // in shown attivo il barcode reader
+            // il lettore del badge
+            NewReader = new CNETActiveReader();
+            NewReader.ADataRead += ObjDataReceived;
+            evtDataReceived += new EventDataReceived(onDataReceived);
+            // ora cerco se c'è qualche porta che va bene
+            string ComPort = "";
+            string ComDescr = "";
+            int ComPortInt = 0;
+            bool foundsomething = NewReader.AutodiscoverBarcode(ref ComPort, ref ComDescr, ref ComPortInt);
+            // Attivo        
+            if (VTConfig.UsaLettore)
+            {
+                if (foundsomething && VTConfig.PortaLettore != ComPortInt)
+                {
+                    // todo: ha perso la configurazione della com, non sa cosa fare
+                }
+                NewReader.PortName = "COM" + VTConfig.PortaLettore.ToString();
+            }
+            else
+            {
+                // se ho trovato qualcosa e non c'era ancora la configurazione allora lo salvo comunque
+                if (foundsomething)
+                {
+                    VTConfig.UsaLettore = true;
+                    VTConfig.PortaLettore = ComPortInt;
+                    NewReader.PortName = "COM" + VTConfig.PortaLettore.ToString();
+                    // salvo nel db
+                    oDBDati.SalvaConfigurazionePistolaBarcode();
+                }
+            } 
+            
             if (VTConfig.UsaLettore)
             {
                 if (!NewReader.Open())
                 {
                     // ci sono stati errori con la com all'apertura
                     VTConfig.UsaLettore = false;
-                    MessageBox.Show(rm.GetString("SAPP_START_ERRCOM1") + VTConfig.PortaLettore + rm.GetString("SAPP_START_ERRCOM2"), "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        rm.GetString("SAPP_START_ERRCOM1") + VTConfig.PortaLettore + rm.GetString("SAPP_START_ERRCOM2"),
+                        "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    imgERBarcode.Visible = true;
                 }
+                else
+                    imgERSemaf.Visible = false;
             }
-            timVotoApero.Enabled = true;
-        }
-
-        private void frmMain_Shown(object sender, EventArgs e)
-        {
-            // Carico il tema nelle labels, alla fine l'ho messo in resize
-            //CaricaTemaInControlli();
         }
         
         private void frmMain_Paint(object sender, PaintEventArgs e)
@@ -721,10 +780,7 @@ namespace VotoTouch
 
         private void SemaforoOKImg(bool bok)
         {
-            //if (bok)
-            //    pnSemaf.BackColor = Color.LimeGreen;
-            //else
-            //    pnSemaf.BackColor = Color.Red;
+            imgERSemaf.Visible = !bok;
         }
         
         private static bool PrimoAvvio

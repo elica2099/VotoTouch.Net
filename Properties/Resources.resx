@@ -132,14 +132,27 @@
   <data name="SAPP_START_INITVOT" xml:space="preserve">
     <value>Carico liste e votazioni...</value>
   </data>
+  <data name="SAPP_START_INITCFG" xml:space="preserve">
+    <value>Carico configurazione...</value>
+  </data>
   <data name="SAPP_DEMO_3END" xml:space="preserve">
     <value>Tocca per ritornare alla videata iniziale</value>
   </data>
-  <data name="SAPP_START_CTRL" xml:space="preserve">
-    <value>Applicazione già in esecuzione</value>
+  <data name="SAPP_DEMO" xml:space="preserve">
+    <value>Simulazione di Voto</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Semaforo_red" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Semaforo_red.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SAPP_SKCONTRARIOTUTTI" xml:space="preserve">
+    <value>Contrario a tutte le liste</value>
   </data>
   <data name="SAPP_START_INIT" xml:space="preserve">
     <value>Inizializzo applicazione...</value>
+  </data>
+  <data name="RGB_Purple Logo_Trans Bk_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RGB_Purple Logo_Trans Bk_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SAPP_CLOSE" xml:space="preserve">
     <value>Chiudere l'applicazione?</value>
@@ -150,6 +163,9 @@
   <data name="SAPP_START_INITTOUCH" xml:space="preserve">
     <value>Inizializzo Touch...</value>
   </data>
+  <data name="SAPP_START_ERRCFG" xml:space="preserve">
+    <value>Problemi nel caricamento della configurazione, verificare: \n - la mappatura dei dischi\n - il file votosegretospa.ini</value>
+  </data>
   <data name="SAPP_SKBIANCA" xml:space="preserve">
     <value>Scheda Bianca</value>
   </data>
@@ -159,15 +175,11 @@
   <data name="SAPP_ERR_BDGPRES" xml:space="preserve">
     <value> - Badge non presente.</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Save-icon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Save-icon.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SAPP_START_ERRCONN" xml:space="preserve">
     <value>Problemi nella connessione al database</value>
-  </data>
-  <data name="SAPP_DEMO" xml:space="preserve">
-    <value>Simulazione di Voto</value>
   </data>
   <data name="SAPP_VOTE_DIRITTIPER" xml:space="preserve">
     <value> diritti di voto per</value>
@@ -190,14 +202,8 @@
   <data name="SAPP_ERR_BDG" xml:space="preserve">
     <value>Badge : </value>
   </data>
-  <data name="SAPP_START_INITVAR" xml:space="preserve">
-    <value>Inizializzo variabili...</value>
-  </data>
   <data name="SAPP_START_IMGSEARCH" xml:space="preserve">
     <value>Ricerco immagini...</value>
-  </data>
-  <data name="SAPP_START_ERRCFG" xml:space="preserve">
-    <value>Problemi nel caricamento della configurazione, verificare: \n - la mappatura dei dischi\n - il file votosegretospa.ini</value>
   </data>
   <data name="SAPP_ERR_BDGANN" xml:space="preserve">
     <value> - Badge Annullato</value>
@@ -205,11 +211,8 @@
   <data name="SAPP_ERR_BDGIMP" xml:space="preserve">
     <value> - Codice Impianto diverso</value>
   </data>
-  <data name="SAPP_CLOSE_ERR" xml:space="preserve">
-    <value>Impossibile effettuare questa operazione durante la votazione.</value>
-  </data>
-  <data name="SAPP_ERR_BDGZERO" xml:space="preserve">
-    <value> - Tutti i soci hanno già votato</value>
+  <data name="RGB_White Logo_Trans Bk200" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RGB_White Logo_Trans Bk200.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SAPP_START_INITDB" xml:space="preserve">
     <value>Inizializzo database...</value>
@@ -223,14 +226,23 @@
   <data name="SAPP_ERR_BDGVOT" xml:space="preserve">
     <value> - Il Badge ha già votato</value>
   </data>
-  <data name="SAPP_START_INITCFG" xml:space="preserve">
-    <value>Carico configurazione...</value>
+  <data name="SAPP_START_CTRL" xml:space="preserve">
+    <value>Applicazione già in esecuzione</value>
+  </data>
+  <data name="SAPP_CLOSE_ERR" xml:space="preserve">
+    <value>Impossibile effettuare questa operazione durante la votazione.</value>
   </data>
   <data name="SAPP_DEMO_1DIR" xml:space="preserve">
     <value>Tocca per provare con 1 diritto di voto</value>
   </data>
+  <data name="SAPP_START_INITVAR" xml:space="preserve">
+    <value>Inizializzo variabili...</value>
+  </data>
   <data name="SAPP_DEMO_3DIR" xml:space="preserve">
     <value>Tocca per provare con 3 diritti di voto</value>
+  </data>
+  <data name="SAPP_ERR_BDGZERO" xml:space="preserve">
+    <value> - Tutti i soci hanno già votato</value>
   </data>
   <data name="SAPP_START_INITBARCODE" xml:space="preserve">
     <value>Inizializzo lettore barcode...</value>
@@ -238,16 +250,10 @@
   <data name="SAPP_VOTE_1DIRITTOPER" xml:space="preserve">
     <value>1 diritto di voto per</value>
   </data>
-  <data name="RGB_White Logo_Trans Bk200" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RGB_White Logo_Trans Bk200.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RGB_Purple Logo_Trans Bk_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RGB_Purple Logo_Trans Bk_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="SAPP_SKASTENUTOTUTTI" xml:space="preserve">
     <value>Astenuto a tutte le liste</value>
   </data>
-  <data name="SAPP_SKCONTRARIOTUTTI" xml:space="preserve">
-    <value>Contrario a tutte le liste</value>
+  <data name="barcode_red" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\barcode_red.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

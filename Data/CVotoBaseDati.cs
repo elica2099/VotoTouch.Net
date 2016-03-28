@@ -69,6 +69,11 @@ namespace VotoTouch
             return 0;
         }
 
+        virtual public int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
+        {
+            return 0;
+        }
+
         // --------------------------------------------------------------------------
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------

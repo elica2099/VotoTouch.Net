@@ -71,9 +71,13 @@ namespace VotoTouch
             this.pbSalvaDati = new System.Windows.Forms.PictureBox();
             this.lbConfermaUp = new System.Windows.Forms.Label();
             this.lbNomeAzStart = new System.Windows.Forms.Label();
+            this.imgERSemaf = new System.Windows.Forms.PictureBox();
+            this.imgERBarcode = new System.Windows.Forms.PictureBox();
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.imgERSemaf)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.imgERBarcode)).BeginInit();
             this.SuspendLayout();
             // 
             // lbDirittiDiVoto
@@ -339,11 +343,37 @@ namespace VotoTouch
             this.lbNomeAzStart.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.lbNomeAzStart.Visible = false;
             // 
+            // imgERSemaf
+            // 
+            this.imgERSemaf.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.imgERSemaf.Image = global::VotoTouch.Properties.Resources.Semaforo_red;
+            this.imgERSemaf.Location = new System.Drawing.Point(32, 536);
+            this.imgERSemaf.Name = "imgERSemaf";
+            this.imgERSemaf.Size = new System.Drawing.Size(30, 30);
+            this.imgERSemaf.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.imgERSemaf.TabIndex = 129;
+            this.imgERSemaf.TabStop = false;
+            this.imgERSemaf.Visible = false;
+            // 
+            // imgERBarcode
+            // 
+            this.imgERBarcode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.imgERBarcode.Image = global::VotoTouch.Properties.Resources.barcode_red;
+            this.imgERBarcode.Location = new System.Drawing.Point(0, 536);
+            this.imgERBarcode.Name = "imgERBarcode";
+            this.imgERBarcode.Size = new System.Drawing.Size(30, 30);
+            this.imgERBarcode.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.imgERBarcode.TabIndex = 130;
+            this.imgERBarcode.TabStop = false;
+            this.imgERBarcode.Visible = false;
+            // 
             // frmMain
             // 
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(844, 566);
+            this.Controls.Add(this.imgERBarcode);
+            this.Controls.Add(this.imgERSemaf);
             this.Controls.Add(this.lbConfermaUp);
             this.Controls.Add(this.lbConferma_old2);
             this.Controls.Add(this.Panel4);
@@ -376,6 +406,8 @@ namespace VotoTouch
             this.pnBadge.ResumeLayout(false);
             this.pnBadge.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.imgERSemaf)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.imgERBarcode)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -408,5 +440,7 @@ namespace VotoTouch
         private Label lbNomeAzStart;
         private Button btnRipetiz;
         private Button button2;
+        private PictureBox imgERSemaf;
+        private PictureBox imgERBarcode;
     }
 }

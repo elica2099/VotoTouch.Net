@@ -5,12 +5,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
+
 namespace VotoTouch
 {
 
     public class CIPThreadSemaphore : CBaseSemaphore
     {
-
 
         public Socket SockSem;
 
@@ -59,8 +59,7 @@ namespace VotoTouch
             {
                 if (AAttiva)
                 {
-                    semaf = new Thread(new ThreadStart(ThreadSemaphore));
-                    semaf.IsBackground = true;
+                    semaf = new Thread(new ThreadStart(ThreadSemaphore)) {IsBackground = true};
                     semaf.Start();
                     SemaforoAttivo = true;
                 }
@@ -122,7 +121,9 @@ namespace VotoTouch
                         SockSem.Close();
                         SockSem.Dispose();
                         SockSem = null;
+                        MyMutex.WaitOne();
 
+                        MyMutex.ReleaseMutex();
                     }
                     catch (Exception ex)
                     {
@@ -130,6 +131,7 @@ namespace VotoTouch
                         MyMutex.WaitOne();
                         sGloSend = "";
                         Logging.WriteToLog("<SemError> : ThreadSemaphore " + ex.Message);
+
                         MyMutex.ReleaseMutex();
                     }
                     
@@ -187,26 +189,20 @@ namespace VotoTouch
 
         private void SendData(char AColor, char AFlash, bool ARound)
         {
-            String sSend;
-
             // riattivo il timer
             timSemaforo.Enabled = false;
             timSemaforo.Enabled = true;
 
-            sSend = new string(' ', 128);
+            string sSend = new string(' ', 128);
 
             try
             {
                 if (SemaforoAttivo)
                 {
                     // mando i dati
-                    if (ARound)
-                        sSend = MakeRoundFull(AColor, AFlash);
-                    else
-                        sSend = MakeCharX(AColor, AFlash);                 
-                    
-                    sGloSend = sSend;
+                    sSend = ARound ? MakeRoundFull(AColor, AFlash) : MakeCharX(AColor, AFlash);
 
+                    sGloSend = sSend;
                 }
             }
             catch (SocketException se)
@@ -302,14 +298,13 @@ namespace VotoTouch
 
         public String MakeCrc(String sText)
         {
-            String sTCrc;
             int nVar;
             int nCrc;
             //char ch;
             char h;
             char l;
 
-            sTCrc = "";
+            string sTCrc = "";
             nCrc = 0;
 
             for(nVar=0;nVar < sText.Length; nVar++) {
@@ -325,12 +320,9 @@ namespace VotoTouch
             return (sTCrc);
         }
 
-
         public String MakeBuffer(char ch,char color, char Effect)
         {
-            String sTextOut;
-
-            sTextOut = "300GC=0;101;" + '0' + Effect + color + Effect + ch + ';';
+            string sTextOut = "300GC=0;101;" + '0' + Effect + color + Effect + ch + ';';
 
             sTextOut = MakeCrc(sTextOut);
 

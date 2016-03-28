@@ -141,6 +141,58 @@ namespace VotoTouch
            if (ASerialError != null) { ASerialError(this, e); }
        }
 
+
+       // -------------------------------------------------------------------------------
+       // AUTODISCOVER
+       // -------------------------------------------------------------------------------
+
+       public bool AutodiscoverBarcode( ref string APorta, ref string ADescription, ref int APortaInt)
+       {
+           bool found = false;
+           string ss = "";
+           // carico le seriali
+           foreach (COMPortInfo comPort in COMPortInfo.GetCOMPortsInfo())
+           {
+               ss = comPort.Description.ToLower();
+
+               if (ss.IndexOf("datalogic", System.StringComparison.Ordinal) >= 0 ||
+                   ss.IndexOf("barcode", System.StringComparison.Ordinal) >= 0 ||
+                   ss.IndexOf("scanner", System.StringComparison.Ordinal) >= 0 ||
+                   ss.IndexOf("hyperion", System.StringComparison.Ordinal) >= 0 ||
+                   ss.IndexOf("orbit", System.StringComparison.Ordinal) >= 0
+                   )
+               {
+                   // la porta va bene, setto
+                   APorta = comPort.Name;
+                   ADescription = comPort.Description;
+
+                               // ora devo trovare la stringa COM
+                   string ss2 = comPort.Name;
+                   const string removeString = "COM";
+                   int index = ss2.LastIndexOf(removeString, System.StringComparison.Ordinal);
+                   if (index >= 0)
+                   {
+                       string st = ss2.Remove(ss2.IndexOf(removeString, System.StringComparison.Ordinal), removeString.Length);
+                       //string st = ss.Substring(index +3, ss.Length - index +3); // ss[index + 3].ToString();
+                       APortaInt = Convert.ToInt16(st);
+                   }
+                   //// set the property
+                   //App.Config.cfg.ReaderUsa = true;
+                   //App.Config.cfg.ReaderComPort = comPort.Name;
+
+
+                   //// set the port hardware
+                   //if (evRequestConfiguraLettore != null)
+                   //    evRequestConfiguraLettore(this, true, porta);
+
+                   found = true;
+                   break;
+               }
+           }
+           return found;
+       }
+
+
     }
 
 }
