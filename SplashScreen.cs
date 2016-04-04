@@ -32,6 +32,11 @@ namespace VotoTouch
             label2.Text = Msg;
             pbSplash.Update();
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     
     }
 }

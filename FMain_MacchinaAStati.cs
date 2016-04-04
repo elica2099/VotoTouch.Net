@@ -55,10 +55,10 @@ namespace VotoTouch
                     {
                         if (AperturaVotoEsterno)
                         {
-                            // TODO: Possibili bachi: Ricaricamento Liste ad apertura votazione
+                            // TODO: Possibili bachi: Ricaricamento Liste ad apertura votazione, per ora disabilitata
                             Logging.WriteToLog("Evento Apertura votazione");
-                            Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
-                            Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, false);
+                            // Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
+                            // Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, false);
                         }
                         else
                             Logging.WriteToLog("Evento Chiusura votazione");

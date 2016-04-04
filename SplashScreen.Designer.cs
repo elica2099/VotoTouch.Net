@@ -72,9 +72,10 @@
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.label1.Location = new System.Drawing.Point(15, 21);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(318, 56);
+            this.label1.Size = new System.Drawing.Size(400, 56);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Voto Segreto";
+            this.label1.Text = "Voto Touch 2016";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // SplashScreen
             // 

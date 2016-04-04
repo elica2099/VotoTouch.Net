@@ -314,6 +314,10 @@ namespace VotoTouch
         // in questo caso uso il paint invce della label per un problema grafico
         public void PaintDirittiDiVoto(object sender, PaintEventArgs e, int Diritti)
         {
+            //string ss = string.Format("{0:N0}", Diritti.ToString());
+
+            string ss = Diritti.ToString("###,###,###,##0");
+            
             TTheme th =  new TTheme();
             StringFormat stringFormat = new StringFormat();
             stringFormat.Alignment = StringAlignment.Center;
@@ -326,16 +330,16 @@ namespace VotoTouch
                 th.AColor = Color.Firebrick;
             }
             e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            SizeF sf = e.Graphics.MeasureString(Diritti.ToString(), th.AFont);
+            SizeF sf = e.Graphics.MeasureString(ss, th.AFont);
             float fx = th.a.Left + ((th.a.Width - sf.Width) / 2);
             float fy = th.a.Top + ((th.a.Height - sf.Height) / 2);
             if (th.Shadow)
             {
                 Brush myBrush1 = new System.Drawing.SolidBrush(Color.Gray); //E3E3E3
-                e.Graphics.DrawString(Diritti.ToString(), th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
+                e.Graphics.DrawString(ss, th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
             }
             Brush myBrush = new System.Drawing.SolidBrush(th.AColor);
-            e.Graphics.DrawString(Diritti.ToString(), th.AFont, myBrush, fx, fy); //th.a, stringFormat);
+            e.Graphics.DrawString(ss, th.AFont, myBrush, fx, fy); //th.a, stringFormat);
             th.AFont.Dispose();
         }
 

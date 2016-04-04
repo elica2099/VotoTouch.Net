@@ -251,6 +251,8 @@ namespace VotoTouch
                     qryStd.Parameters.Clear();
                     qryStd.CommandText = "SELECT * from VS_Liste_Totem  " +
                                          "where NumVotaz = @IDVoto and Attivo = true ";
+
+                    // todo: occhio all'ordine dell'idlista che luca lo usa per i suoi calcoli, non è meglio idscheda?
                     // ecco, in funzione del tipo di voto
                     switch (votaz.TipoVoto)
                     {
