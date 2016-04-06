@@ -15,6 +15,17 @@ namespace VotoTouch
         private string _TText = "";
         private bool label1_Visible = false, label2_Visible = false, label3_Visible = false;
 
+        private ContentAlignment _TextAlign;
+        public ContentAlignment TextAlign
+        {
+            get { return _TextAlign; }
+            set
+            {
+                _TextAlign = value;
+                SetCandidatiAligment(value);
+            }
+        }
+
         public LabelCandidati()
         {
             InitializeComponent();
@@ -26,6 +37,13 @@ namespace VotoTouch
         {
             get { return _TText; }
             set { SetCandidatiText(value); }
+        }
+
+        private void SetCandidatiAligment(ContentAlignment ATextAlign)
+        {
+            label1.TextAlign = ATextAlign;
+            label2.TextAlign = ATextAlign;
+            label3.TextAlign = ATextAlign;
         }
 
         private void SetCandidatiText(string AText)

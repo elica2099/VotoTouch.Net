@@ -79,7 +79,7 @@ namespace VotoTouch
             //bool NODirittiLabel = false;
 
             // crea la pagina di conferma
-            SettaComponenti(false);
+            //SettaComponenti(false);
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);

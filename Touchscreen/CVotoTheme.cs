@@ -164,7 +164,7 @@ namespace VotoTouch
                                        Convert.ToInt32(r["URight"]), Convert.ToInt32(r["UBottom"]));
                         c.ForeColor = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());
                         //c.Visible = Convert.ToBoolean(r["Visible"]);
-                        //c.TextAlign = GetTextAlignment(Convert.ToInt32(r["Align"]));
+                        c.TextAlign = GetTextAlignment(Convert.ToInt32(r["Align"]));
                         // font
                         FontStyle fs = FontStyle.Regular;
                         if (Convert.ToBoolean(r["Bold"])) fs = FontStyle.Bold;
