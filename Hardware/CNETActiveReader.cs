@@ -159,7 +159,7 @@ namespace VotoTouch
                    ss.IndexOf("barcode", System.StringComparison.Ordinal) >= 0 ||
                    ss.IndexOf("scanner", System.StringComparison.Ordinal) >= 0 ||
                    ss.IndexOf("hyperion", System.StringComparison.Ordinal) >= 0 ||
-                   ss.IndexOf("orbit", System.StringComparison.Ordinal) >= 0
+                   ss.IndexOf("honeywell bidirectional", System.StringComparison.Ordinal) >= 0
                    )
                {
                    // la porta va bene, setto

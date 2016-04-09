@@ -164,7 +164,7 @@ namespace VotoTouch
                                        Convert.ToInt32(r["URight"]), Convert.ToInt32(r["UBottom"]));
                         c.ForeColor = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());
                         //c.Visible = Convert.ToBoolean(r["Visible"]);
-                        c.TextAlign = GetTextAlignment(Convert.ToInt32(r["Align"]));
+                        c.TextAlign = GetTextLabelAlignment(Convert.ToInt32(r["Align"]));
                         // font
                         FontStyle fs = FontStyle.Regular;
                         if (Convert.ToBoolean(r["Bold"])) fs = FontStyle.Bold;
@@ -239,6 +239,25 @@ namespace VotoTouch
                     break;
                 default:
                     return ContentAlignment.MiddleCenter;
+                    break;
+            }
+        }
+
+        private ContentAlignment GetTextLabelAlignment(int AAlign)
+        {
+            switch (AAlign)
+            {
+                case 0:
+                    return ContentAlignment.TopCenter;
+                    break;
+                case 1:
+                    return ContentAlignment.TopLeft;
+                    break;
+                case 2:
+                    return ContentAlignment.TopRight;
+                    break;
+                default:
+                    return ContentAlignment.TopCenter;
                     break;
             }
         }

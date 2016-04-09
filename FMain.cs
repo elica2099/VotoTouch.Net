@@ -29,11 +29,6 @@ namespace VotoTouch
         private System.Windows.Forms.Timer timConfigura;
         private System.Windows.Forms.Timer timAutoRitorno;
 
-        // Modo Debug
-        //public bool DebugMode;
-        //public bool PaintTouch;
-        //// VersioneDemo
-        //public bool DemoVersion;
         // oggetti demo
         private Button btnBadgeUnVoto;
         private Button btnBadgePiuVoti;
@@ -84,6 +79,7 @@ namespace VotoTouch
         public int VotoEspresso;
         public string VotoEspressoStr;
         public string VotoEspressoStrUp;
+	    public string VotoEspressoStrNote;
 		public int Badge_Letto;
         public string Badge_Seriale;
 

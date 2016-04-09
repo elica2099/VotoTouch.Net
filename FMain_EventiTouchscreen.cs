@@ -70,6 +70,7 @@ namespace VotoTouch
                 VotoEspresso = a.IDScheda;
                 VotoEspressoStr = a.ListaElenco;
                 VotoEspressoStrUp = a.DescrLista;
+                VotoEspressoStrNote = a.Presentatore;
                 // da aggiungere successivamente:
                 VExp = new TVotoEspresso
                     {
@@ -86,6 +87,7 @@ namespace VotoTouch
                 VotoEspresso = VSDecl.VOTO_SCHEDABIANCA;
                 VotoEspressoStr = "";
                 VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
+                VotoEspressoStrNote = "";
                 VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
@@ -125,6 +127,7 @@ namespace VotoTouch
                     // ora aggiungo il candidato
                     VotoEspressoStr += a.ListaElenco + ";";
                     VotoEspressoStrUp += a.DescrLista + ";";
+                    VotoEspressoStrNote = "";
                 }
             }
             // a questo punto vado in conferma con la stessa CurrVote
@@ -144,6 +147,7 @@ namespace VotoTouch
             VotoEspresso = VSDecl.VOTO_SCHEDABIANCA;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
+            VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
                 {
@@ -163,6 +167,7 @@ namespace VotoTouch
             VotoEspresso = VSDecl.VOTO_CONTRARIO_TUTTI;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_SKCONTRARIOTUTTI");
+            VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
             {
@@ -182,6 +187,7 @@ namespace VotoTouch
             VotoEspresso = VSDecl.VOTO_ASTENUTO_TUTTI;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_SKASTENUTOTUTTI");
+            VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
             {
@@ -201,6 +207,7 @@ namespace VotoTouch
             VotoEspresso = VSDecl.VOTO_NONVOTO;
             VotoEspressoStr = "";
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
+            VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
                 {

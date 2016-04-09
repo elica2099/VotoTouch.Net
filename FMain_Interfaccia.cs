@@ -135,6 +135,7 @@ namespace VotoTouch
                 }
                  * */
                 lbConferma.Text = VotoEspressoStrUp;
+                lbConferma.TextNote = VotoEspressoStrNote;
                 lbConferma.Visible = true;
                 //oVotoTheme.SetTheme_lbConfermaUp_Cand(ref lbConfermaUp);
             }
@@ -147,6 +148,7 @@ namespace VotoTouch
                 // voto di lista/candidato              
                 lbConfermaUp.Text = VotoEspressoStrUp;
                 lbConferma.Text = VotoEspressoStr;
+                lbConferma.TextNote = VotoEspressoStrNote;
                 oVotoTheme.SetTheme_lbConfermaUp(ref lbConfermaUp);
             }
 

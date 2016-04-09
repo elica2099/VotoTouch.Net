@@ -39,6 +39,18 @@ namespace VotoTouch
             set { SetCandidatiText(value); }
         }
 
+        private string _TextNote;
+        public string TextNote
+        {
+            get { return _TextNote; }
+            set
+            {
+                _TextNote = value;
+                SetFontNote();
+                label_note.Text = value;
+            }
+        }
+
         private void SetCandidatiAligment(ContentAlignment ATextAlign)
         {
             label1.TextAlign = ATextAlign;
@@ -75,11 +87,7 @@ namespace VotoTouch
                 label3_Visible = false;
                 SpostaLabel();
                 // ok ora il testo
-                txlab = "";
-                foreach (string ss in ris)
-                {
-                    txlab += ss + "\n";
-                }
+                txlab = ris.Aggregate("", (current, ss) => current + (ss + "\n"));
                 label1.Text = txlab;
                 return;
             }
@@ -157,6 +165,13 @@ namespace VotoTouch
 
         }
 
+        private void SetFontNote()
+        {
+            FontStyle fs = FontStyle.Italic;
+            //if (Convert.ToBoolean(r["Bold"])) fs = FontStyle.Bold;
+            label_note.Font = new Font(this.Font.Name, this.Font.Size - 2, fs);            
+        }
+
         //private void LabelCandidati_Resize(object sender, EventArgs e)
         //{
         //    SpostaLabel();
@@ -179,7 +194,7 @@ namespace VotoTouch
             //Debug.WriteLine(this.Size.Width);
             //Debug.WriteLine(this.Size.Height);
             int ww = this.Width;
-            int hh = this.Height;
+            int hh = this.Height-40;
             // evento resize 1 sola label
             if (label1_Visible && !label2_Visible && !label3_Visible)
             {
@@ -213,6 +228,10 @@ namespace VotoTouch
             label1.Visible = label1_Visible;
             label2.Visible = label2_Visible;
             label3.Visible = label3_Visible;
+            // le note
+            label_note.SetBounds(0, hh, ww, 40);
+            label_note.Visible = true;
+
         }
 
         //[Description("Test text displayed in the textbox"), Category("Data")]
