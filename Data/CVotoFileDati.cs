@@ -49,13 +49,13 @@ namespace VotoTouch
             FIDSeggio = 99;
             VTConfig.Attivo = true;
             VTConfig.VotoAperto = true;
-            VTConfig.ControllaPresenze = 1;
+            //VTConfig.ControllaPresenze = 1;
             VTConfig.UsaSemaforo = false;
             VTConfig.IP_Com_Semaforo = "127.0.0.1";
             VTConfig.TipoSemaforo = 1;
-            VTConfig.SalvaLinkVoto = true;
-            VTConfig.SalvaVotoNonConfermato = true;
-            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
+            //VTConfig.SalvaLinkVoto = true;
+            //VTConfig.SalvaVotoNonConfermato = true;
+            //VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
             //TotCfg.UsaSemaforo = true;
             //TotCfg.IP_Com_Semaforo = "10.178.6.16";
             //TotCfg.IP_Com_Semaforo = "192.168.0.32";
@@ -67,16 +67,62 @@ namespace VotoTouch
             VTConfig.CodiceUscita = "999999";
             //TotCfg.UsaController = false;
             //TotCfg.IPController = "127.0.0.1";
-            return 0;
+            return 0; 
+            //VTConfig.Postazione = VTConfig.NomeTotem;
+            //// faccio un  ulteriore controllo
+            //VTConfig.IDSeggio = 99;
+            //FIDSeggio = 99;
+            //VTConfig.Attivo = true;
+            //VTConfig.VotoAperto = true;
+            //VTConfig.ControllaPresenze = 1;
+            //VTConfig.UsaSemaforo = false;
+            //VTConfig.IP_Com_Semaforo = "127.0.0.1";
+            //VTConfig.TipoSemaforo = 1;
+            //VTConfig.SalvaLinkVoto = true;
+            //VTConfig.SalvaVotoNonConfermato = true;
+            //VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;            
+            ////TotCfg.UsaSemaforo = true;
+            ////TotCfg.IP_Com_Semaforo = "10.178.6.16";
+            ////TotCfg.IP_Com_Semaforo = "192.168.0.32";
+            ////TotCfg.UsaSemaforo = true;
+            ////TotCfg.IP_Com_Semaforo = "COM3";           
+            ////TotCfg.TipoSemaforo = 2;
+            //VTConfig.UsaLettore = false;
+            //VTConfig.PortaLettore = 0;
+            //VTConfig.CodiceUscita = "999999";
+            ////TotCfg.UsaController = false;
+            ////TotCfg.IPController = "127.0.0.1";
+            //return 0;
         }
 
         override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
-            VTConfig.SalvaLinkVoto = true;
-            VTConfig.SalvaVotoNonConfermato = true;
-            VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
-            //TotCfg.TastoRicominciaDaCapo = false;
-            //TotCfg.AbilitaLogV = true;
+            DataTable dt = new DataTable();
+
+            dt.ReadXml(AData_path + "CONFIG_CfgVotoSegreto.xml");
+
+            foreach (DataRow a in dt.Rows)
+            {
+                VTConfig.ModoAssemblea = Convert.ToInt32(a["ModoAssemblea"]);
+                // il link del voto
+                VTConfig.SalvaLinkVoto = Convert.ToBoolean(a["SalvaLinkVoto"]);
+                // il salvataggio del voto anche se non ha confermato
+                VTConfig.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
+                // l'id della scheda che deve essere salvata in caso di 999999
+                VTConfig.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
+                // ModoPosizioneAreeTouch
+                VTConfig.ModoPosizioneAreeTouch = Convert.ToInt32(a["ModoPosizioneAreeTouch"]); ;
+                // controllo delle presenze
+                VTConfig.ControllaPresenze = Convert.ToInt32(a["ControllaPresenze"]); 
+                // AbilitaBottoneUscita
+                VTConfig.AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"]);
+                // AttivaAutoRitornoVoto
+                VTConfig.AttivaAutoRitornoVoto = Convert.ToBoolean(a["AttivaAutoRitornoVoto"]);
+                // TimeAutoRitornoVoto
+                VTConfig.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]); ; ;
+                // AbilitaDirittiNonVoglioVotare
+                VTConfig.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]); ;
+            }
             return 0;
         }
 

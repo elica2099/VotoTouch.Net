@@ -201,8 +201,8 @@ namespace VotoTouch
             // questa versione la configurazione è centralizzata sul db
             bool dataloc = File.Exists(Data_Path + "VTS_STANDALONE.txt");
             if (VTConfig.IsDemoMode)
-                oDBDati = new CVotoMDBDati(DBConfig, dataloc, Data_Path);
-                //oDBDati = new CVotoFileDati(DBConfig, NomeTotem, dataloc, Data_Path);
+                //oDBDati = new CVotoMDBDati(DBConfig, dataloc, Data_Path);
+                oDBDati = new CVotoFileDati(DBConfig, dataloc, Data_Path);
             else
                 oDBDati = new CVotoDBDati(DBConfig, dataloc, Data_Path);
 
