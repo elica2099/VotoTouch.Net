@@ -356,6 +356,11 @@ namespace VotoTouch
             return 0;
         }
 
+        override public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
+        {
+            return 0;
+        }
+
         override public int NumAzTitolare(int AIDBadge)
         {
             return 0;

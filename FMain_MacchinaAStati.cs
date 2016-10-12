@@ -190,6 +190,10 @@ namespace VotoTouch
                     //oDBDati.SalvaTutto(Badge_Letto, TotCfg, ref Azionisti);
                     oDBDati.SalvaTutto(Badge_Letto, ref Azionisti);
                      
+                    // TODO : COMMENTAREEEEEE
+                    // GEAS
+                    oDBDati.SalvaTuttoInGeas(Badge_Letto, ref Azionisti);
+
                     // togli lo spinning wheel
                     pbSalvaDati.Visible = false;
                     

@@ -139,6 +139,11 @@ namespace VotoTouch
             return 0;
         }
 
+        virtual public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti FAzionisti)
+        {
+            return 0;
+        }
+
         virtual public int NumAzTitolare(int AIDBadge)
         {
             return 0;

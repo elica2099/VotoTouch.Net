@@ -136,6 +136,15 @@ namespace VotoTouch.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to - Badge non abilitato al voto.
+        /// </summary>
+        internal static string SAPP_ERR_BDABIL {
+            get {
+                return ResourceManager.GetString("SAPP_ERR_BDABIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Badge : .
         /// </summary>
         internal static string SAPP_ERR_BDG {

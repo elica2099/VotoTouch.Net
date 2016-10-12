@@ -39,6 +39,7 @@ namespace VotoTouch
 	    private string qry_DammiDirittiDiVoto_Titolare = "";
 	    private string qry_DammiDirittiDiVoto_Deleganti = "";
         private string qry_DammiVotazioniTotem = "";
+        private string qry_DammiBadgePresenteGeas = "";
 
         public CVotoDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) : 
             base(AFDBConfig, AADataLocal, AAData_path)
@@ -61,6 +62,7 @@ namespace VotoTouch
             qry_DammiDirittiDiVoto_Titolare = getModelsQueryProcedure("DammiDirittiDiVoto_Titolare.sql");
             qry_DammiDirittiDiVoto_Deleganti = getModelsQueryProcedure("DammiDirittiDiVoto_Deleganti.sql");
             qry_DammiVotazioniTotem = getModelsQueryProcedure("DammiVotazioniTotem.sql");
+            qry_DammiBadgePresenteGeas = getModelsQueryProcedure("DammiBadgePresenteGeas.sql");
         }
 
         ~CVotoDBDati()
@@ -646,7 +648,7 @@ namespace VotoTouch
 
             SqlDataReader a;
             SqlTransaction traStd = null;
-            bool Presente, resCons, BAnnull, BNonEsiste;
+            bool Presente, resCons, BAnnull, BNonEsiste, BAbilitato;
 
             // testo la connessione
             if (!OpenConnection("ControllaBadge")) return false;
@@ -663,7 +665,9 @@ namespace VotoTouch
                 // -------------------------------------------------
                 // ok, ora testo se è annullato
                 BAnnull = false;
-                qryStd.CommandText = "SELECT Annullato FROM GEAS_Titolari with (NOLOCK) WHERE Badge ='" + AIDBadge.ToString() + "'";
+                qryStd.Parameters.Clear();
+                qryStd.CommandText = "SELECT Annullato FROM GEAS_Titolari with (NOLOCK) WHERE Badge = @Badge"; //'" + AIDBadge.ToString() + "'";
+                qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                 a = qryStd.ExecuteReader();
                 if (a.HasRows)
                 {
@@ -681,12 +685,35 @@ namespace VotoTouch
                 a.Close();
 
                 // -------------------------------------------------
+                // se sono in geas mode devo controllare se il badge è abilitato a inizio votazione corrente
+                if (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS)
+                {
+                    BAbilitato = false;
+                    qryStd.CommandText = qry_DammiBadgePresenteGeas;
+                    qryStd.Parameters.Clear();
+                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                    a = qryStd.ExecuteReader();
+                    if (a.HasRows)
+                    {
+                        // devo verificare, il campo non può essere null 
+                        a.Read();
+                        string mv = a["TipoMov"].ToString();
+                        BAbilitato = (mv == "E");
+                    }
+                    a.Close();
+                }
+                else
+                    BAbilitato = true;
+
+                // -------------------------------------------------
                 //  ok ora testo se è presente
                 Presente = false;
-                qryStd.CommandText = "SELECT TipoMov FROM GEAS_TimbInOut with (NOLOCK) " +
-                    "WHERE Badge='" + AIDBadge.ToString() + "' AND GEAS_TimbInOut.Reale=1 " +
-                    "AND DataOra=(SELECT MAX(DataOra) FROM GEAS_TimbInOut with (NOLOCK) " +
-                    "WHERE Badge='" + AIDBadge.ToString() + "' AND GEAS_TimbInOut.Reale=1)";
+                qryStd.CommandText = @"SELECT TipoMov FROM GEAS_TimbInOut with (NOLOCK) 
+                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1 
+                                        AND DataOra=(SELECT MAX(DataOra) FROM GEAS_TimbInOut with (NOLOCK)
+                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1)";
+                qryStd.Parameters.Clear();
+                qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                 a = qryStd.ExecuteReader();
                 if (a.HasRows)
                 {
@@ -696,9 +723,10 @@ namespace VotoTouch
                     Presente = (mv == "E");
                 }
                 a.Close();
-                // se non è annullato e non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO
+                // se non è annullato e non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO oppure PRES_MODO_GEAS
                 // forzo un movimento di ingresso
-                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO))
+                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO
+                    || (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS && BAbilitato)))
                 {
                     // forzo il movimento
                     qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
@@ -707,6 +735,7 @@ namespace VotoTouch
                         AIDBadge.ToString() + "', 'E', 1, 3, " +
                         VTConfig.Sala.ToString() + ", { fn NOW() })";
                     // eseguo
+                    qryStd.Parameters.Clear();
                     qryStd.ExecuteNonQuery();
                     Presente = true;
                 }
@@ -751,9 +780,10 @@ namespace VotoTouch
                 //  BAnnull = false, Presente = true (ma solo se il controllo è attivato), resCons = false
                 // naturalmente true indica che il controllo è andato a buon fine e può continuare
                 // è un and quindi tutti i valori devono essere a true
-                result = (!BAnnull &&  // se non è annullato è a true
-                          Presente &&  // è presente
-                          !resCons);   // se non ha schede consegnate è a true
+                result = (!BAnnull &&   // se non è annullato è a true
+                          Presente &&   // è presente
+                          !resCons &&   // se non ha schede consegnate è a true
+                          BAbilitato);  // Se è abilitato (solo geas) 
 
                 // ok ora compongo il flag degli eventuali errori
                 AReturnFlags = 0;
@@ -766,6 +796,7 @@ namespace VotoTouch
                 }
                 if (!Presente) AReturnFlags = AReturnFlags | 0x02;
                 if (resCons) AReturnFlags = AReturnFlags | 0x04;
+                if (!BAbilitato) AReturnFlags = AReturnFlags | 0x80;
 
             }
             catch (Exception objExc)
@@ -1004,10 +1035,10 @@ namespace VotoTouch
                 if (!VTConfig.AbilitaDirittiNonVoglioVotare)
                 {
                     qryStd.Parameters.Clear();
-                    qryStd.CommandText = "insert into VS_Votanti_Totem with (ROWLOCK) " +
-                                         " (Badge, idSeggio, DataOraVotaz, NomeComputer) " +
-                                         " VALUES " +
-                                         " (@Badge, @idSeggio, { fn NOW() }, @NomeComputer)";
+                    qryStd.CommandText = @"insert into VS_Votanti_Totem with (ROWLOCK) 
+                                                (Badge, idSeggio, DataOraVotaz, NomeComputer)
+                                            VALUES 
+                                                (@Badge, @idSeggio, { fn NOW() }, @NomeComputer)";
                     qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                     qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
                     qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = VTConfig.NomeTotem;
@@ -1023,10 +1054,10 @@ namespace VotoTouch
                     {
                         // conschede
                         qryStd.Parameters.Clear();
-                        qryStd.CommandText = "INSERT INTO VS_ConSchede with (ROWLOCK) " +
-                                             " (Badge, NumVotaz, IdAzion, ProgDeleg, IdSeggio, DataOraVotaz, NomeComputer) " +
-                                             " VALUES " +
-                                             " (@Badge, @NumVotaz, @IdAzion, @ProgDeleg, @IdSeggio, { fn NOW() }, @NomeComputer) ";
+                        qryStd.CommandText = @"INSERT INTO VS_ConSchede with (ROWLOCK) 
+                                                (Badge, NumVotaz, IdAzion, ProgDeleg, IdSeggio, DataOraVotaz, NomeComputer) 
+                                              VALUES 
+                                                (@Badge, @NumVotaz, @IdAzion, @ProgDeleg, @IdSeggio, { fn NOW() }, @NomeComputer) ";
                         qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                         qryStd.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                         qryStd.Parameters.Add("@IdAzion", System.Data.SqlDbType.Int).Value = az.IDAzion;
@@ -1047,10 +1078,10 @@ namespace VotoTouch
 
                             // salvo nel db
                             qryVoti.Parameters.Clear();
-                            qryVoti.CommandText = "insert into VS_Intonse_Totem  with (rowlock) " +
-                                                  " (NumVotaz, idTipoScheda, idSeggio, voti, Badge, ProgDeleg, IdCarica) " +
-                                                  " VALUES " +
-                                                  " (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @Badge, @ProgDeleg, @IdCarica) ";
+                            qryVoti.CommandText = @"insert into VS_Intonse_Totem  with (rowlock) 
+                                                   (NumVotaz, idTipoScheda, idSeggio, voti, Badge, ProgDeleg, IdCarica) 
+                                                   VALUES 
+                                                   (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @Badge, @ProgDeleg, @IdCarica) ";
                             qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                             qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
                             qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
@@ -1074,6 +1105,183 @@ namespace VotoTouch
                 Logging.WriteToLog("<dberror> fn SalvaTutto: " + AIDBadge.ToString() + " err: " + objExc.Message);
                 MessageBox.Show("Errore nella funzione SalvaTutto " + "\n\n" +
                     "Impossibile salvare i voti.\n\n " +
+                    "Chiamare operatore esterno.\n\n " +
+                    "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                qryStd.Dispose();
+                qryVoti.Dispose();
+                if (traStd != null) traStd.Dispose();
+                CloseConnection("");
+            }
+            return result;
+        }
+
+
+        override public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
+        {
+            SqlCommand qryStd = null, qryVoti = null;
+            SqlTransaction traStd = null;
+            SqlDataReader a;
+            int result = 0;
+            double PNAzioni = 0;
+            string TipoAsse = "";
+
+            // TODO: FUNZIONA SOLO CON UN VOTO!!!!
+
+            // testo la connessione
+            if (!OpenConnection("SalvaTuttoInGeas")) return 0;
+
+            qryStd = new SqlCommand {Connection = STDBConn};
+            qryVoti = new SqlCommand { Connection = STDBConn };
+            try
+            {
+                //  1. Mi calcolo il progmozione
+                int ProgMozione = -1;
+                qryStd.Parameters.Clear();
+                qryStd.CommandText = @"select isnull(GEAS_MatchVot.ProgMozione, -1) as ProgMozione, TipoAsse from GEAS_MatchVot
+					                        where GEAS_MatchVot.VotoSegretoDettaglio > 0";
+                a = qryStd.ExecuteReader();
+                if (a.HasRows)
+                {
+                    // devo verificare, il campo non può essere null 
+                    a.Read();
+                    ProgMozione = Convert.ToInt32(a["ProgMozione"]);
+                    TipoAsse = a["TipoAsse"].ToString();
+                }
+                a.Close();
+
+                if (ProgMozione >= 0)
+                {
+                    // abilito la transazione
+                    traStd = STDBConn.BeginTransaction();
+                    qryStd.Transaction = traStd;
+                    qryVoti.Transaction = traStd;
+
+                    // devo salvare i voti in geas
+                    // 2. salvo il titolare in geas_voti con voto 6, lo salvo comunque anche se ha azioni 0
+                    qryStd.Parameters.Clear();
+                    qryStd.CommandText = @"INSERT INTO Geas_Voti with (ROWLOCK) 
+                                                (ProgMozione, ProgSubVotaz, Reale, Badge, MozioneRea, SubVotaz, TipoVoto, DataOraVoto, NumFav, IsSelection) 
+                                              VALUES 
+                                                (@ProgMozione, -1, 1, @Badge, 0, 0, 6, { fn NOW() }, 0, 0) ";
+                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                    qryStd.Parameters.Add("@ProgMozione", System.Data.SqlDbType.Int).Value = ProgMozione;
+                    qryStd.ExecuteNonQuery();
+
+                    // occhio che devo inserire il titolare se ha azioni 0
+                    if (AAzionisti.Titolare_Badge.NAzioni == 0)
+                    {
+                        qryVoti.Parameters.Clear();
+                        qryVoti.CommandText = @"insert into GEAS_VotiDiff with (rowlock)
+                                                        (ProgMozione, ProgSubVotaz, Badge, ProgDeleg, ValAssem, TipoVoto, AzioniSi, VotiSi,
+                                                            PercSi, AzioniNo, VotiNo, PercNo, AzioniAst, VotiAst, PercAst,AzioniCi, VotiCi,
+                                                            AzioniNv, VotiNv, PercNv, AzioniNq, VotiNq, PercNq)
+                                                    Values
+                                                        (@ProgMozione, -1, @Badge, 0, @ValAssem, 0, 0, 0,
+                                                            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+
+                        qryVoti.Parameters.Add("@ProgMozione", System.Data.SqlDbType.Int).Value = ProgMozione;
+                        qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        //qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
+                        qryVoti.Parameters.Add("@ValAssem", System.Data.SqlDbType.VarChar).Value = TipoAsse;
+                        qryVoti.ExecuteNonQuery();
+                    }
+
+                    // 3 . ok ora salvo i singoli voti in geas_diff
+                    foreach (TAzionista az in AAzionisti.Azionisti)
+                    {
+                                               
+                        foreach (TVotoEspresso vt in az.VotiEspressi)
+                        {
+                            double ASi = 0, VSi = 0, PSi = 0, ANo = 0, VNo = 0, PNo = 0, AAst = 0, VAst = 0,
+                                   PAst = 0, ANv = 0, VNv = 0, PNv = 0;
+                            
+                            int TipoVoto = vt.VotoExp_IDScheda;
+
+                            switch (vt.VotoExp_IDScheda)
+                            {
+                                // li metto hardcoded
+                                //Fav
+                                case 1:
+                                    ASi = az.NAzioni;
+                                    VSi = 1;
+                                    PSi = 100;
+                                    break;
+                                // contr
+                                case 2:
+                                    ANo = az.NAzioni;
+                                    VNo = 1;
+                                    PNo = 100;
+                                    break;
+                                // ast
+                                case 3:
+                                    AAst = az.NAzioni;
+                                    VAst = 1;
+                                    PAst = 100;
+                                    break;
+                                // nv
+                                case -2:
+                                    TipoVoto = 0;
+                                    ANv = az.NAzioni;
+                                    VNv = 1;
+                                    PNv = 100;
+                                    break;
+                            }
+
+                            qryVoti.Parameters.Clear();
+                            qryVoti.CommandText = @"insert into GEAS_VotiDiff with (rowlock)
+                                                        (ProgMozione, ProgSubVotaz, Badge, ProgDeleg, ValAssem, TipoVoto, AzioniSi, VotiSi,
+                                                            PercSi, AzioniNo, VotiNo, PercNo, AzioniAst, VotiAst, PercAst,AzioniCi, VotiCi,
+                                                            AzioniNv, VotiNv, PercNv, AzioniNq, VotiNq, PercNq)
+                                                    Values
+                                                        (@ProgMozione, -1, @Badge, @ProgDeleg, @ValAssem, @TipoVoto, @Azionisi, @VotiSi,
+                                                            @PercSi, @AzioniNo, @VotiNo, @PercNo, @AzioniAst, @VotiAst, @PercAst, 0, 0,
+                                                            @AzioniNv, @VotiNv, @PercNv, 0, 0, 0)";
+
+                            qryVoti.Parameters.Add("@ProgMozione", System.Data.SqlDbType.Int).Value = ProgMozione;
+                            qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                            qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
+                            qryVoti.Parameters.Add("@ValAssem", System.Data.SqlDbType.VarChar).Value = TipoAsse;
+                            qryVoti.Parameters.Add("@TipoVoto", System.Data.SqlDbType.Int).Value = TipoVoto; // vt.VotoExp_IDScheda;
+
+                            qryVoti.Parameters.Add("@AzioniSi", System.Data.SqlDbType.Decimal).Value = ASi;
+                            qryVoti.Parameters.Add("@VotiSi", System.Data.SqlDbType.Decimal).Value = VSi;
+                            qryVoti.Parameters.Add("@PercSi", System.Data.SqlDbType.Decimal).Value = PSi;
+
+                            qryVoti.Parameters.Add("@AzioniNo", System.Data.SqlDbType.Decimal).Value = ANo;
+                            qryVoti.Parameters.Add("@VotiNo", System.Data.SqlDbType.Decimal).Value = VNo;
+                            qryVoti.Parameters.Add("@PercNo", System.Data.SqlDbType.Decimal).Value = PNo;
+
+                            qryVoti.Parameters.Add("@AzioniAst", System.Data.SqlDbType.Decimal).Value = AAst;
+                            qryVoti.Parameters.Add("@VotiAst", System.Data.SqlDbType.Decimal).Value = VAst;
+                            qryVoti.Parameters.Add("@PercAst", System.Data.SqlDbType.Decimal).Value = PAst;
+
+                            qryVoti.Parameters.Add("@AzioniNv", System.Data.SqlDbType.Decimal).Value = ANv;
+                            qryVoti.Parameters.Add("@VotiNv", System.Data.SqlDbType.Decimal).Value = VNv;
+                            qryVoti.Parameters.Add("@PercNv", System.Data.SqlDbType.Decimal).Value = PNv;
+
+                            //qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
+                            //qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Float).Value = PNAzioni;
+                            //qryVoti.Parameters.Add("@IdCarica", System.Data.SqlDbType.Int).Value = vt.TipoCarica;
+                            qryVoti.ExecuteNonQuery();
+
+                        }
+                    }
+
+                    // chiudo la transazione
+                    traStd.Commit();
+                    result = 1;
+                }
+            }
+            catch (Exception objExc)
+            {
+                if (traStd != null) traStd.Rollback();
+                result = 0;
+                Logging.WriteToLog("<dberror> fn SalvaTuttoInGeas: " + AIDBadge.ToString() + " err: " + objExc.Message);
+                MessageBox.Show("Errore nella funzione SalvaTuttoInGeas " + "\n\n" +
+                    "Impossibile salvare i voti Geas.\n\n " +
                     "Chiamare operatore esterno.\n\n " +
                     "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -1231,6 +1439,14 @@ namespace VotoTouch
                 NumberofRows = qryStd.ExecuteNonQuery();
                 traStd.Commit();
                 result = true;
+
+                // TODO: CANCELLARE
+                //qryStd.CommandText = "delete from Geas_voti with (ROWLOCK) where badge = " + AIDBadge.ToString();
+                //NumberofRows = qryStd.ExecuteNonQuery();
+
+                //qryStd.CommandText = "delete from Geas_votiDiff with (ROWLOCK) where badge = " + AIDBadge.ToString();
+                //NumberofRows = qryStd.ExecuteNonQuery();
+
                 //
                 MessageBox.Show("I Voti sono stati cancellati", "Exclamation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }

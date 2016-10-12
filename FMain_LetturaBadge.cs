@@ -182,6 +182,8 @@ namespace VotoTouch
                     if ((ErrorFlag & 0x01) == 0x01) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGANN");   // "\n - Badge Annullato";
                     // 0x40 : Il Badge non esiste
                     if ((ErrorFlag & 0x40) == 0x40) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGEST");   // "\n - Il Badge non esiste";
+                    // 0x50 : Il Badge non è abilitato al voto (GEAS)
+                    if ((ErrorFlag & 0x80) == 0x80) messaggio += "\n" + rm.GetString("SAPP_ERR_BDABIL");   // "\n - Il Badge non è abilitato al voto";
                     // 0x02 : Badge non presente (controllo disabilitato)
                     if (VTConfig.ControllaPresenze == VSDecl.PRES_CONTROLLA && (ErrorFlag & 0x01) != 0x01)
                     {

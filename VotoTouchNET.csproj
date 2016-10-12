@@ -249,6 +249,7 @@
     <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Deleganti.sql" />
     <EmbeddedResource Include="Data\Query\DammiDirittiDiVoto_Titolare.sql" />
     <EmbeddedResource Include="Data\Query\DammiVotazioniTotem.sql" />
+    <EmbeddedResource Include="Data\Query\DammiBadgePresenteGeas.sql" />
     <Content Include="Resources\barcode_red.png" />
     <Content Include="vote.ico" />
     <EmbeddedResource Include="Resources\tab_rev.png" />

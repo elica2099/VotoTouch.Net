@@ -233,6 +233,7 @@ namespace VotoTouch
         public const int PRES_NON_CONTROLLARE = 0;
         public const int PRES_CONTROLLA = 1;
         public const int PRES_FORZA_INGRESSO = 2;
+        public const int PRES_MODO_GEAS = 3;
         // Modo Touch aree 
         public const int MODO_POS_TOUCH_NORMALE = 0;
         public const int MODO_POS_TOUCH_MODERN = 1;
