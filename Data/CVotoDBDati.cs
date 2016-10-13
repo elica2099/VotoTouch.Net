@@ -927,7 +927,8 @@ namespace VotoTouch
                             IDBadge = AIDBadge,
                             ProgDeleg = 0,
                             RaSo = a["Raso1"].ToString(),
-                            NAzioni = Convert.ToDouble(a["AzOrd"]),
+                            // TODO: CANCELLLARREEEEEEEEEEEE AZ STRA
+                            NAzioni = Convert.ToDouble(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
                             Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString(),
                             HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
                             IDVotaz = IDVotazione
@@ -964,7 +965,8 @@ namespace VotoTouch
                                     IDBadge = AIDBadge,
                                     ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
                                     RaSo = a["Raso1"].ToString(),
-                                    NAzioni = Convert.ToInt32(a["AzOrd"]),
+                                    // TODO: CANCELLLARREEEEEEEEEEEE AZ STRA
+                                    NAzioni = Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
                                     Sesso = "N",
                                     HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
                                     IDVotaz = IDVotazione
@@ -1223,6 +1225,8 @@ namespace VotoTouch
                                     break;
                                 // nv
                                 case -2:
+                                case -3:
+                                case -4:
                                     TipoVoto = 0;
                                     ANv = az.NAzioni;
                                     VNv = 1;
@@ -1441,11 +1445,21 @@ namespace VotoTouch
                 result = true;
 
                 // TODO: CANCELLARE
-                //qryStd.CommandText = "delete from Geas_voti with (ROWLOCK) where badge = " + AIDBadge.ToString();
-                //NumberofRows = qryStd.ExecuteNonQuery();
+                qryStd.Parameters.Clear();
+                qryStd.CommandText = @"delete Geas_voti with (ROWLOCK) 
+                                       where badge = @Badge 
+                                       and ProgMozione = (select isnull(GEAS_MatchVot.ProgMozione, 0) as ProgMozione from GEAS_MatchVot
+		                               where GEAS_MatchVot.VotoSegretoDettaglio > 0) ";
+                qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                NumberofRows = qryStd.ExecuteNonQuery();
 
-                //qryStd.CommandText = "delete from Geas_votiDiff with (ROWLOCK) where badge = " + AIDBadge.ToString();
-                //NumberofRows = qryStd.ExecuteNonQuery();
+                qryStd.Parameters.Clear();
+                qryStd.CommandText = @"delete Geas_votiDiff with (ROWLOCK) 
+                                       where badge = @Badge 
+                                       and ProgMozione = (select isnull(GEAS_MatchVot.ProgMozione, 0) as ProgMozione from GEAS_MatchVot
+		                               where GEAS_MatchVot.VotoSegretoDettaglio > 0) ";
+                qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                NumberofRows = qryStd.ExecuteNonQuery();
 
                 //
                 MessageBox.Show("I Voti sono stati cancellati", "Exclamation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
