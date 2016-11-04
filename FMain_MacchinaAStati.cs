@@ -187,12 +187,11 @@ namespace VotoTouch
                         // metti lo spinning wheel
                     }
                     // salvo i dati sul database
-                    //oDBDati.SalvaTutto(Badge_Letto, TotCfg, ref Azionisti);
                     oDBDati.SalvaTutto(Badge_Letto, ref Azionisti);
-                     
-                    // TODO : COMMENTAREEEEEE
+
+                    // TODO: GEAS VERSIONE (salvataggio voti)
                     // GEAS
-                    oDBDati.SalvaTuttoInGeas(Badge_Letto, ref Azionisti);
+                    // oDBDati.SalvaTuttoInGeas(Badge_Letto, ref Azionisti);
 
                     // togli lo spinning wheel
                     pbSalvaDati.Visible = false;

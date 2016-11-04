@@ -927,7 +927,8 @@ namespace VotoTouch
                             IDBadge = AIDBadge,
                             ProgDeleg = 0,
                             RaSo = a["Raso1"].ToString(),
-                            // TODO: CANCELLLARREEEEEEEEEEEE AZ STRA
+                            // TODO: GEAS VERSIONE
+                            // TODO: AZ STRA ???
                             NAzioni = Convert.ToDouble(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
                             Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString(),
                             HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
@@ -965,7 +966,7 @@ namespace VotoTouch
                                     IDBadge = AIDBadge,
                                     ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
                                     RaSo = a["Raso1"].ToString(),
-                                    // TODO: CANCELLLARREEEEEEEEEEEE AZ STRA
+                                    // TODO: AZ STRA ???
                                     NAzioni = Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
                                     Sesso = "N",
                                     HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
@@ -1120,7 +1121,6 @@ namespace VotoTouch
             return result;
         }
 
-
         override public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
         {
             SqlCommand qryStd = null, qryVoti = null;
@@ -1130,7 +1130,7 @@ namespace VotoTouch
             double PNAzioni = 0;
             string TipoAsse = "";
 
-            // TODO: FUNZIONA SOLO CON UN VOTO!!!!
+            // TODO: GEAS VERSIONE (Salvataggio voti Geas NOTA: FUNZIONA SOLO CON UN VOTO)
 
             // testo la connessione
             if (!OpenConnection("SalvaTuttoInGeas")) return 0;
@@ -1444,7 +1444,8 @@ namespace VotoTouch
                 traStd.Commit();
                 result = true;
 
-                // TODO: CANCELLARE
+                // TODO: GEAS VERSIONE
+                /*
                 qryStd.Parameters.Clear();
                 qryStd.CommandText = @"delete Geas_voti with (ROWLOCK) 
                                        where badge = @Badge 
@@ -1460,7 +1461,7 @@ namespace VotoTouch
 		                               where GEAS_MatchVot.VotoSegretoDettaglio > 0) ";
                 qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                 NumberofRows = qryStd.ExecuteNonQuery();
-
+                */
                 //
                 MessageBox.Show("I Voti sono stati cancellati", "Exclamation", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }

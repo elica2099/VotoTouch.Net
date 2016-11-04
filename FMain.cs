@@ -487,6 +487,7 @@ namespace VotoTouch
                 else
                     imgERSemaf.Visible = false;
             }
+
         }
         
         private void frmMain_Paint(object sender, PaintEventArgs e)
