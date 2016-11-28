@@ -92,7 +92,10 @@ namespace VotoTouch
             {
                 a = new TTZone();
                 // se c'è anche non voto devo spostarla
-                GetZone(ref a, 35, 76, 64, 93); // non la sposto sta in centro
+                if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
+                    GetZone(ref a, 28, 72, 72, 93); // non la sposto sta in centro
+                else
+                    GetZone(ref a, 35, 76, 64, 93); // non la sposto sta in centro
                 //if (!AVotazione.SkNonVoto)
                 //    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
                 //else

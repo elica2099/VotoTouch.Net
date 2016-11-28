@@ -85,23 +85,23 @@ namespace VotoTouch
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
             lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
 
-            //if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
-            //{
-            //if (IsVotazioneDifferenziata)
-            //    lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
-            //else
-            //{
-            //    if (!Azionisti.HaDirittiDiVotoMultipli())
-            //        lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
-            //    else
-            //        lbConfermaNVoti.Text = Azionisti.DammiCountDirittiDiVoto_VotoCorrente() +
-            //                               rm.GetString("SAPP_VOTE_DIRITTIPER"); //" diritti di voto per";
-            //}
-            //}
-            //else
-            //{
-                
-            //}
+            if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
+            {
+                if (IsVotazioneDifferenziata)
+                    lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
+                else
+                {
+                    if (!Azionisti.HaDirittiDiVotoMultipli())
+                        lbConfermaNVoti.Text = rm.GetString("SAPP_VOTE_1DIRITTOPER"); //"1 diritto di voto per";
+                    else
+                        lbConfermaNVoti.Text = Azionisti.DammiCountDirittiDiVoto_VotoCorrente() +
+                                               rm.GetString("SAPP_VOTE_DIRITTIPER"); //" diritti di voto per";
+                }
+            }
+            else
+            {
+                // TODO: lbConfermaNVoti METTERE AZIONI????
+            }
 
             // ok, per ora distinguiamo tra i due metodi di voto, quello normale e quello multicandidato
             // che ha i voti salvati in una collection

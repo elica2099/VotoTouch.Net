@@ -193,11 +193,9 @@ namespace VotoTouch
             VTConfig.IsPaintTouch = File.Exists(Data_Path + "VTS_PAINT_TOUCH.txt");
 
             // classe lbConferma
-		    lbConferma = new LabelCandidati();
-		    lbConferma.Visible = false;
-		    lbConferma.Parent = this;
+		    lbConferma = new LabelCandidati {Visible = false, Parent = this};
 
-            // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
+		    // Inizializzo la classe del database, mi servirà prima delle altre classi perché in
             // questa versione la configurazione è centralizzata sul db
             bool dataloc = File.Exists(Data_Path + "VTS_STANDALONE.txt");
             if (VTConfig.IsDemoMode)

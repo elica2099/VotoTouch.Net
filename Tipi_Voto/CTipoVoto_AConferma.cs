@@ -28,13 +28,21 @@ namespace VotoTouch
 
 			 // Bottone Annulla
 			 a = new TTZone();
-			 GetZone(ref a, 14, 66, 45, 90); a.expr = 0; a.pag = 0; a.Multi = 0; 
+             if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
+                 GetZone(ref a, 8, 60, 45, 90); 
+             else
+                 GetZone(ref a, 14, 66, 45, 90);  
+             a.expr = 0; a.pag = 0; a.Multi = 0; 
 			 a.Text = ""; a.ev = TTEvento.steAnnulla;
 			 Tz.Add(a);
 			 // Bottone Conferma
 			 a = new TTZone();
-			 GetZone(ref a, 55, 66, 86, 90); a.expr = 1; a.pag = 0; a.Multi = 0;  
-			 a.Text = ""; a.ev = TTEvento.steConferma;
+             if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
+			    GetZone(ref a, 55, 60, 92, 90);  
+             else
+			    GetZone(ref a, 55, 66, 86, 90);   
+			 a.expr = 1; a.pag = 0; a.Multi = 0;
+             a.Text = ""; a.ev = TTEvento.steConferma;
 			 Tz.Add(a);
 
 			 // da vedere: conferma anche se schiaccia il candidato
