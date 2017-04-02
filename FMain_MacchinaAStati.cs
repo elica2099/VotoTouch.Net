@@ -57,8 +57,8 @@ namespace VotoTouch
                         {
                             // TODO: Possibili bachi: Ricaricamento Liste ad apertura votazione, per ora disabilitata
                             Logging.WriteToLog("Evento Apertura votazione");
-                            // Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
-                            // Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, false);
+                            Rectangle FFormRect = new Rectangle(0, 0, this.Width, this.Height);
+                            Votazioni.CaricaListeVotazioni(Data_Path, FFormRect, false);
                         }
                         else
                             Logging.WriteToLog("Evento Chiusura votazione");
@@ -190,8 +190,9 @@ namespace VotoTouch
                     oDBDati.SalvaTutto(Badge_Letto, ref Azionisti);
 
                     // TODO: GEAS VERSIONE (salvataggio voti)
-                    // GEAS
-                    // oDBDati.SalvaTuttoInGeas(Badge_Letto, ref Azionisti);
+                    // Salva i voti in GEAS
+                    if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_SPA && VTConfig.SalvaVotoInGeas)                    
+                        oDBDati.SalvaTuttoInGeas(Badge_Letto, ref Azionisti);
 
                     // togli lo spinning wheel
                     pbSalvaDati.Visible = false;

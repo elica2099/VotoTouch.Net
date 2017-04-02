@@ -38,8 +38,11 @@ namespace VotoTouch
 
         // CONFIGURAZIONE GENERALE
         static public int ModoAssemblea;
+        public static string ValAssemblea;
         static public bool SalvaLinkVoto;
         static public bool SalvaVotoNonConfermato;
+        static public bool SalvaVotoInGeas;
+        static public int MaxDeleghe;
         static public int IDSchedaUscitaForzata;
         static public int ModoPosizioneAreeTouch;
         static public int ControllaPresenze;
@@ -66,6 +69,10 @@ namespace VotoTouch
         // codici impianto
         static public int BadgeLen;
         static public string CodImpianto;
+
+        public static bool IsOrdinaria; // = ValAssemblea.Contains("O"); //CheckOrdinariaValAssem();
+        public static bool IsStraordinaria; // = ValAssemblea.Contains("S"); //CheckStraordinariaValAssem();
+
 
         static VTConfig()
         {
@@ -150,7 +157,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.0RC8  20/11/2016";
+        public const string VTS_VERSION = "4.1  31/03/2017";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string CONFIGURA = "88889990";

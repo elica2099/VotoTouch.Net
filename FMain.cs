@@ -341,7 +341,7 @@ namespace VotoTouch
             timAutoRitorno = new System.Windows.Forms.Timer
                 {
                     Enabled = false,
-                    Interval = VTConfig.TimeAutoRitornoVoto*1000
+                    Interval = VTConfig.TimeAutoRitornoVoto
                 };
 		    timAutoRitorno.Tick += timAutoRitorno_Tick;
 
@@ -507,7 +507,8 @@ namespace VotoTouch
                         //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, true);
                         oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, true);
                         // paint dei Bottoni
-                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, false, oVotoTheme.BaseFontCandidato);
+                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, false, oVotoTheme.BaseFontCandidato, 
+                            oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
                     }
                     // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
                     if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
@@ -516,7 +517,8 @@ namespace VotoTouch
                         //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, false);
                         oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
                         // paint dei bottoni
-                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, true, oVotoTheme.BaseFontCandidato);
+                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, true, oVotoTheme.BaseFontCandidato,
+                            oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
                     }
 
                     // ******* OBSOLETO ********/
@@ -903,12 +905,18 @@ namespace VotoTouch
             lbVersion.Items.Add("Usalettore: " + VTConfig.UsaLettore.ToString() + " Porta: " + VTConfig.PortaLettore.ToString());
             lbVersion.Items.Add("UsaSemaforo: " + VTConfig.UsaSemaforo.ToString() + " IP: " + VTConfig.IP_Com_Semaforo.ToString());
             lbVersion.Items.Add("IDSeggio: " + VTConfig.IDSeggio.ToString() + " NomeComputer: " + VTConfig.NomeTotem);
-            lbVersion.Items.Add("ControllaPresenze: " + VTConfig.ControllaPresenze.ToString() +
-                " CodiceUscita: " + VTConfig.CodiceUscita);
+            lbVersion.Items.Add("ControllaPresenze: " + VTConfig.ControllaPresenze.ToString());
+            lbVersion.Items.Add("     0: Non controllare, 1: Blocca");
+            lbVersion.Items.Add("     2: Forza Ingresso (ora) 3: Forza ingresso Geas");
+            lbVersion.Items.Add("MaxDeleghe: " + VTConfig.MaxDeleghe);
+            lbVersion.Items.Add("CodiceUscita: " + VTConfig.CodiceUscita);
             lbVersion.Items.Add("SalvaLinkVoto: " + VTConfig.SalvaLinkVoto.ToString());
             lbVersion.Items.Add("SalvaVotoNonConfermato: " + VTConfig.SalvaVotoNonConfermato.ToString());
+            lbVersion.Items.Add("SalvaVoto In geas: " + VTConfig.SalvaVotoInGeas.ToString());
             lbVersion.Items.Add("IDSchedaUscitaForzata: " + VTConfig.IDSchedaUscitaForzata.ToString());
             lbVersion.Items.Add("AbilitaDirittiNonVoglioVotare: " + VTConfig.AbilitaDirittiNonVoglioVotare.ToString());
+            lbVersion.Items.Add("TimerAutoritorno: " + VTConfig.AttivaAutoRitornoVoto.ToString());
+            lbVersion.Items.Add("Tempo TimerAutoritorno (ms): " + VTConfig.TimeAutoRitornoVoto.ToString());
             lbVersion.Items.Add("");
             // le votazioni
             foreach (TNewVotazione fVoto in Votazioni.Votazioni)

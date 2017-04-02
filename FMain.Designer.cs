@@ -172,13 +172,13 @@ namespace VotoTouch
             this.Panel4.Controls.Add(this.lbVersion);
             this.Panel4.Location = new System.Drawing.Point(519, 12);
             this.Panel4.Name = "Panel4";
-            this.Panel4.Size = new System.Drawing.Size(300, 440);
+            this.Panel4.Size = new System.Drawing.Size(300, 525);
             this.Panel4.TabIndex = 118;
             this.Panel4.Visible = false;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(112, 407);
+            this.button2.Location = new System.Drawing.Point(112, 493);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 130;
@@ -189,7 +189,7 @@ namespace VotoTouch
             // btnCancVoti
             // 
             this.btnCancVoti.BackColor = System.Drawing.Color.White;
-            this.btnCancVoti.Location = new System.Drawing.Point(117, 364);
+            this.btnCancVoti.Location = new System.Drawing.Point(117, 450);
             this.btnCancVoti.Name = "btnCancVoti";
             this.btnCancVoti.Size = new System.Drawing.Size(64, 31);
             this.btnCancVoti.TabIndex = 129;
@@ -199,7 +199,7 @@ namespace VotoTouch
             // 
             // btnRicaricaListe
             // 
-            this.btnRicaricaListe.Location = new System.Drawing.Point(9, 361);
+            this.btnRicaricaListe.Location = new System.Drawing.Point(9, 447);
             this.btnRicaricaListe.Name = "btnRicaricaListe";
             this.btnRicaricaListe.Size = new System.Drawing.Size(100, 63);
             this.btnRicaricaListe.TabIndex = 4;
@@ -228,7 +228,7 @@ namespace VotoTouch
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(188, 361);
+            this.button1.Location = new System.Drawing.Point(188, 447);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(102, 65);
             this.button1.TabIndex = 1;
@@ -242,7 +242,7 @@ namespace VotoTouch
             this.lbVersion.FormattingEnabled = true;
             this.lbVersion.Location = new System.Drawing.Point(1, 33);
             this.lbVersion.Name = "lbVersion";
-            this.lbVersion.Size = new System.Drawing.Size(294, 316);
+            this.lbVersion.Size = new System.Drawing.Size(294, 407);
             this.lbVersion.TabIndex = 0;
             // 
             // pnBadge

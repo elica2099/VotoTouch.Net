@@ -42,9 +42,10 @@ namespace VotoTouch
         public const float Nqy = 100;
         public string AData_path;
 
-        // font
+        // candidato
+        public Color BaseColorCandidato;
         public int BaseFontCandidato;
-        public bool BaseFontCandidatoBool;
+        public bool BaseFontCandidatoBold;
 
         DataTable dtTema = new DataTable();
         public Boolean IsThemed;
@@ -57,6 +58,7 @@ namespace VotoTouch
             FFormRect = new Rectangle();
 
             BaseFontCandidato = 22;
+            BaseColorCandidato = System.Drawing.ColorTranslator.FromHtml("#FFFFFF");
 		}
 
         //-----------------------------------------------------------------------------
@@ -97,8 +99,9 @@ namespace VotoTouch
                 {
                     foreach (DataRow r in dtTema.Select("Oggetto = 'BaseFontCandidato'"))
                     {
+                        BaseColorCandidato = System.Drawing.ColorTranslator.FromHtml(r["Color"].ToString());
                         BaseFontCandidato = Convert.ToInt32(r["Point"]);
-                        BaseFontCandidatoBool = Convert.ToBoolean(r["Bold"]);
+                        BaseFontCandidatoBold = Convert.ToBoolean(r["Bold"]);
                     }
                 }
             }

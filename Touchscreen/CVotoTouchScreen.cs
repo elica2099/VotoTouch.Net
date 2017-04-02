@@ -702,7 +702,8 @@ namespace VotoTouch
             }
         }
 
-        public void PaintButtonCandidatoPagina(object sender, PaintEventArgs e, bool Multi, int ABaseFontCandidato)
+        public void PaintButtonCandidatoPagina(object sender, PaintEventArgs e, bool Multi, int ABaseFontCandidato,
+                                                                bool ABaseFontCandidatoBold, Color BaseColorCandidato)
         {
             // ok questo metodo viene chiamato da paint della finestra principale 
             // per disegnare i bottoni dei candidati
@@ -713,8 +714,8 @@ namespace VotoTouch
             Pen blackPen = new Pen(Color.Black, 1);
             Pen graypen = new Pen(Color.Gray, 2);
 
-            Font myFont22 = new System.Drawing.Font("Arial", ABaseFontCandidato, FontStyle.Regular);  
-            Font myFont23 = new System.Drawing.Font("Arial", ABaseFontCandidato + 2, FontStyle.Regular);  
+            Font myFont22 = new System.Drawing.Font("Arial", ABaseFontCandidato, ABaseFontCandidatoBold ? FontStyle.Bold : FontStyle.Regular);
+            Font myFont23 = new System.Drawing.Font("Arial", ABaseFontCandidato + 2, ABaseFontCandidatoBold ? FontStyle.Bold : FontStyle.Regular);  
             //Font myFont24 = new System.Drawing.Font("Arial", 24, FontStyle.Regular);
 
             Font myFont = null; // = new System.Drawing.Font("Arial", 24, FontStyle.Regular);
@@ -808,7 +809,7 @@ namespace VotoTouch
                                     ss = a.Text.Substring(a.Text.IndexOf('('),
                                           a.Text.Length - a.Text.IndexOf('('));
                                     a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
-                                    e.Graphics.DrawString(ss, myFont3, Brushes.DarkSlateGray,
+                                    e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),  //Brushes.DarkSlateGray,
                                         new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20), stringFormat);
                                     stringFormat.Alignment = StringAlignment.Center;
                                 }
@@ -819,7 +820,7 @@ namespace VotoTouch
                                 //    myFont = myFont23;
                                 //else
                                 //    myFont = myFont22;
-                                e.Graphics.DrawString(a.Text, myFont, Brushes.DarkSlateGray,
+                                e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),  //Brushes.DarkSlateGray,
                                         new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4), stringFormat);
 
                             }  // if (a.pag == CurrPag || a.pag == 0)

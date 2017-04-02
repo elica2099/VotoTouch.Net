@@ -165,7 +165,7 @@ namespace VotoTouch
             SqlCommand qryStd = new SqlCommand() { Connection = STDBConn };
             try
             {
-                // Leggo ora da GEAS_Titolari	
+                // Leggo ora da CONFIG_cfgParametri	
                 qryStd.CommandText = "select * from CONFIG_cfgParametri with (nolock)";
                 a = qryStd.ExecuteReader();
                 if (a.HasRows)
@@ -181,6 +181,27 @@ namespace VotoTouch
                     ABadgeLen = 8;
                     ACodImpianto = "00";
                 }
+                a.Close();
+
+                // ora devo leggere il modo assemblea
+                // Leggo ora da CONFIG_cfgParametri	
+                qryStd.CommandText = "select ValAssem from CONFIG_DatiAssemblea with (nolock)";
+                a = qryStd.ExecuteReader();
+                if (a.HasRows)
+                {
+                    // devo verificare 
+                    a.Read();
+
+                    VTConfig.ValAssemblea = a.IsDBNull(a.GetOrdinal("ValAssem")) ? "O" : (a["ValAssem"]).ToString();
+                }
+                else
+                {
+                    VTConfig.ValAssemblea = "O";
+                }
+
+                VTConfig.IsOrdinaria = VTConfig.ValAssemblea.Contains("O");
+                VTConfig.IsStraordinaria = VTConfig.ValAssemblea.Contains("S");
+
                 a.Close();
             }
             catch (Exception objExc)
@@ -335,6 +356,10 @@ namespace VotoTouch
                     VTConfig.SalvaLinkVoto = Convert.ToBoolean(a["SalvaLinkVoto"]);
                     // il salvataggio del voto anche se non ha confermato
                     VTConfig.SalvaVotoNonConfermato = Convert.ToBoolean(a["SalvaVotoNonConfermato"]);
+                    // il salvataggio del voto su Geas
+                    VTConfig.SalvaVotoInGeas = Convert.ToBoolean(a["SalvaVotoInGeas"]);
+                    // Massimo n. di deleghe accettate
+                    VTConfig.MaxDeleghe = Convert.ToInt32(a["MaxDeleghe"]);
                     // l'id della scheda che deve essere salvata in caso di 999999
                     VTConfig.IDSchedaUscitaForzata = Convert.ToInt32(a["IDSchedaUscitaForzata"]);
                     // ModoPosizioneAreeTouch
@@ -725,8 +750,7 @@ namespace VotoTouch
                 a.Close();
                 // se non è annullato e non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO oppure PRES_MODO_GEAS
                 // forzo un movimento di ingresso
-                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO
-                    || (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS && BAbilitato)))
+                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO))
                 {
                     // forzo il movimento
                     qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
@@ -739,6 +763,24 @@ namespace VotoTouch
                     qryStd.ExecuteNonQuery();
                     Presente = true;
                 }
+
+                // se non è annullato e non è presente e il flag è PRES_MODO_GEAS
+                // forzo un movimento di ingresso ( in teoria all'inizio della votazione)
+                if (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS && !BAbilitato)
+                {
+                    // forzo il movimento
+                    qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
+                        " DataOra, Badge, TipoMov, Reale, Classe, Terminale, DataIns " +
+                        ") values ({ fn NOW() } , '" +
+                        AIDBadge.ToString() + "', 'E', 1, 3, " +
+                        VTConfig.Sala.ToString() + ", { fn NOW() })";
+                    // eseguo
+                    qryStd.Parameters.Clear();
+                    qryStd.ExecuteNonQuery();
+                    Presente = true;
+                    BAbilitato = true;
+                }
+
                 // qua faccio un elaborazione successsiva in funzione del flag ControllaPresenze
                 // per avere un valore assoluto nel confronto finale
                 // perché se Presente = true va tutto bene, ma se Presente è a false
@@ -920,23 +962,29 @@ namespace VotoTouch
                     // in teoria non può non avere righe, testa anche se ha azioni, se no è un rappr
                     if (a.HasRows && a.Read())
                     {
-                        c = new TAzionista
+                        c = new TAzionista();
+                        c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
+                        c.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                        c.IDBadge = AIDBadge;
+                        c.ProgDeleg = 0;
+                        c.RaSo = a["Raso1"].ToString();
+                        // TODO: GEAS VERSIONE
+                        if (VTConfig.IsOrdinaria)    // becca O, O/S o S/O
+                            c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                        else
                         {
-                            CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
-                            IDAzion = Convert.ToInt32(a["IdAzion"]),
-                            IDBadge = AIDBadge,
-                            ProgDeleg = 0,
-                            RaSo = a["Raso1"].ToString(),
-                            // TODO: GEAS VERSIONE
-                            // TODO: AZ STRA ???
-                            NAzioni = Convert.ToDouble(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
-                            Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString(),
-                            HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
-                            IDVotaz = IDVotazione
-                        };
+                            if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)      // BECCA S
+                                c.NAzioni = Convert.ToDouble(a["AzStr"]);
+                        }
+                        c.Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
+                        c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
+                                         ? TListaAzionisti.VOTATO_DBASE
+                                         : TListaAzionisti.VOTATO_NO;
+                        c.IDVotaz = IDVotazione;
 
                         // ok, ora se è titolare e ha azioni l'aggiungo alla lista
-                        if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
+                        if (c.NAzioni > 0)
+                        //if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
                             AAzionisti.Add(c);
 
                         // poi lo salvo come titolare
@@ -959,19 +1007,38 @@ namespace VotoTouch
                             // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
                             if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
                             {
-                                c = new TAzionista
+                                c = new TAzionista();
+                                c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
+                                c.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                                c.IDBadge = AIDBadge;
+                                c.ProgDeleg = Convert.ToInt32(a["ProgDeleg"]);
+                                c.RaSo = a["Raso1"].ToString();
+                                // TODO: GEAS VERSIONE
+                                if (VTConfig.IsOrdinaria)
+                                    c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                                else
                                 {
-                                    CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
-                                    IDAzion = Convert.ToInt32(a["IdAzion"]),
-                                    IDBadge = AIDBadge,
-                                    ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
-                                    RaSo = a["Raso1"].ToString(),
-                                    // TODO: AZ STRA ???
-                                    NAzioni = Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
-                                    Sesso = "N",
-                                    HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
-                                    IDVotaz = IDVotazione
-                                };
+                                    if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
+                                        c.NAzioni = Convert.ToDouble(a["AzStr"]);
+                                }
+                                c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
+                                c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
+                                c.IDVotaz = IDVotazione;
+                                
+                                //c = new TAzionista
+                                //{
+                                //    CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
+                                //    IDAzion = Convert.ToInt32(a["IdAzion"]),
+                                //    IDBadge = AIDBadge,
+                                //    ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
+                                //    RaSo = a["Raso1"].ToString(),
+                                //    // TODO: AZ STRA -- VEDERE IL TIPO DI ASSEMBLEA
+                                //    NAzioni = Convert.ToInt32(a["AzOrd"]), // + Convert.ToInt32(a["AzStr"]),
+                                //    //NAzioni = Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
+                                //    Sesso = "N",
+                                //    HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
+                                //    IDVotaz = IDVotazione
+                                //};
                                 AAzionisti.Add(c);
                             }
                         }   //while (a.Read()) 
@@ -1312,12 +1379,11 @@ namespace VotoTouch
             //  mi da quante azioni ha un titolare
             SqlDataReader ab;
             SqlCommand qryStd1;
-            int AzO, AzS, result;
+            int result = 0;
 
             // testo la connessione
             if (!OpenConnection("NumAzTitolare")) return 0;
 
-            result = 0;
             qryStd1 = new SqlCommand();
             qryStd1.Connection = STDBConn;
             // apro la query
@@ -1329,14 +1395,24 @@ namespace VotoTouch
             {
                 ab.Read();
                 // possono essere nulli
-                if (ab.IsDBNull(ab.GetOrdinal("AzOrd"))) AzO = 0;
-                else AzO = Convert.ToInt32(ab["AzOrd"]);
+                if (VTConfig.IsOrdinaria)
+                    result = ab.IsDBNull(ab.GetOrdinal("AzOrd")) ? 0 : Convert.ToInt32(ab["AzOrd"]);
+                    //c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                else
+                {
+                    if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
+                        result = ab.IsDBNull(ab.GetOrdinal("AzStr")) ? 0 : Convert.ToInt32(ab["AzStr"]);
+                    //c.NAzioni = Convert.ToDouble(a["AzStr"]);
+                }
+                
+                //if (ab.IsDBNull(ab.GetOrdinal("AzOrd"))) AzO = 0;
+                //else AzO = Convert.ToInt32(ab["AzOrd"]);
 
-                if (ab.IsDBNull(ab.GetOrdinal("AzStr"))) AzS = 0;
-                else AzS = Convert.ToInt32(ab["AzStr"]);
+                //if (ab.IsDBNull(ab.GetOrdinal("AzStr"))) AzS = 0;
+                //else AzS = Convert.ToInt32(ab["AzStr"]);
 
-                result = AzO + AzS; //Convert.ToInt32( ab["AzOrd"] ) + Convert.ToInt32( ab["AzStr"] );
-                ab.Close();
+                //result = AzO + AzS; //Convert.ToInt32( ab["AzOrd"] ) + Convert.ToInt32( ab["AzStr"] );
+                //ab.Close();
             }
             ab.Close();
             qryStd1.Dispose();

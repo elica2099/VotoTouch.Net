@@ -53,6 +53,7 @@ namespace VotoTouch
             VTConfig.UsaSemaforo = false;
             VTConfig.IP_Com_Semaforo = "127.0.0.1";
             VTConfig.TipoSemaforo = 1;
+            VTConfig.ValAssemblea = "O";
             //VTConfig.SalvaLinkVoto = true;
             //VTConfig.SalvaVotoNonConfermato = true;
             //VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
