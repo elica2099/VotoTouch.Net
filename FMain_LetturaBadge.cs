@@ -158,18 +158,28 @@ namespace VotoTouch
                     {
                         if (Azionisti.CaricaDirittidiVotoDaDatabase(Badge_Letto, ref Votazioni) && !Azionisti.TuttiIDirittiSonoStatiEspressi())
                         {
-                            // resetto alcune variabili
-                            IsVotazioneDifferenziata = false;                   // dico che è un voto normale
-                            CancellaTempVotiCorrenti();         // cancello i voti temporanei
-                            // cambio lo stato
-                            Logging.WriteToLog("** Inizio Voto : " + Badge_Letto.ToString() +
-                                " Diritti di Voto Max: " + Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString());
+                            // testo se ha superato il n. di deleghe
+                            if (Azionisti.DammiMaxNumeroDirittiDiVotoTotali() >= VTConfig.MaxDeleghe)
+                                ErrorFlag = ErrorFlag | 0x100;
+                            else
+                            {
+                                // resetto alcune variabili
+                                IsVotazioneDifferenziata = false;                   // dico che è un voto normale
+                                CancellaTempVotiCorrenti();         // cancello i voti temporanei
+                                // cambio lo stato
+                                Logging.WriteToLog("** Inizio Voto : " + Badge_Letto.ToString() +
+                                    " Diritti di Voto Max: " + Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString());
 
-                            Stato = TAppStato.ssvVotoStart;
-                            CambiaStato();
+                                Stato = TAppStato.ssvVotoStart;
+                                CambiaStato();
+                            }                            
                         }
                         else  // if (DammiUtente())
                             ErrorFlag = ErrorFlag | 0x08;  // setto l'errore
+
+                            //MessageBox.Show(Azionisti.DammiMaxNumeroDirittiDiVotoTotali().ToString() + " - " +
+                            //                VTConfig.MaxDeleghe);
+
                     }  // if (Controllato)
                 } // if (ErrorFlag == 0)
 
@@ -197,6 +207,8 @@ namespace VotoTouch
                     if ((ErrorFlag & 0x10) == 0x10) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGIMP");   // "\n - Codice Impianto diverso";
                     // 0x20 : Errore nella conversione
                     if ((ErrorFlag & 0x20) == 0x20) messaggio += "\n" + rm.GetString("SAPP_ERR_BDGCONV");   // "\n - Errore nella conversione Badge";
+                    // 0x100 : Raggiunto il max n. di deleghe
+                    if ((ErrorFlag & 0x100) == 0x100) messaggio += "\n" + rm.GetString("SAPP_ERR_MAXDELEGHE");   // "\n - Raggiunto il massimo numero di deleghe";
 
                     // se il badge è 999999, metto un codice a parte
                     if (AText == VTConfig.CodiceUscita)

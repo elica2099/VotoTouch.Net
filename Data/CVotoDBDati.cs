@@ -40,6 +40,7 @@ namespace VotoTouch
 	    private string qry_DammiDirittiDiVoto_Deleganti = "";
         private string qry_DammiVotazioniTotem = "";
         private string qry_DammiBadgePresenteGeas = "";
+        private string qry_MettiBadgePresenteGeas = "";
 
         public CVotoDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) : 
             base(AFDBConfig, AADataLocal, AAData_path)
@@ -63,6 +64,7 @@ namespace VotoTouch
             qry_DammiDirittiDiVoto_Deleganti = getModelsQueryProcedure("DammiDirittiDiVoto_Deleganti.sql");
             qry_DammiVotazioniTotem = getModelsQueryProcedure("DammiVotazioniTotem.sql");
             qry_DammiBadgePresenteGeas = getModelsQueryProcedure("DammiBadgePresenteGeas.sql");
+            qry_MettiBadgePresenteGeas = getModelsQueryProcedure("MettiBadgePresenteGeas.sql");
         }
 
         ~CVotoDBDati()
@@ -673,7 +675,7 @@ namespace VotoTouch
 
             SqlDataReader a;
             SqlTransaction traStd = null;
-            bool Presente, resCons, BAnnull, BNonEsiste, BAbilitato;
+            bool Presente = false, resCons, BAnnull = true, BNonEsiste = true, BAbilitato = false;
 
             // testo la connessione
             if (!OpenConnection("ControllaBadge")) return false;
@@ -709,12 +711,49 @@ namespace VotoTouch
                 }
                 a.Close();
 
-                // -------------------------------------------------
-                // se sono in geas mode devo controllare se il badge è abilitato a inizio votazione corrente
-                if (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS)
+                // OK, se è annullato non ci posso fare nulla e skippo direttamente, se invece è ok
+                // continuo
+                if (!BAnnull)
                 {
-                    BAbilitato = false;
-                    qryStd.CommandText = qry_DammiBadgePresenteGeas;
+
+                    // -------------------------------------------------
+                    // se sono in geas mode devo controllare se il badge è abilitato a inizio votazione corrente
+                    // se non lo è devo mettere il movimento di ingresso uscita all'ora della votazione
+                    if (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS)
+                    {
+                        BAbilitato = false;
+                        qryStd.CommandText = qry_DammiBadgePresenteGeas;
+                        qryStd.Parameters.Clear();
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        a = qryStd.ExecuteReader();
+                        if (a.HasRows)
+                        {
+                            // devo verificare, il campo non può essere null 
+                            a.Read();
+                            string mv = a["TipoMov"].ToString();
+                            BAbilitato = (mv == "E");
+                        }
+                        a.Close();
+
+                        // se non è abilitato, forzo il movimento 1s prima ingresso e 1s dopo uscita
+                        qryStd.CommandText = qry_MettiBadgePresenteGeas;
+                        qryStd.Parameters.Clear();
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        qryStd.Parameters.Add("@Sala", System.Data.SqlDbType.VarChar).Value = VTConfig.Sala;
+                        qryStd.ExecuteNonQuery();
+
+                        BAbilitato = true;
+                    }
+                    else
+                        BAbilitato = true;
+
+                    // -------------------------------------------------
+                    // ok ora testo se è presente a questo momento
+                    Presente = false;
+                    qryStd.CommandText = @"SELECT TipoMov FROM GEAS_TimbInOut with (NOLOCK) 
+                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1 
+                                        AND DataOra=(SELECT MAX(DataOra) FROM GEAS_TimbInOut with (NOLOCK)
+                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1)";
                     qryStd.Parameters.Clear();
                     qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                     a = qryStd.ExecuteReader();
@@ -723,62 +762,26 @@ namespace VotoTouch
                         // devo verificare, il campo non può essere null 
                         a.Read();
                         string mv = a["TipoMov"].ToString();
-                        BAbilitato = (mv == "E");
+                        Presente = (mv == "E");
                     }
                     a.Close();
-                }
-                else
-                    BAbilitato = true;
 
-                // -------------------------------------------------
-                //  ok ora testo se è presente
-                Presente = false;
-                qryStd.CommandText = @"SELECT TipoMov FROM GEAS_TimbInOut with (NOLOCK) 
-                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1 
-                                        AND DataOra=(SELECT MAX(DataOra) FROM GEAS_TimbInOut with (NOLOCK)
-                                        WHERE Badge = @Badge AND GEAS_TimbInOut.Reale=1)";
-                qryStd.Parameters.Clear();
-                qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                a = qryStd.ExecuteReader();
-                if (a.HasRows)
-                {
-                    // devo verificare, il campo non può essere null 
-                    a.Read();
-                    string mv = a["TipoMov"].ToString();
-                    Presente = (mv == "E");
-                }
-                a.Close();
-                // se non è annullato e non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO oppure PRES_MODO_GEAS
-                // forzo un movimento di ingresso
-                if (!BAnnull && !Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO))
-                {
-                    // forzo il movimento
-                    qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
-                        " DataOra, Badge, TipoMov, Reale, Classe, Terminale, DataIns " +
-                        ") values ({ fn NOW() } , '" +
-                        AIDBadge.ToString() + "', 'E', 1, 3, " +
-                        VTConfig.Sala.ToString() + ", { fn NOW() })";
-                    // eseguo
-                    qryStd.Parameters.Clear();
-                    qryStd.ExecuteNonQuery();
-                    Presente = true;
-                }
-
-                // se non è annullato e non è presente e il flag è PRES_MODO_GEAS
-                // forzo un movimento di ingresso ( in teoria all'inizio della votazione)
-                if (VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS && !BAbilitato)
-                {
-                    // forzo il movimento
-                    qryStd.CommandText = "insert into Geas_TimbinOut with (ROWLOCK) (" +
-                        " DataOra, Badge, TipoMov, Reale, Classe, Terminale, DataIns " +
-                        ") values ({ fn NOW() } , '" +
-                        AIDBadge.ToString() + "', 'E', 1, 3, " +
-                        VTConfig.Sala.ToString() + ", { fn NOW() })";
-                    // eseguo
-                    qryStd.Parameters.Clear();
-                    qryStd.ExecuteNonQuery();
-                    Presente = true;
-                    BAbilitato = true;
+                    // ok, se non è presente e il flag è VSDecl.PRES_FORZA_INGRESSO o VSDecl.PRES_MODO_GEAS
+                    // forzo un movimento di ingresso a questo momento
+                    if (!Presente && (VTConfig.ControllaPresenze == VSDecl.PRES_FORZA_INGRESSO ||
+                          VTConfig.ControllaPresenze == VSDecl.PRES_MODO_GEAS))
+                    {
+                        // forzo il movimento
+                        qryStd.CommandText = @"insert into Geas_TimbinOut with (ROWLOCK) 
+                                                (DataOra, Badge, TipoMov, Reale, Classe, Terminale, DataIns)
+                                                values ({ fn NOW() } , @Badge, 'E', 1, 99, @Sala, { fn NOW() })";
+                        // eseguo
+                        qryStd.Parameters.Clear();
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        qryStd.Parameters.Add("@Sala", System.Data.SqlDbType.Int).Value = VTConfig.Sala;
+                        qryStd.ExecuteNonQuery();
+                        Presente = true;
+                    }
                 }
 
                 // qua faccio un elaborazione successsiva in funzione del flag ControllaPresenze
@@ -1272,20 +1275,33 @@ namespace VotoTouch
                             switch (vt.VotoExp_IDScheda)
                             {
                                 // li metto hardcoded
-                                //Fav
+                                //Fav e anche le liste
                                 case 1:
+                                case 129:
+                                case 130:
+                                case 131:
+                                case 132:
+                                case 133:
+                                case 134:
+                                case 135:
+                                case 137:
+                                case 138:
+                                case 139:
+                                case 140:
                                     ASi = az.NAzioni;
                                     VSi = 1;
                                     PSi = 100;
                                     break;
                                 // contr
                                 case 2:
+                                case 227:
                                     ANo = az.NAzioni;
                                     VNo = 1;
                                     PNo = 100;
                                     break;
                                 // ast
                                 case 3:
+                                case 226:
                                     AAst = az.NAzioni;
                                     VAst = 1;
                                     PAst = 100;
