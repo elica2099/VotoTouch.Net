@@ -73,6 +73,11 @@ namespace VotoTouch
         public static bool IsOrdinaria; // = ValAssemblea.Contains("O"); //CheckOrdinariaValAssem();
         public static bool IsStraordinaria; // = ValAssemblea.Contains("S"); //CheckStraordinariaValAssem();
 
+        // Diciture Votazioni
+        static public string ContrarioATutti;
+        static public string AstenutoATutti;
+
+
 
         static VTConfig()
         {
@@ -87,6 +92,8 @@ namespace VotoTouch
             AbilitaDirittiNonVoglioVotare = false;
             IsDemoMode = false;
             NomeTotem = "";
+            ContrarioATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKCONTRARIOTUTTI");
+            AstenutoATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKASTENUTOTUTTI");
         }
     }
 
@@ -157,7 +164,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.11  02/04/2017";
+        public const string VTS_VERSION = "4.12  02/04/2017";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string CONFIGURA = "88889990";

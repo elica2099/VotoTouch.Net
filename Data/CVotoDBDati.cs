@@ -637,6 +637,29 @@ namespace VotoTouch
                         }
                     }
                     a.Close();
+                
+                    // TODO: DA RIVEDERE CHE FUNZIONA SOLO SU UN VOTO SOLO
+                    // carica la dicitira astenuto e contrario
+                    int IDScheda;
+                    string DescrLista;
+                    qryStd.Parameters.Clear();
+                    qryStd.CommandText = @"select distinct IDscheda, descrLista from VS_Liste_Totem
+                                            where IdScheda = 226 or IdScheda = 227 ";
+                     a = qryStd.ExecuteReader();
+                    if (a.HasRows)
+                    {
+                        while (a.Read())
+                        {
+                            IDScheda = Convert.ToInt32(a["idScheda"]);
+                            DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString();
+                            if (IDScheda == VSDecl.VOTO_CONTRARIO_TUTTI)
+                                VTConfig.ContrarioATutti = DescrLista;
+                            if (IDScheda == VSDecl.VOTO_ASTENUTO_TUTTI)
+                                VTConfig.AstenutoATutti = DescrLista;
+                        }
+                    }
+                    a.Close();
+
                 }
                 result = true;
             }

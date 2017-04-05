@@ -166,7 +166,7 @@ namespace VotoTouch
             // ContrarioATutti
             VotoEspresso = VSDecl.VOTO_CONTRARIO_TUTTI;
             VotoEspressoStr = "";
-            VotoEspressoStrUp = rm.GetString("SAPP_SKCONTRARIOTUTTI");
+            VotoEspressoStrUp = VTConfig.ContrarioATutti; // rm.GetString("SAPP_SKCONTRARIOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
@@ -186,7 +186,7 @@ namespace VotoTouch
             // Astenuto Tutti
             VotoEspresso = VSDecl.VOTO_ASTENUTO_TUTTI;
             VotoEspressoStr = "";
-            VotoEspressoStrUp = rm.GetString("SAPP_SKASTENUTOTUTTI");
+            VotoEspressoStrUp = VTConfig.AstenutoATutti; // rm.GetString("SAPP_SKASTENUTOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
             TVotoEspresso VExp = new TVotoEspresso
