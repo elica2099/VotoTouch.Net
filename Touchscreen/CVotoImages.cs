@@ -71,20 +71,30 @@ namespace VotoTouch
                 }
                 else
                 {
-                    // Non ho trovato nessuna cartella, quindi mi creo il ramo c:\\Data\\VtsNETImg\\
-                    // e tento di copiare le immagini dalla cartella Source, es. h:\\Data\\VtsNETImg\\
-                    // in caso di esecuzione da server
-                    //splash.SetSplash(11, "Copio immagini...");
-                    if (CopyImages())
+                    // l'ultimo controllo che faccio è sulla cartella c:\Data\VtsNETImgLocali\
+                    if (System.IO.Directory.Exists("c:" + VSDecl.IMG_PATH_LOC_ABS))
                     {
-                        AData_Path = "c:" + VSDecl.DATA_PATH_ABS;       // "\\Data\\";
-                        Img_path = "c:" + VSDecl.IMG_PATH_ABS;          // "\\Data\\VtsNETImg\\";
+                        // metto i corretti path
+                        AData_Path = "c:" + "\\data\\";
+                        Img_path = SourceExePath + VSDecl.IMG_PATH_LOC_ABS;
                     }
                     else
                     {
-                        MessageBox.Show("Impossibile trovare le immagini", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        //CtrlPrimoAvvio = false;
-                        return false;
+                        // Non ho trovato nessuna cartella, quindi mi creo il ramo c:\\Data\\VtsNETImg\\
+                        // e tento di copiare le immagini dalla cartella Source, es. h:\\Data\\VtsNETImg\\
+                        // in caso di esecuzione da server
+                        //splash.SetSplash(11, "Copio immagini...");
+                        if (CopyImages())
+                        {
+                            AData_Path = "c:" + VSDecl.DATA_PATH_ABS;       // "\\Data\\";
+                            Img_path = "c:" + VSDecl.IMG_PATH_ABS;          // "\\Data\\VtsNETImg\\";
+                        }
+                        else
+                        {
+                            MessageBox.Show("Impossibile trovare le immagini", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            //CtrlPrimoAvvio = false;
+                            return false;
+                        }   
                     }
                 }
             }

@@ -54,6 +54,7 @@ namespace VotoTouch
             VTConfig.IP_Com_Semaforo = "127.0.0.1";
             VTConfig.TipoSemaforo = 1;
             VTConfig.ValAssemblea = "O";
+            VTConfig.AbilitaBottoneUscita = true;
             //VTConfig.SalvaLinkVoto = true;
             //VTConfig.SalvaVotoNonConfermato = true;
             //VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_SCHEDABIANCA;
@@ -66,6 +67,11 @@ namespace VotoTouch
             VTConfig.UsaLettore = false;
             VTConfig.PortaLettore = 0;
             VTConfig.CodiceUscita = "999999";
+            VTConfig.MaxDeleghe = 1000;
+
+            VTConfig.ContrarioATutti = "Contrario";
+            VTConfig.AstenutoATutti = "Astenuto";
+
             //TotCfg.UsaController = false;
             //TotCfg.IPController = "127.0.0.1";
             return 0; 
@@ -155,22 +161,22 @@ namespace VotoTouch
 
             foreach (DataRow a in dt.Rows)
             {
-                v = new TNewVotazione
-                {
-                    IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                    IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                    TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                    TipoSubVoto = 0,
-                    Descrizione = a["Argomento"].ToString(),
-                    SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                    SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                    SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                    SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                    SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                    //PreIntermezzo = false,
-                    MaxScelte = Convert.ToInt32(a["MaxScelte"]),
-                    AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
-                };
+                v = new TNewVotazione();
+
+                v.IDVoto = Convert.ToInt32(a["NumVotaz"]);
+                v.IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]);
+                v.TipoVoto = Convert.ToInt32(a["TipoVotaz"]);
+                v.TipoSubVoto = 0;
+                v.Descrizione = a["Argomento"].ToString();
+                v.SkBianca = Convert.ToBoolean(a["SchedaBianca"]);
+                v.SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]);
+                v.SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]);
+                v.SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]);
+                v.SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]);
+                //PreIntermezzo = false,
+                v.MaxScelte = Convert.ToInt32(a["MaxScelte"]);
+                v.AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"]);
+                
                 AVotazioni.Add(v);
             }
 
@@ -185,7 +191,7 @@ namespace VotoTouch
             TNewLista Lista;
 
             dt.ReadXml(AData_path + "VS_Liste_Totem.xml");
-            string ASort = "idlista desc";
+            string ASort = "idlista asc";
             // cicla lungo le votazioni e carica le liste
             foreach (TNewVotazione votaz in AVotazioni)
             {

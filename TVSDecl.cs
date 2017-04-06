@@ -195,6 +195,7 @@ namespace VotoTouch
         public const string SOURCE_IMG_PATH = "\\Data\\VtsNETImg\\";
         // path immagine locale
         public const string IMG_PATH_LOC = "\\VtsNETImgLocali\\";
+        public const string IMG_PATH_LOC_ABS = "\\Data\\VtsNETImgLocali\\";
         public const string IMG_type = ".png";
 
         public const string IMG_Badge = "badge";
