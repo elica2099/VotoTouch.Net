@@ -996,11 +996,11 @@ namespace VotoTouch
                         c.RaSo = a["Raso1"].ToString();
                         // TODO: GEAS VERSIONE
                         if (VTConfig.IsOrdinaria)    // becca O, O/S o S/O
-                            c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                            c.NVoti = Convert.ToDouble(a["VtOrd"]);
                         else
                         {
                             if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)      // BECCA S
-                                c.NAzioni = Convert.ToDouble(a["AzStr"]);
+                                c.NVoti = Convert.ToDouble(a["VtStr"]);
                         }
                         c.Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
                         c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
@@ -1009,7 +1009,7 @@ namespace VotoTouch
                         c.IDVotaz = IDVotazione;
 
                         // ok, ora se è titolare e ha azioni l'aggiungo alla lista
-                        if (c.NAzioni > 0)
+                        if (c.NVoti > 0)
                         //if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
                             AAzionisti.Add(c);
 
@@ -1031,7 +1031,7 @@ namespace VotoTouch
                         while (a.Read())        // qua posso avere più righe
                         {
                             // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
-                            if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
+                            if ((Convert.ToInt32(a["VtOrd"]) + Convert.ToInt32(a["VtStr"])) > 0)
                             {
                                 c = new TAzionista();
                                 c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
@@ -1041,11 +1041,11 @@ namespace VotoTouch
                                 c.RaSo = a["Raso1"].ToString();
                                 // TODO: GEAS VERSIONE
                                 if (VTConfig.IsOrdinaria)
-                                    c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                                    c.NVoti = Convert.ToDouble(a["VtOrd"]);
                                 else
                                 {
                                     if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
-                                        c.NAzioni = Convert.ToDouble(a["AzStr"]);
+                                        c.NVoti = Convert.ToDouble(a["VtStr"]);
                                 }
                                 c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
                                 c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
@@ -1170,7 +1170,7 @@ namespace VotoTouch
                             if (!VTConfig.SalvaLinkVoto)
                                 AIDBadge_OK = random.Next(1, TopRand);
                             // salvo i voti o le azioni a seconda del modo assemblea
-                            PNAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : az.NAzioni;
+                            PNAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : az.NVoti;
 
                             // salvo nel db
                             qryVoti.Parameters.Clear();
@@ -1266,7 +1266,7 @@ namespace VotoTouch
                     qryStd.ExecuteNonQuery();
 
                     // occhio che devo inserire il titolare se ha azioni 0
-                    if (AAzionisti.Titolare_Badge.NAzioni == 0)
+                    if (AAzionisti.Titolare_Badge.NVoti == 0)
                     {
                         qryVoti.Parameters.Clear();
                         qryVoti.CommandText = @"insert into GEAS_VotiDiff with (rowlock)
@@ -1311,21 +1311,21 @@ namespace VotoTouch
                                 case 138:
                                 case 139:
                                 case 140:
-                                    ASi = az.NAzioni;
+                                    ASi = az.NVoti;
                                     VSi = 1;
                                     PSi = 100;
                                     break;
                                 // contr
                                 case 2:
                                 case 227:
-                                    ANo = az.NAzioni;
+                                    ANo = az.NVoti;
                                     VNo = 1;
                                     PNo = 100;
                                     break;
                                 // ast
                                 case 3:
                                 case 226:
-                                    AAst = az.NAzioni;
+                                    AAst = az.NVoti;
                                     VAst = 1;
                                     PAst = 100;
                                     break;
@@ -1334,7 +1334,7 @@ namespace VotoTouch
                                 case -3:
                                 case -4:
                                     TipoVoto = 0;
-                                    ANv = az.NAzioni;
+                                    ANv = az.NVoti;
                                     VNv = 1;
                                     PNv = 100;
                                     break;

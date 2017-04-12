@@ -956,7 +956,7 @@ namespace VotoTouch
                 lbVersion.Items.Add("Badge: " + c.IDBadge.ToString() + " " + c.RaSo.Trim());
                 lbVersion.Items.Add("   IDazion:" + c.IDAzion.ToString() + " *** IDVotaz: " + c.IDVotaz.ToString());
                 lbVersion.Items.Add("   ProgDeleg:" + c.ProgDeleg.ToString() + " Coaz:" + c.CoAz +
-                            " AzOrd: " + c.NAzioni.ToString());
+                            " AzOrd: " + c.NVoti.ToString());
 
             }
             Panel4.Visible = true;

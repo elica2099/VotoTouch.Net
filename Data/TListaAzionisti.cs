@@ -13,7 +13,7 @@ namespace VotoTouch
         public int IDAzion { get; set; }
         public int ProgDeleg { get; set; }
         public string RaSo { get; set; }
-        public double NAzioni { get; set; }
+        public double NVoti { get; set; }
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
         
@@ -54,7 +54,7 @@ namespace VotoTouch
         public void CopyFrom(ref TAzionista cp)
         {
             IDBadge = cp.IDBadge; CoAz = cp.CoAz; IDAzion = cp.IDAzion; ProgDeleg = cp.ProgDeleg;
-            RaSo = cp.RaSo; NAzioni = cp.NAzioni; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
+            RaSo = cp.RaSo; NVoti = cp.NVoti; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
             IDVotaz = cp.IDVotaz;
         }
 	}
@@ -201,12 +201,12 @@ namespace VotoTouch
 
         public int DammiTotaleAzioniRimanentiPerIDVotazione(int AIDVotazione)
         {
-            return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+            return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NVoti);
         }
 
         public int DammiTotaleAzioniRimanenti()
         {
-            return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+            return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NVoti);
         }
 
         public int DammiMaxNumeroAzioniTotali()
@@ -224,7 +224,7 @@ namespace VotoTouch
             {
                 var listatemp = _Azionisti.Where(a => a.HaVotato == VOTATO_NO).Take(1);
                 TAzionista v = listatemp.ElementAt(0);
-                return (int)Azionisti.Where(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz).Sum(n => n.NAzioni);
+                return (int)Azionisti.Where(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz).Sum(n => n.NVoti);
                 //return (int)Azionisti.Count(n => n.HaVotato == VOTATO_NO && n.IDVotaz == v.IDVotaz);
             }
             else
@@ -328,7 +328,7 @@ namespace VotoTouch
             // conta i diritti di voto relativi agli azionisti in votazione (lista sopra) 
             if (ListaDiritti_VotoCorrente != null)
             {
-                return (int)ListaDiritti_VotoCorrente.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NAzioni);
+                return (int)ListaDiritti_VotoCorrente.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NVoti);
             }
             else
                 return 0;

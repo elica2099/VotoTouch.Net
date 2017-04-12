@@ -428,7 +428,7 @@ namespace VotoTouch
                             ProgDeleg = 0,
                             RaSo = "Mario Rossi",
                             Sesso = "M",
-                            NAzioni = 1,
+                            NVoti = 1,
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
@@ -447,7 +447,7 @@ namespace VotoTouch
                             ProgDeleg = 0,
                             RaSo = "Mario Rossi",
                             Sesso = "M",
-                            NAzioni = 1,
+                            NVoti = 1,
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
@@ -463,7 +463,7 @@ namespace VotoTouch
                             ProgDeleg = 1,
                             Sesso = "M",
                             RaSo = "Mario Rossi - Delega 1",
-                            NAzioni = 1,
+                            NVoti = 1,
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
@@ -475,7 +475,7 @@ namespace VotoTouch
                             IDAzion = 10003,
                             IDBadge = 1003,
                             ProgDeleg = 0,
-                            NAzioni = 1,
+                            NVoti = 1,
                             Sesso = "M",
                             RaSo = "Mario Rossi - Delega 2",
                             IDVotaz = IDVotazione,
