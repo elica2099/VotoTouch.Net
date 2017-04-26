@@ -108,6 +108,8 @@ namespace VotoTouch
 
             dt.ReadXml(AData_path + "CONFIG_CfgVotoSegreto.xml");
 
+            VTConfig.CodImpianto = "78";
+
             foreach (DataRow a in dt.Rows)
             {
                 VTConfig.ModoAssemblea = Convert.ToInt32(a["ModoAssemblea"]);
