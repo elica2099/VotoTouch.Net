@@ -30,9 +30,9 @@ namespace VotoTouch
 			        // differenziato tasto grande
 			        a = new TTZone();
                     if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
-			            GetZone(ref a, 9, 45, 57, 90); 
+			            GetZone(ref a, 90, 450, 570, 900); 
                     else
-                        GetZone(ref a, 12, 45, 64, 90);      // VSDecl.MODO_POS_TOUCH_MODERN
+                        GetZone(ref a, 120, 450, 640, 900);      // VSDecl.MODO_POS_TOUCH_MODERN
                     a.expr = 0; a.pag = 0; a.Multi = 0;			        
                     a.Text = "";
 			        a.ev = TTEvento.steVotaNormale;
@@ -40,9 +40,9 @@ namespace VotoTouch
 			        // differenziato tasto piccolo
 			        a = new TTZone();
                     if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE    )
-                        GetZone(ref a, 62, 52, 93, 90);
+                        GetZone(ref a, 620, 520, 930, 900);
                     else
-                        GetZone(ref a, 69, 52, 96, 90); // VSDecl.MODO_POS_TOUCH_MODERN
+                        GetZone(ref a, 690, 520, 960, 900); // VSDecl.MODO_POS_TOUCH_MODERN
                     a.expr = 1;
 			        a.pag = 0;
 			        a.Multi = 0;
@@ -54,7 +54,7 @@ namespace VotoTouch
 			{
 				// normale, tutto lo schermo
 				a = new TTZone();
-				GetZone(ref a, 2, 2, 98, 98); a.expr = 0; a.pag = 0; a.Multi = 0;
+				GetZone(ref a, 20, 20, 980, 980); a.expr = 0; a.pag = 0; a.Multi = 0;
 				a.Text = ""; a.ev = TTEvento.steVotaNormale;
 				Tz.Add(a);
 			}

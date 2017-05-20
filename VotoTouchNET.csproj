@@ -168,6 +168,7 @@
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoSmall.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOld.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOriginal.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_Custom_Multi_Manutencoop.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_Lista.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_MultiCandidatoNew.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_MultiCandidatoOriginal.cs" />
@@ -252,6 +253,7 @@
     <EmbeddedResource Include="Data\Query\DammiBadgePresenteGeas.sql" />
     <EmbeddedResource Include="Data\Query\MettiBadgePresenteGeas.sql" />
     <Content Include="Resources\barcode_red.png" />
+    <EmbeddedResource Include="Resources\check.png" />
     <Content Include="vote.ico" />
     <EmbeddedResource Include="Resources\tab_rev.png" />
     <EmbeddedResource Include="Resources\tab.png" />

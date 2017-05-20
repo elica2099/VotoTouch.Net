@@ -164,7 +164,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.13  12/04/2017";
+        public const string VTS_VERSION = "4.2  25/05/2017";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string CONFIGURA = "88889990";
@@ -211,7 +211,6 @@ namespace VotoTouch
         public const string IMG_voto_pre = "_pre";
 
         // Modo Assemblea
-        // TODO: FARE COME PROPOSTE che lo trova in automatico
         public const int MODO_AGM_POP = 0;            // popolari
         public const int MODO_AGM_SPA = 1;            // spa
 
@@ -220,6 +219,11 @@ namespace VotoTouch
         public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
         public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
         public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
+
+        // tipo di sottovoto
+        public const int SUBVOTO_NORMAL = 0;
+        public const int SUBVOTO_NEW = 1;
+        public const int SUBVOTO_CUSTOM_MANUTENCOOP = 40;
 
         // Voti
         public const int LISTA_1 = 0;
@@ -249,9 +253,20 @@ namespace VotoTouch
         public const int PRES_CONTROLLA = 1;
         public const int PRES_FORZA_INGRESSO = 2;
         public const int PRES_MODO_GEAS = 3;
+
+        // TOUCHSCREEN **********************
+
+        public const int PM_NORMAL = 0;
+        public const int PM_NONE = 1;
+        public const int PM_ONLYCHECK = 2;
+
         // Modo Touch aree 
         public const int MODO_POS_TOUCH_NORMALE = 0;
         public const int MODO_POS_TOUCH_MODERN = 1;
+        
+        // paint mode TTZone
+        public const float VOTESCREEN_DIVIDE_WIDTH = 1000;
+        public const float VOTESCREEN_DIVIDE_HEIGHT = 1000;
 
         public const int SEMAFORO_IP = 1;
         public const int SEMAFORO_COM = 2;

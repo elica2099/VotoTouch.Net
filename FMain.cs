@@ -28,6 +28,7 @@ namespace VotoTouch
         private System.Windows.Forms.Timer timCambiaStato;
         private System.Windows.Forms.Timer timConfigura;
         private System.Windows.Forms.Timer timAutoRitorno;
+        private System.Windows.Forms.Timer timPopup;
 
         // oggetti demo
         private Button btnBadgeUnVoto;
@@ -126,9 +127,18 @@ namespace VotoTouch
             splash.SetSplash(0, rm.GetString("SAPP_START_INIT")); //Inizializzo applicazione...
             splash.Update();
 
-			// Massimizzo la finestra
+            // Massimizzo la finestra
+#if DEBUG
+            this.WindowState = FormWindowState.Normal;
+		    this.Left = 0;
+		    this.Height = 0;
+            this.Width = 1280;
+            this.Height = 1024;
+            labelMousee.Visible = true;
+#else      
+            labelMousee.Visible = false;
             WindowState = FormWindowState.Maximized;
-
+#endif
             // inizializzo il splashscreen
             splash.SetSplash(10, rm.GetString("SAPP_START_IMGSEARCH")); //Ricerco immagini...
            
@@ -144,6 +154,8 @@ namespace VotoTouch
             oVotoImg = new CVotoImages();
             oVotoImg.MainForm = this;
             CtrlPrimoAvvio = oVotoImg.CheckDataFolder(ref Data_Path);
+		    pnPopupRed.Left = 5;
+            pnPopupRed.Top = 5;
 
             btnCancVoti.Visible = File.Exists(Data_Path + "VTS_ADMIN.txt");
 
@@ -301,6 +313,7 @@ namespace VotoTouch
             Azionisti = new TListaAzionisti(oDBDati);
             // Classe del TouchScreen
 		    oVotoTouch = new CVotoTouchScreen(); //ref TotCfg);
+            oVotoTouch.ShowPopup += new ehShowPopup(oVotoTouch_ShowPopup);
             oVotoTouch.PremutoVotaNormale += new ehPremutoVotaNormale(onPremutoVotaNormale);
             oVotoTouch.PremutoVotaDifferenziato += new ehPremutoVotaDifferenziato(onPremutoVotaDifferenziato);
             oVotoTouch.PremutoConferma += new ehPremutoConferma(onPremutoConferma);
@@ -338,12 +351,11 @@ namespace VotoTouch
             timConfigura = new System.Windows.Forms.Timer {Enabled = false, Interval = 30};
 		    timConfigura.Tick += timConfigura_Tick;
             // timer di autoritorno
-            timAutoRitorno = new System.Windows.Forms.Timer
-                {
-                    Enabled = false,
-                    Interval = VTConfig.TimeAutoRitornoVoto
-                };
+            timAutoRitorno = new System.Windows.Forms.Timer {Enabled = false, Interval = VTConfig.TimeAutoRitornoVoto };
 		    timAutoRitorno.Tick += timAutoRitorno_Tick;
+            // popup multicandidati
+            timPopup = new System.Windows.Forms.Timer { Enabled = false, Interval = 6000 };
+            timPopup.Tick += timPopup_Tick;
 
             //pnSemaf.BackColor = Color.Transparent;
 
@@ -381,6 +393,13 @@ namespace VotoTouch
 
             // Attivo la macchina a stati (in FMain_MacchinaAStati.cs)
             CambiaStato();
+        }
+
+        void oVotoTouch_ShowPopup(object source, string messaggio)
+        {
+            lblMsgPopup.Text = messaggio;
+            pnPopupRed.Visible = true;
+            timPopup.Enabled = true;
         }
 
 		/// <summary>
@@ -439,7 +458,6 @@ namespace VotoTouch
         private void frmMain_Shown(object sender, EventArgs e)
         {
             // in shown attivo il barcode reader
-            // il lettore del badge
             NewReader = new CNETActiveReader();
             NewReader.ADataRead += ObjDataReceived;
             evtDataReceived += new EventDataReceived(onDataReceived);
@@ -495,37 +513,33 @@ namespace VotoTouch
             {
                 oVotoTouch.PaintTouch(sender, e);
 
-                // controllo che CurrVoteIDX sia nel range giusto
-                //if (CurrVoteIDX < NVoti)
-                //{
-                    // se la votazione corrente è di candidato su più pagine disegno i rettangoli
-                    if (Stato == TAppStato.ssvVoto && 
-                        (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                         Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
-                    {
-                        // paint delle label Aggiuntive
-                        //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, true);
-                        oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, true);
-                        // paint dei Bottoni
-                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, false, oVotoTheme.BaseFontCandidato, 
-                            oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
-                    }
-                    // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
-                    if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
-                    {
-                        // paint delle label Aggiuntive
-                        //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, false);
-                        oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
-                        // paint dei bottoni
-                        oVotoTouch.PaintButtonCandidatoPagina(sender, e, true, oVotoTheme.BaseFontCandidato,
-                            oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
-                    }
+                // se la votazione corrente è di candidato su più pagine disegno i rettangoli
+                if (Stato == TAppStato.ssvVoto && 
+                    (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                        Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
+                {
+                    // paint delle label Aggiuntive
+                    //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, true);
+                    oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, true);
+                    // paint dei Bottoni
+                    oVotoTouch.PaintButtonCandidatoPagina(sender, e, false, oVotoTheme.BaseFontCandidato, 
+                        oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
+                }
+                // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
+                if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                {
+                    // paint delle label Aggiuntive
+                    oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
+                    oVotoTheme.PaintlabelNSelezioni(sender, e, Votazioni.VotoCorrente, false);
+                    // paint dei bottoni
+                    oVotoTouch.PaintButtonCandidatoPagina(sender, e, true, oVotoTheme.BaseFontCandidato,
+                        oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
+                }
 
-                    // ******* OBSOLETO ********/
-                    // votazione VOTO_CANDIDATO_SING, candidato a singola pagina, disegno i rettangoli
-                    //if (Stato == TAppStato.ssvVoto && (FParVoto[CurrVoteIDX].TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
-                    //    oVotoTouch.PaintButtonCandidatoSingola(sender, e);
-                //}
+                // ******* OBSOLETO ********/
+                // votazione VOTO_CANDIDATO_SING, candidato a singola pagina, disegno i rettangoli
+                //if (Stato == TAppStato.ssvVoto && (FParVoto[CurrVoteIDX].TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
+                //    oVotoTouch.PaintButtonCandidatoSingola(sender, e);
                 
                 // se sono nello stato di votostart e il n. di voti è > 1
                 if (Stato == TAppStato.ssvVotoStart && Azionisti.HaDirittiDiVotoMultipli())
@@ -534,7 +548,7 @@ namespace VotoTouch
                     // in questo caso uso un paint e non una label per un problema grafico di visibilità
                     int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
                                    ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
-                                   : Azionisti.DammiMaxNumeroAzioniTotali();
+                                   : Azionisti.DammiMaxNumeroVotiTotali();
                     oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
                 }
             }
@@ -1161,6 +1175,21 @@ namespace VotoTouch
 
             //TListaVotazioni vot = new TListaVotazioni(oDBDati);
             //vot.CaricaListeVotazioni();
+        }
+
+        private void frmMain_MouseMove(object sender, MouseEventArgs e)
+        {
+#if DEBUG
+            float vx = (VSDecl.VOTESCREEN_DIVIDE_WIDTH / this.Width) * Cursor.Position.X;
+            float vy = (VSDecl.VOTESCREEN_DIVIDE_HEIGHT / this.Height) * Cursor.Position.Y;
+            float lx = (100 / this.Width) * Cursor.Position.X;
+            float ly = (100 / this.Height) * Cursor.Position.Y;
+
+            labelMousee.Text = "Local: " + e.X + ", " + e.Y + ". \n"
+               + "Vote: " + (int)vx + ", " + (int)vy + ". \n"
+                +"Label: " + (int)lx + ", " + (int)ly + ". \n"
+               + "Globalis " + Cursor.Position.X + ", " + Cursor.Position.Y + ".";
+#endif
         }
 
 

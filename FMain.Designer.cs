@@ -73,11 +73,17 @@ namespace VotoTouch
             this.lbNomeAzStart = new System.Windows.Forms.Label();
             this.imgERSemaf = new System.Windows.Forms.PictureBox();
             this.imgERBarcode = new System.Windows.Forms.PictureBox();
+            this.labelMousee = new System.Windows.Forms.Label();
+            this.pnPopupRed = new System.Windows.Forms.Panel();
+            this.lblMsgPopup = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgERSemaf)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgERBarcode)).BeginInit();
+            this.pnPopupRed.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // lbDirittiDiVoto
@@ -367,11 +373,54 @@ namespace VotoTouch
             this.imgERBarcode.TabStop = false;
             this.imgERBarcode.Visible = false;
             // 
+            // labelMousee
+            // 
+            this.labelMousee.AutoSize = true;
+            this.labelMousee.Location = new System.Drawing.Point(7, 9);
+            this.labelMousee.Name = "labelMousee";
+            this.labelMousee.Size = new System.Drawing.Size(35, 13);
+            this.labelMousee.TabIndex = 131;
+            this.labelMousee.Text = "label2";
+            // 
+            // pnPopupRed
+            // 
+            this.pnPopupRed.BackColor = System.Drawing.Color.Transparent;
+            this.pnPopupRed.Controls.Add(this.lblMsgPopup);
+            this.pnPopupRed.Controls.Add(this.pictureBox1);
+            this.pnPopupRed.Location = new System.Drawing.Point(21, 425);
+            this.pnPopupRed.Name = "pnPopupRed";
+            this.pnPopupRed.Size = new System.Drawing.Size(543, 133);
+            this.pnPopupRed.TabIndex = 132;
+            this.pnPopupRed.Visible = false;
+            // 
+            // lblMsgPopup
+            // 
+            this.lblMsgPopup.BackColor = System.Drawing.Color.White;
+            this.lblMsgPopup.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMsgPopup.Location = new System.Drawing.Point(13, 20);
+            this.lblMsgPopup.Name = "lblMsgPopup";
+            this.lblMsgPopup.Size = new System.Drawing.Size(421, 78);
+            this.lblMsgPopup.TabIndex = 1;
+            this.lblMsgPopup.Text = "label2";
+            this.lblMsgPopup.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(0, 3);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(537, 120);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // frmMain
             // 
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(844, 566);
+            this.Controls.Add(this.pnPopupRed);
+            this.Controls.Add(this.labelMousee);
             this.Controls.Add(this.imgERBarcode);
             this.Controls.Add(this.imgERSemaf);
             this.Controls.Add(this.lbConfermaUp);
@@ -399,6 +448,7 @@ namespace VotoTouch
             this.Shown += new System.EventHandler(this.frmMain_Shown);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmMain_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMain_KeyDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.frmMain_MouseUp);
             this.Resize += new System.EventHandler(this.frmMain_Resize);
             this.Panel4.ResumeLayout(false);
@@ -408,6 +458,9 @@ namespace VotoTouch
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgERSemaf)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.imgERBarcode)).EndInit();
+            this.pnPopupRed.ResumeLayout(false);
+            this.pnPopupRed.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -442,5 +495,9 @@ namespace VotoTouch
         private Button button2;
         private PictureBox imgERSemaf;
         private PictureBox imgERBarcode;
+        private Label labelMousee;
+        private Panel pnPopupRed;
+        private PictureBox pictureBox1;
+        private Label lblMsgPopup;
     }
 }

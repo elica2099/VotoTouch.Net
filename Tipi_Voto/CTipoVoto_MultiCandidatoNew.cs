@@ -61,29 +61,29 @@ namespace VotoTouch
 
             Tarea = new TAreaVotazione();
             // area di voto;
-            Tarea.XVt = 4;
-            Tarea.YVt = 25;
-            Tarea.WVt = 94;
-            Tarea.HVt = 42;
+            Tarea.XVt = 40;
+            Tarea.YVt = 250;
+            Tarea.WVt = 940;
+            Tarea.HVt = 420;
             // Voto dei candidati Cda
-            Tarea.XCda = 4;
-            Tarea.YCda = 25;
-            Tarea.WCda = 94;
-            Tarea.HCda = 23;
+            Tarea.XCda = 40;
+            Tarea.YCda = 250;
+            Tarea.WCda = 940;
+            Tarea.HCda = 230;
             Tarea.NeedTabs = false;
             // area cand normali
-            Tarea.XAlt = 4;
-            Tarea.YAlt = 58;
-            Tarea.WAlt = 94;
-            Tarea.HAlt = 16;
+            Tarea.XAlt = 40;
+            Tarea.YAlt = 580;
+            Tarea.WAlt = 940;
+            Tarea.HAlt = 160;
             Tarea.CandidatiPerPagina = 3;
 
             // faccio un aggiustamento se ci sono solo dei presentati, allargo un po'
             if (AVotazione.NPresentatoCDA == AVotazione.NListe)
             {
-                Tarea.YVt = 28;
-                Tarea.YCda = 28;
-                Tarea.HCda = 26;
+                Tarea.YVt = 280;
+                Tarea.YCda = 280;
+                Tarea.HCda = 260;
             }
 
             #region  ok, ciclo lungo i candidati per metterli nell'area giusta
@@ -248,31 +248,31 @@ namespace VotoTouch
                 switch (APosPresCda)
                 {
                     case 1:
-                        GetZone(ref a, (int)3, (int)29, (int)32, (int)39); //(int)b);
+                        GetZone(ref a, (int)30, (int)290, (int)320, (int)390); //(int)b);
                         break;
                     case 2:
-                        GetZone(ref a, (int)36, (int)29, (int)65, (int)39); //(int)b);
+                        GetZone(ref a, (int)360, (int)290, (int)650, (int)390); //(int)b);
                         break;
                     case 3:
-                        GetZone(ref a, (int)69, (int)29, (int)97, (int)39); //(int)b);
+                        GetZone(ref a, (int)690, (int)290, (int)970, (int)390); //(int)b);
                         break;
                     case 4:
-                        GetZone(ref a, (int)3, (int)43, (int)32, (int)53); //(int)b);
+                        GetZone(ref a, (int)30, (int)430, (int)320, (int)530); //(int)b);
                         break;
                     case 5:
-                        GetZone(ref a, (int)36, (int)43, (int)65, (int)53); //(int)b);
+                        GetZone(ref a, (int)360, (int)430, (int)650, (int)530); //(int)b);
                         break;
                     case 6:
-                        GetZone(ref a, (int)69, (int)43, (int)97, (int)53); //(int)b);
+                        GetZone(ref a, (int)690, (int)430, (int)970, (int)530); //(int)b);
                         break;
                     case 7:
-                        GetZone(ref a, (int)3, (int)57, (int)32, (int)67); //(int)b);
+                        GetZone(ref a, (int)30, (int)570, (int)320, (int)670); //(int)b);
                         break;
                     case 8:
-                        GetZone(ref a, (int)36, (int)57, (int)65, (int)67); //(int)b);
+                        GetZone(ref a, (int)360, (int)570, (int)650, (int)670); //(int)b);
                         break;
                     case 9:
-                        GetZone(ref a, (int)69, (int)57, (int)97, (int)67); //(int)b);
+                        GetZone(ref a, (int)690, (int)570, (int)970, (int)670); //(int)b);
                         break;
                 }
 
@@ -325,7 +325,7 @@ namespace VotoTouch
                 else
                     y = b - HRETT_CANDIDATO;
                 // devo centrare i rettangoli
-                float[] dimr = new float[] { 0, 38, 34, 29 };
+                float[] dimr = new float[] { 0, 380, 340, 290 };
                 ax = x + ((r - x - dimr[nct]) / 2);
                 ar = r - ((r - x - dimr[nct]) / 2);
                 GetZone(ref a, (int)ax, (int)y, (int)ar, (int)y + 11); //(int)b);
@@ -363,7 +363,7 @@ namespace VotoTouch
             // devo ora calcolarmi il vero rettangolo interno
             b = y + HRETT_CANDIDATO;
             // devo centrare i rettangoli
-            float[] dimr = new float[] { 0, 38, 34, 29 };
+            float[] dimr = new float[] { 0, 380, 340, 290 };
             ax = x + ((r - x - dimr[nct]) / 2);
             ar = r - ((r - x - dimr[nct]) / 2);
             GetZone(ref a, (int)ax, (int)y, (int)ar, (int)y + 11);
@@ -386,12 +386,12 @@ namespace VotoTouch
             TTZone a;
 
             // x:995 y:320 w:295 h:600
-            x = 77;
+            x = 770;
             y = AVotazione.AreaVoto.YAlt; // 31;
-            h = 5; // altezza dei tabs fissa
+            h = 50; // altezza dei tabs fissa
             // bisogna stabilire quante colonne ci sono
             ncol = ((AVotazione.Pagine.Count - 1) / 8) + 1;
-            w = 24 / ncol;
+            w = 240 / ncol;
 
             acol = 0;
             arow = 0;
@@ -402,7 +402,7 @@ namespace VotoTouch
                 // ok, ora inserisco in funzione della posizione
                 a = new TTZone();
                 ax = x + (w * acol);
-                ay = y + (6 * arow);
+                ay = y + (60 * arow);
 
                 GetZone(ref a, ax, ay, ax + w - 1, ay + h);
 

@@ -365,9 +365,25 @@ namespace VotoTouch
             th.AFont.Dispose();
         }
 
+
         //-----------------------------------------------------------------------------
-        //  PAINT DELLE LABEL PROPOSTE CDA o PROPOSTE ALTERNATIVE
+        //  PAINT DELLE LABEL MULTICANDIDATO
         //-----------------------------------------------------------------------------
+
+        public void PaintlabelNSelezioni(object sender, PaintEventArgs e, TNewVotazione vt, bool Candidato)
+        {
+            int nsel = vt.NMultiSelezioni;
+            Brush myBrush1;
+            Font myFont2 = new System.Drawing.Font("Arial", 50, FontStyle.Bold);
+            if (nsel >= vt.MinScelte && nsel <= vt.MaxScelte)
+                myBrush1 = new System.Drawing.SolidBrush(Color.Green);  //E3E3E3
+            else
+                myBrush1 = new System.Drawing.SolidBrush(Color.Red);  //E3E3E3
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            e.Graphics.DrawString(nsel.ToString(), myFont2, myBrush1, 600, 6);//rr, stringFormat);
+            Font myFont3 = new System.Drawing.Font("Arial", 20, FontStyle.Regular);
+            e.Graphics.DrawString("scelte espresse", myFont3, myBrush1, 534, 75);//rr, stringFormat);
+        }
 
         public void PaintlabelProposteCdaAlt(object sender, PaintEventArgs e, TNewVotazione vt, bool Candidato)
         {

@@ -14,6 +14,8 @@ namespace VotoTouch
         public int ProgDeleg { get; set; }
         public string RaSo { get; set; }
         public double NVoti { get; set; }
+        public double Voti1 { get; set; }
+        public double Voti2 { get; set; }
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
         
@@ -55,13 +57,12 @@ namespace VotoTouch
         {
             IDBadge = cp.IDBadge; CoAz = cp.CoAz; IDAzion = cp.IDAzion; ProgDeleg = cp.ProgDeleg;
             RaSo = cp.RaSo; NVoti = cp.NVoti; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
-            IDVotaz = cp.IDVotaz;
+            IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2;
         }
 	}
 
     public class TListaAzionisti
     {
-
         public const int VOTATO_NO = 0;
         public const int VOTATO_SESSIONE = 1;
         public const int VOTATO_DBASE = 2;
@@ -194,22 +195,22 @@ namespace VotoTouch
         #endregion
 
         // --------------------------------------------------------------------------
-        //  Ritorno Numero di Azioni
+        //  Ritorno Numero di Voti
         // --------------------------------------------------------------------------
 
-        #region Ritorno Numero di Azioni
+        #region Ritorno Numero di Voti
 
-        public int DammiTotaleAzioniRimanentiPerIDVotazione(int AIDVotazione)
+        public int DammiTotaleVotiRimanentiPerIDVotazione(int AIDVotazione)
         {
             return (int)_Azionisti.Where(a => a.IDVotaz == AIDVotazione && a.HaVotato == VOTATO_NO).Sum(a => a.NVoti);
         }
 
-        public int DammiTotaleAzioniRimanenti()
+        public int DammiTotaleVotiRimanenti()
         {
             return (int)_Azionisti.Where(a => a.HaVotato == VOTATO_NO).Sum(a => a.NVoti);
         }
 
-        public int DammiMaxNumeroAzioniTotali()
+        public int DammiMaxNumeroVotiTotali()
         {
             // questa funzione non è banale, perchè deve estrarre il numero massimo di ritti di voto, 
             // che nel caso normale è semplice, ma in caso di votazioni differenziate già espresse

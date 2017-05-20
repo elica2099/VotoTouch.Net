@@ -41,7 +41,7 @@ namespace VotoTouch
                         // 1 candidato presentato da cda / normale, è lo stesso, 99% che sarà sempre questo
                         li = AVotazione.Liste[0];
                         a = new TTZone();
-                        GetZone(ref a, 16, 31, 85, 50);
+                        GetZone(ref a, 160, 310, 850, 500);
                         a.expr = 0; a.ev = TTEvento.steVotoValido; a.Text = li.DescrLista;
                         a.Multi = 0; a.pag = 0; a.cda = li.PresentatodaCDA; // (AVotazione.NPresentatoCDA == 1); 
                         Tz.Add(a);
@@ -53,15 +53,15 @@ namespace VotoTouch
                         // 2 candidati presentato da cda o altro non importa li metto sempre in verticale
                         if (AVotazione.NListe == 2) // && AVotazione.NPresentatoCDA == 3)
                         {
-                            int str = 29; // partenza
-                            int ha = 12; // altezza dei bottoni
-                            int sp = 8; // spazio tra i bottoni
+                            int str = 290; // partenza
+                            int ha = 120; // altezza dei bottoni
+                            int sp = 80; // spazio tra i bottoni
                             // ciclo
                             for (int z = 0; z < AVotazione.NListe; z++)
                             {
                                 li = AVotazione.Liste[z];
                                 a = new TTZone();
-                                GetZone(ref a, 18, str, 83, str + ha);
+                                GetZone(ref a, 180, str, 830, str + ha);
                                 a.expr = z; a.ev = TTEvento.steVotoValido; a.Text = li.DescrLista;
                                 a.Multi = 0; a.pag = 0; a.cda = li.PresentatodaCDA;
                                 Tz.Add(a);
@@ -76,15 +76,15 @@ namespace VotoTouch
                         // 3 candidati presentato da cda o altro non importa li metto sempre in verticale
                         if (AVotazione.NListe == 3) // && AVotazione.NPresentatoCDA == 3)
                         {
-                            int str = 27; // partenza
-                            int ha = 10; // altezza dei bottoni
-                            int sp = 5;  // spazio tra i bottoni
+                            int str = 270; // partenza
+                            int ha = 100; // altezza dei bottoni
+                            int sp = 50;  // spazio tra i bottoni
                             // ciclo
                             for (int z = 0; z < AVotazione.NListe; z++)
                             {
                                 li = AVotazione.Liste[z];
                                 a = new TTZone();
-                                GetZone(ref a, 18, str, 83, str + ha);
+                                GetZone(ref a, 180, str, 830, str + ha);
                                 a.expr = z; a.ev = TTEvento.steVotoValido; a.Text = li.DescrLista;
                                 a.Multi = 0; a.pag = 0; a.cda = li.PresentatodaCDA;
                                 Tz.Add(a);
@@ -102,22 +102,22 @@ namespace VotoTouch
                         {
                             int ha = 13; // altezza dei bottoni
                             // schema 2 + 2
-                            int[] bx = new int[] { 9, 55, 9, 55 };
-                            int[] by = new int[] { 28, 28, 48, 48 };
-                            int[] bw = new int[] { 37, 37, 37, 37 };
+                            int[] bx = new int[] { 900, 550, 90, 550 };
+                            int[] by = new int[] { 280, 280, 480, 480 };
+                            int[] bw = new int[] { 370, 370, 370, 370 };
 
                             // possono esserci delle differenze se sono 1 - 3 o 3 - 1
                             if (AVotazione.NPresentatoCDA == 1)   // 1 - 3
                             {
-                                bx = new int[] { 35, 3, 35, 67 };
-                                by = new int[] { 28, 48, 48, 48 };
-                                bw = new int[] { 30, 30, 30, 30 };
+                                bx = new int[] { 350, 30, 350, 670 };
+                                by = new int[] { 280, 480, 480, 480 };
+                                bw = new int[] { 300, 300, 300, 300 };
                             }
                             if (AVotazione.NPresentatoCDA == 3)   // 3 - 1
                             {
-                                bx = new int[] { 3, 35, 67, 35 };
-                                by = new int[] { 28, 28, 28, 48 };
-                                bw = new int[] { 30, 30, 30, 30 };
+                                bx = new int[] { 30, 350, 670, 350 };
+                                by = new int[] { 280, 280, 280, 480 };
+                                bw = new int[] { 300, 300, 300, 300 };
                             }
                 
                             // ciclo, tanto sono sempre ordinati prima cda e poi norm
@@ -144,22 +144,22 @@ namespace VotoTouch
                         // 2 1 2
                         if (AVotazione.NListe == 5)
                         {
-                            int ha = 10; // altezza dei bottoni
-                            int bw = 37;
+                            int ha = 100; // altezza dei bottoni
+                            int bw = 370;
                             // schema 2 + 2
-                            int[] bx = new int[] { 9, 55, 9, 55, 9 };
-                            int[] by = new int[] { 27, 27, 42, 42, 57 };
+                            int[] bx = new int[] { 90, 550, 90, 550, 90 };
+                            int[] by = new int[] { 270, 270, 420, 420, 570 };
 
                             // possono esserci delle differenze se sono 1 - 3 o 3 - 1
                             if (AVotazione.NPresentatoCDA == 1)   // 1 - 2 - 2
                             {
-                                bx = new int[] { 31, 9, 55, 9, 55 };
-                                by = new int[] { 27, 42, 42, 57, 57 };
+                                bx = new int[] { 310, 90, 550, 90, 550 };
+                                by = new int[] { 270, 420, 420, 570, 570 };
                             }
                             if (AVotazione.NPresentatoCDA == 3)   // 2 - 1 - 2
                             {
-                                bx = new int[] { 9, 55, 9, 9, 55 };
-                                by = new int[] { 27, 27, 42, 57, 57 };
+                                bx = new int[] { 90, 550, 90, 90, 550 };
+                                by = new int[] { 270, 270, 420, 570, 570 };
                             }
 
                             // ciclo, tanto sono sempre ordinati prima cda e poi norm
@@ -187,30 +187,30 @@ namespace VotoTouch
                         // 5 - 3 2 1
                         if (AVotazione.NListe == 6)
                         {
-                            int ha = 10; // altezza dei bottoni
-                            int bw = 37;
+                            int ha = 100; // altezza dei bottoni
+                            int bw = 370;
                             // schema 2 + 2
-                            int[] bx = new int[] { 9, 55, 9, 55, 9, 55 };
-                            int[] by = new int[] { 27, 27, 42, 42, 57, 57 };
+                            int[] bx = new int[] { 90, 550, 90, 550, 90, 550 };
+                            int[] by = new int[] { 270, 270, 420, 420, 570, 570 };
 
                             // possono esserci delle differenze
                             if (AVotazione.NPresentatoCDA == 1)   // 1 3 2
                             {
-                                bx = new int[] { 35, 3, 35, 67, 3, 35 };
-                                by = new int[] { 26, 43, 43, 43, 58, 58 };
+                                bx = new int[] { 350, 30, 350, 670, 30, 350 };
+                                by = new int[] { 260, 430, 430, 430, 580, 580 };
                                 bw = 30;
                             }
                             if (AVotazione.NPresentatoCDA == 3)   // 3 - 3 
                             {
-                                bx = new int[] { 3, 35, 67, 3, 35, 67 };
-                                by = new int[] { 28, 28, 28, 50, 50, 50 };
+                                bx = new int[] { 30, 350, 670, 30, 350, 670 };
+                                by = new int[] { 280, 280, 280, 500, 500, 500 };
                                 bw = 30;
                                 ha = 13;
                             }
                             if (AVotazione.NPresentatoCDA == 5)   // 3 - 2 - 1
                             {
-                                bx = new int[] { 3, 35, 67, 3, 35, 35 };
-                                by = new int[] { 26, 26, 26, 41, 41, 58 };
+                                bx = new int[] { 30, 350, 670, 30, 350, 350 };
+                                by = new int[] { 260, 260, 260, 410, 410, 580 };
                                 bw = 30;
                             }
 

@@ -541,7 +541,7 @@ namespace VotoTouch
                             IDVoto = Convert.ToInt32(a["NumVotaz"]),
                             IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
                             TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                            TipoSubVoto = 0,
+                            TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
                             Descrizione = a["Argomento"].ToString(),
                             SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
                             SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
@@ -550,13 +550,10 @@ namespace VotoTouch
                             SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
                             //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
                             MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                            MinScelte = a.IsDBNull(a.GetOrdinal("MinScelte")) ? 1 : Convert.ToInt32(a["MinScelte"]),
                             AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
                         };
-                        AVotazioni.Add(v);
-                        // nota: esisteva nella vecchia versione voto e subvoto, ora tolti, il codice era
-                        //  // se è maggiore di 9 e minore di 99 contiene voto e subvoto
-                        //  fVoto[nv].TipoVoto = (Int32)Math.Floor((Decimal)TipoVoto / 10);
-                        //  fVoto[nv].TipoSubVoto = TipoVoto % 10;                   
+                        AVotazioni.Add(v);               
                     }
                 }
                 a.Close();
@@ -995,12 +992,20 @@ namespace VotoTouch
                         c.ProgDeleg = 0;
                         c.RaSo = a["Raso1"].ToString();
                         // TODO: GEAS VERSIONE
-                        if (VTConfig.IsOrdinaria)    // becca O, O/S o S/O
-                            c.NVoti = Convert.ToDouble(a["VtOrd"]);
+                        if (VTConfig.IsOrdinaria) // becca O, O/S o S/O
+                        {
+                            c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
+                            c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
+                            c.NVoti = c.Voti1 + c.Voti2;
+                        }
                         else
                         {
-                            if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)      // BECCA S
-                                c.NVoti = Convert.ToDouble(a["VtStr"]);
+                            if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria) // BECCA S
+                            {
+                                c.Voti1 = Convert.ToDouble(a["VtStr1"]);
+                                c.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                c.NVoti = c.Voti1 + c.Voti2;   
+                            }
                         }
                         c.Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
                         c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
@@ -1031,7 +1036,8 @@ namespace VotoTouch
                         while (a.Read())        // qua posso avere più righe
                         {
                             // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
-                            if ((Convert.ToInt32(a["VtOrd"]) + Convert.ToInt32(a["VtStr"])) > 0)
+                            if ((Convert.ToInt32(a["VtOrd1"]) + Convert.ToInt32(a["VtStr1"]) +
+                                Convert.ToInt32(a["VtOrd2"]) + Convert.ToInt32(a["VtStr2"])) > 0)
                             {
                                 c = new TAzionista();
                                 c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
@@ -1041,30 +1047,24 @@ namespace VotoTouch
                                 c.RaSo = a["Raso1"].ToString();
                                 // TODO: GEAS VERSIONE
                                 if (VTConfig.IsOrdinaria)
-                                    c.NVoti = Convert.ToDouble(a["VtOrd"]);
+                                {
+                                    c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
+                                    c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
+                                    c.NVoti = c.Voti1 + c.Voti2;                                    
+                                }
                                 else
                                 {
                                     if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
-                                        c.NVoti = Convert.ToDouble(a["VtStr"]);
+                                    {
+                                        c.Voti1 = Convert.ToDouble(a["VtStr1"]);
+                                        c.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                        c.NVoti = c.Voti1 + c.Voti2;
+                                    }
                                 }
                                 c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
                                 c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
                                 c.IDVotaz = IDVotazione;
-                                
-                                //c = new TAzionista
-                                //{
-                                //    CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString(),
-                                //    IDAzion = Convert.ToInt32(a["IdAzion"]),
-                                //    IDBadge = AIDBadge,
-                                //    ProgDeleg = Convert.ToInt32(a["ProgDeleg"]),
-                                //    RaSo = a["Raso1"].ToString(),
-                                //    // TODO: AZ STRA -- VEDERE IL TIPO DI ASSEMBLEA
-                                //    NAzioni = Convert.ToInt32(a["AzOrd"]), // + Convert.ToInt32(a["AzStr"]),
-                                //    //NAzioni = Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"]),
-                                //    Sesso = "N",
-                                //    HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO,
-                                //    IDVotaz = IDVotazione
-                                //};
+                                // aggiungo
                                 AAzionisti.Add(c);
                             }
                         }   //while (a.Read()) 
@@ -1111,7 +1111,7 @@ namespace VotoTouch
             SqlCommand qryStd = null, qryVoti = null;
             SqlTransaction traStd = null;
             int result = 0; const int TopRand = VSDecl.MAX_ID_RANDOM;
-            double PNAzioni = 0;
+            //double PNAzioni1 = 0, PNAzioni2 = 0;
             Random random;
 
             // testo la connessione
@@ -1169,19 +1169,18 @@ namespace VotoTouch
                             int AIDBadge_OK = AIDBadge;
                             if (!VTConfig.SalvaLinkVoto)
                                 AIDBadge_OK = random.Next(1, TopRand);
-                            // salvo i voti o le azioni a seconda del modo assemblea
-                            PNAzioni = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP ? 1 : az.NVoti;
 
                             // salvo nel db
                             qryVoti.Parameters.Clear();
                             qryVoti.CommandText = @"insert into VS_Intonse_Totem  with (rowlock) 
-                                                   (NumVotaz, idTipoScheda, idSeggio, voti, Badge, ProgDeleg, IdCarica) 
+                                                   (NumVotaz, idTipoScheda, idSeggio, voti, voti2, Badge, ProgDeleg, IdCarica) 
                                                    VALUES 
-                                                   (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @Badge, @ProgDeleg, @IdCarica) ";
+                                                   (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @voti2, @Badge, @ProgDeleg, @IdCarica) ";
                             qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                             qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
                             qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
-                            qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Float).Value = PNAzioni;
+                            qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Float).Value = az.Voti1;
+                            qryVoti.Parameters.Add("@voti2", System.Data.SqlDbType.Float).Value = az.Voti2;
                             qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge_OK.ToString();
                             qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
                             qryVoti.Parameters.Add("@IdCarica", System.Data.SqlDbType.Int).Value = vt.TipoCarica;

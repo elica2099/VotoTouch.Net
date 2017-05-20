@@ -47,7 +47,7 @@ namespace VotoTouch
             }
             else
             {
-                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroAzioniTotali());
+                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroVotiTotali());
                 lbDirittiDiVoto.Text = ss;
                 lbDirittiStart.Text = ss;
             }

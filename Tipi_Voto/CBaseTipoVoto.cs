@@ -18,10 +18,12 @@ namespace VotoTouch
 
         public ArrayList TouchZone { get { return Tz ?? null; } }
 
-        public const float Nqx = 100;
-        public const float Nqy = 100;
+        public const float Nqx = VSDecl.VOTESCREEN_DIVIDE_WIDTH;
+        public const float Nqy = VSDecl.VOTESCREEN_DIVIDE_HEIGHT;
 
         public const float HRETT_CANDIDATO = 6F; //67px;
+
+        protected bool CustomPaint = false;
 
         public CBaseTipoVoto(Rectangle AFormRect)		
         {
@@ -45,10 +47,10 @@ namespace VotoTouch
 
             //c 'è una parte comune
             // il Bottone Uscita
-            if (AVotazione.AbilitaBottoneUscita)
+            if (!CustomPaint && AVotazione.AbilitaBottoneUscita)
             {
                 TTZone a = new TTZone();
-                GetZone(ref a, 76, 0, 98, 12); // in alto a dx
+                GetZone(ref a, 760, 0, 980, 120); // in alto a dx
                 a.expr = VSDecl.VOTO_BTN_USCITA;
                 a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
@@ -64,11 +66,18 @@ namespace VotoTouch
             if (ABtnUscita)
             {
                 TTZone a = new TTZone();
-                GetZone(ref a, 76, 0, 98, 12); // in alto a dx
+                GetZone(ref a, 760, 0, 980, 120); // in alto a dx
                 a.expr = VSDecl.VOTO_BTN_USCITA;
                 a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
             }
+        }
+
+
+        virtual public void CallbackPaintTouch(object sender, PaintEventArgs e)
+        {
+            // ok questo metodo viene chiamato da paint della finestra principale 
+            // nel caso in cui debba fare dei disegni speciali
         }
 
         // --------------------------------------------------------------
@@ -93,9 +102,9 @@ namespace VotoTouch
                 a = new TTZone();
                 // se c'è anche non voto devo spostarla
                 if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
-                    GetZone(ref a, 28, 72, 72, 93); // non la sposto sta in centro
+                    GetZone(ref a, 280, 720, 720, 930); // non la sposto sta in centro
                 else
-                    GetZone(ref a, 35, 76, 64, 93); // non la sposto sta in centro
+                    GetZone(ref a, 350, 760, 640, 930); // non la sposto sta in centro
                 //if (!AVotazione.SkNonVoto)
                 //    GetZone(ref a, 28, 74, 73, 90); // non la sposto sta in centro
                 //else
@@ -110,16 +119,16 @@ namespace VotoTouch
             {
                 // Contrario A Tutti
                 a = new TTZone();
-                GetZone(ref a, 6, 76, 29, 93); // non la sposto sta in centro
+                GetZone(ref a, 60, 760, 290, 930); // non la sposto sta in centro
                 a.expr = VSDecl.VOTO_CONTRARIO_TUTTI;
                 a.Text = ""; a.ev = TTEvento.steSkContrarioTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
                 // Astenuti A Tutti
                 a = new TTZone();
                 if (AVotazione.SkContrarioTutte)
-                    GetZone(ref a, 34, 76, 57, 93); 
+                    GetZone(ref a, 340, 760, 570, 930); 
                 else
-                    GetZone(ref a, 6, 76, 29, 93); 
+                    GetZone(ref a, 60, 760, 290, 930); 
                 a.expr = VSDecl.VOTO_ASTENUTO_TUTTI;
                 a.Text = ""; a.ev = TTEvento.steSkAstenutoTutti; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);
@@ -148,7 +157,7 @@ namespace VotoTouch
                 //    GetZone(ref a, 32, 72, 67, 90); // non la sposto, sta in centro
                 //else
                 //    GetZone(ref a, 55, 72, 89, 90); //la sposto a destra
-                GetZone(ref a, 76, 87, 98, 100); // in bass a sx
+                GetZone(ref a, 760, 870, 980, 1000); // in bass a sx
                 a.expr = VSDecl.VOTO_NONVOTO;
                 a.Text = ""; a.ev = TTEvento.steSkNonVoto; a.pag = 0; a.Multi = 0; a.MultiNoPrint = true;
                 Tz.Add(a);

@@ -34,18 +34,23 @@ namespace VotoTouch
         public string Text;
         public int pag;     // importante, gli item con pag=0 vengono sempre visualizzati/considerati
         public bool cda;
+        // Paint Mode
+        public int PaintMode;
         // per la multivotazione
         public bool MultiNoPrint;
         public int Multi;
+        public Rectangle CKRect;
 
         public TTZone()
         {
             MultiNoPrint = false;
+            PaintMode = VSDecl.PM_NONE;
         }
     }
 
     //Dichiaro il delegate
     public delegate void testEventHandler(object source, string messaggio);
+    public delegate void ehShowPopup(object source, string messaggio);
 
     public delegate void ehPremutoVotaNormale(object source, int VParam);
     public delegate void ehPremutoVotaDifferenziato(object source, int VParam);
@@ -74,6 +79,8 @@ namespace VotoTouch
 	{
         public const int TIMER_TOUCH_INTERVAL = 500;
         public const int TIMER_TOUCHWATCH_INTERVAL = 1000;
+
+        public event ehShowPopup ShowPopup;
 
         public event ehPremutoVotaNormale PremutoVotaNormale;
         public event ehPremutoVotaDifferenziato PremutoVotaDifferenziato;
@@ -113,9 +120,11 @@ namespace VotoTouch
         public Bitmap btnBmpTab;
         public Bitmap btnBmpTabSelez;
         public Bitmap btnBmpCDASelez;
+        public Bitmap btnBmpCheck;
 
         // Gestione delle Multivotazioni
         public int MaxMultiCandSelezionabili = 0;
+        public int MinMultiCandSelezionabili = 0;
 
         // Gestione delle Pagine
         public int CurrPag = 1;
@@ -169,6 +178,9 @@ namespace VotoTouch
             myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottone_selezCDS.png");
             btnBmpCDASelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCDASelez = new Bitmap(myStream);
+
+            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.check.png");
+            btnBmpCheck = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
 
             //ClasseTipoVotoStartNorm = new CTipoVoto_AStart(FFormRect);
             //ClasseTipoVotoStartDiff = new CTipoVoto_AStart(FFormRect);
@@ -271,6 +283,7 @@ namespace VotoTouch
             {
                 Tz = FVotaz.TouchZoneVoto.TouchZone;
                 MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
+                MinMultiCandSelezionabili = FVotaz.DammiMinMultiCandSelezionabili();
             }
             return 0;
         }
@@ -472,17 +485,7 @@ namespace VotoTouch
                     case TTEvento.steMultiAvanti:
                         // ricostruisco chi è stato votato, per trasmetterlo alla routine sopra
                         List<int> votis = new List<int>();
-                        //TTZone b;
                         int nvt = 0;
-                        //for (int i = 0; i < Tz.Count; i++)
-                        //{
-                        //    b = (TTZone)Tz[i];
-                        //    if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
-                        //    {
-                        //        votis.Add(b.expr);
-                        //        nvt++;
-                        //    }
-                        //}
                         foreach (TTZone b in Tz)
                         {
                             if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
@@ -491,19 +494,29 @@ namespace VotoTouch
                                 nvt++;
                             }
                         }
-                        // attenzione, se non ho voti, cioè nvt = 0 devo considerare sk bianca
-                        if (nvt > 0)
+                        // verifico che stia nel range min/max espressi
+                        if (nvt < MinMultiCandSelezionabili)
                         {
-                            // manda l'evento di Avanti nel caso di Multivotazioni
-                            if (PremutoMultiAvanti != null) { PremutoMultiAvanti(this, a.expr, ref votis); }
+                            if (ShowPopup != null) { ShowPopup(this, "Devi selezionare un minimo di " + 
+                                MinMultiCandSelezionabili.ToString() + " candidati per continuare."); }
+                            SystemSounds.Beep.Play();
                         }
                         else
                         {
-                            // manda l'evento di SkBianca
-                            if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, VSDecl.VOTO_SCHEDABIANCA); }
+                            // attenzione, se non ho voti, cioè nvt = 0 devo considerare sk bianca
+                            if (nvt > 0)
+                            {
+                                // manda l'evento di Avanti nel caso di Multivotazioni
+                                if (PremutoMultiAvanti != null) { PremutoMultiAvanti(this, a.expr, ref votis); }
+                            }
+                            else
+                            {
+                                // manda l'evento di SkBianca
+                                if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, VSDecl.VOTO_SCHEDABIANCA); }
+                            }
+                            votis.Clear();
+                            votis = null;
                         }
-                        votis.Clear();
-                        votis = null;
                         break;
 
                     //case TTEvento.steSelezTuttiCDAAvanti:
@@ -622,7 +635,10 @@ namespace VotoTouch
                 if (fount < MaxMultiCandSelezionabili)
                     a.Multi = 1;
                 else
+                {
+                    if (ShowPopup != null) { ShowPopup(this, "Hai espresso il numero massimo di scelte, per modificare devi deselezionarne una"); }
                     SystemSounds.Beep.Play();
+                }
             }
             // ok lo rimetto a posto
             Tz[Trovato] = a;
@@ -774,55 +790,67 @@ namespace VotoTouch
                                 if (!Multi) // no multicandidato
                                 {
                                     e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
-                                    //if (a.cda)
-                                    //    e.Graphics.DrawImage(btnBmpCandCda, r);
-                                    //else
-                                    //    e.Graphics.DrawImage(btnBmpCand, r);
-
                                 }
                                 else
                                 {
-                                    if (a.Multi == 0)
+                                    // multicandidato
+                                    switch (a.PaintMode)
                                     {
-                                        e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
-                                        //if (a.cda)
-                                        //    e.Graphics.DrawImage(btnBmpCandCda, r);
-                                        //else
-                                        //    e.Graphics.DrawImage(btnBmpCand, r);
-                                    }
-                                    else
-                                    {
-                                        e.Graphics.DrawImage(a.cda ? btnBmpCandSelezCda : btnBmpCandSelez, r);
-                                        //if (a.cda)
-                                        //    e.Graphics.DrawImage(btnBmpCandSelezCda, r);
-                                        //else
-                                        //    e.Graphics.DrawImage(btnBmpCandSelez, r);
-                                    }
-                                }
-                                // ok, prima di disegnare il nome devo controllare la mpresenza della data
-                                // di nascita < >
-                                if (a.Text.Contains("(") && a.Text.Contains(")"))
-                                {
-                                    // devo dividere la stringa, per convenzione la divido a partire da
-                                    // la posizione le carattere "<"
-                                    stringFormat.Alignment = StringAlignment.Far;
-                                    ss = a.Text.Substring(a.Text.IndexOf('('),
-                                          a.Text.Length - a.Text.IndexOf('('));
-                                    a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
-                                    e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),  //Brushes.DarkSlateGray,
-                                        new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20), stringFormat);
-                                    stringFormat.Alignment = StringAlignment.Center;
-                                }
-                                // disegno il nome
-                                int ls = a.Text.Length;
-                                myFont = ls <= 16 ? myFont23 : myFont22;
-                                //if (ls <= 16)
-                                //    myFont = myFont23;
-                                //else
-                                //    myFont = myFont22;
-                                e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),  //Brushes.DarkSlateGray,
-                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4), stringFormat);
+                                        case VSDecl.PM_NORMAL:
+                                            if (a.Multi == 0)
+                                                e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
+                                            else
+                                                e.Graphics.DrawImage(a.cda ? btnBmpCandSelezCda : btnBmpCandSelez, r);
+                                            break;
 
+                                        case VSDecl.PM_NONE:
+                                            // Paint None
+                                            break;
+
+                                        case VSDecl.PM_ONLYCHECK:
+                                            if (a.Multi > 0)
+                                                e.Graphics.DrawImage(btnBmpCheck, a.CKRect);
+                                            break;
+
+                                        default:
+                                            if (a.Multi == 0)
+                                                e.Graphics.DrawImage(a.cda ? btnBmpCandCda : btnBmpCand, r);
+                                            else
+                                                e.Graphics.DrawImage(a.cda ? btnBmpCandSelezCda : btnBmpCandSelez, r);
+                                            break;
+                                    }                                 
+                                }
+
+                                if (a.PaintMode == VSDecl.PM_NORMAL)
+                                {
+                                    // ok, prima di disegnare il nome devo controllare la mpresenza della data
+                                    // di nascita < >
+                                    if (a.Text.Contains("(") && a.Text.Contains(")"))
+                                    {
+                                        // devo dividere la stringa, per convenzione la divido a partire da
+                                        // la posizione le carattere "<"
+                                        stringFormat.Alignment = StringAlignment.Far;
+                                        ss = a.Text.Substring(a.Text.IndexOf('('),
+                                                              a.Text.Length - a.Text.IndexOf('('));
+                                        a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
+                                        e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),
+                                                              //Brushes.DarkSlateGray,
+                                                              new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20),
+                                                              stringFormat);
+                                        stringFormat.Alignment = StringAlignment.Center;
+                                    }
+                                    // disegno il nome
+                                    int ls = a.Text.Length;
+                                    myFont = ls <= 16 ? myFont23 : myFont22;
+                                    //if (ls <= 16)
+                                    //    myFont = myFont23;
+                                    //else
+                                    //    myFont = myFont22;
+                                    e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),
+                                                          //Brushes.DarkSlateGray,
+                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4),
+                                                          stringFormat);
+                                }
                             }  // if (a.pag == CurrPag || a.pag == 0)
                             break;
                     }

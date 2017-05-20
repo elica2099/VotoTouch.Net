@@ -26,6 +26,7 @@ namespace VotoTouch
         public bool SkContrarioTutte { get; set; }       // ha il contraio a tutte       
         public bool SkAstenutoTutte { get; set; }       // ha il astenuto a tutte       
         public int MaxScelte { get; set; }               // n scelte max nel caso di multi
+        public int MinScelte { get; set; }               // n scelte min nel caso di multi
         public bool NeedConferma { get; set; }           // indica che dopo questa votazione necessita la conferma
         public bool AbilitaBottoneUscita { get; set; }
 
@@ -33,6 +34,14 @@ namespace VotoTouch
 
         public int NListe { get { return (Liste == null) ? 0 : Liste.Count; } }
         public int NPresentatoCDA { get { return (Liste == null) ? 0 : Liste.Count(a => a.PresentatodaCDA == true); } }               
+
+        public int NMultiSelezioni
+        {
+            get
+            {
+                return TouchZoneVoto.TouchZone.Cast<TTZone>().Count(item => item.Multi > 0);
+            }
+        }
 
         public CBaseTipoVoto TouchZoneVoto;
         public TAreaVotazione AreaVoto;
@@ -51,6 +60,11 @@ namespace VotoTouch
         public int DammiMaxMultiCandSelezionabili()
         {
             return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MaxScelte : 0;
+        }
+
+        public int DammiMinMultiCandSelezionabili()
+        {
+            return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MinScelte : 0;
         }
 
         ~TNewVotazione()
@@ -246,23 +260,46 @@ namespace VotoTouch
                     switch (voto.TipoVoto)
                     {
                         case VSDecl.VOTO_LISTA:
-                            // TODO: Non è bello la nidificazione di voto
                             voto.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
                             break;
 
                         case VSDecl.VOTO_CANDIDATO:
-                            if (voto.NListe <= 6)
-                                voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
-                            else
-                                voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                            // chiamo la classe del voto apposito
+                            switch (voto.TipoSubVoto)
+                            {
+                                case VSDecl.SUBVOTO_NORMAL:
+                                    if (voto.NListe <= 6)
+                                         voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
+                                    else
+                                        voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);                                    
+                                    break;
+
+                                default:
+                                    voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                                    break;
+                            } 
                             break;
 
                         case VSDecl.VOTO_MULTICANDIDATO:
                             // chiamo la classe del voto apposito
-                            if (voto.TipoSubVoto == 1)
-                                voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
-                            else
-                                voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoNew(AFormRect);
+                            switch (voto.TipoSubVoto)
+                            {
+                                case VSDecl.SUBVOTO_NORMAL:
+                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
+                                    break;
+                                case VSDecl.SUBVOTO_NEW:
+                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoNew(AFormRect);
+                                    break;
+
+                                // subvoti speciali
+                                case VSDecl.SUBVOTO_CUSTOM_MANUTENCOOP:
+                                    voto.TouchZoneVoto = new CTipoVoto_Custom_Multi_Manutencoop(AFormRect);
+                                    break;
+
+                                default:
+                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
+                                    break;
+                            }
                             break;
 
                             #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)

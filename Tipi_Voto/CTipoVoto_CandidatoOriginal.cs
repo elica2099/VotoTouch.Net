@@ -158,7 +158,7 @@ namespace VotoTouch
             {
                 // devo aggiungere il tasto con evento           
                 a = new TTZone();
-                GetZone(ref a, 64, 81, 97, 91); a.expr = VSDecl.VOTO_MULTIAVANTI;
+                GetZone(ref a, 640, 810, 970, 910); a.expr = VSDecl.VOTO_MULTIAVANTI;
                 a.Text = ""; a.ev = TTEvento.steMultiAvanti; a.pag = 0; a.cda = false; a.Multi = 0;
                 Tz.Add(a);
 
@@ -170,10 +170,10 @@ namespace VotoTouch
                     //int y;
                     // devo fare attenzione a quante righe ha il cda e spostare il tasto
                     if (AFVotaz.NPresentatoCDA <= 3)
-                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda() + 2),
+                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 240), (AFVotaz.AreaVoto.BCda() + 20),
                             AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 8));
                     else
-                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 24), (AFVotaz.AreaVoto.BCda() - 4),
+                        GetZone(ref a, (AFVotaz.AreaVoto.RCda() - 240), (AFVotaz.AreaVoto.BCda() - 40),
                             AFVotaz.AreaVoto.RCda(), (AFVotaz.AreaVoto.BCda() + 3));
                     a.expr = 999; a.cda = false;
                     a.Text = ""; a.ev = TTEvento.steMultiSelezTuttiCDA; a.pag = 0;
@@ -264,7 +264,7 @@ namespace VotoTouch
             // devo ora calcolarmi il vero rettangolo interno
             b = y + HRETT_CANDIDATO;
             // devo centrare i rettangoli
-            float[] dimr = new float[] { 0, 38, 34, 28 };
+            float[] dimr = new float[] { 0, 380, 340, 280 };
             ax = x + ((r - x - dimr[nct]) / 2);
             ar = r - ((r - x - dimr[nct]) / 2);
             GetZone(ref a, (int)ax, (int)y, (int)ar, (int)b);

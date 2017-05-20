@@ -237,6 +237,12 @@ namespace VotoTouch
             TornaInizio();
         }
 
+        private void timPopup_Tick(object sender, EventArgs e)
+        {
+            timPopup.Enabled = false;
+            pnPopupRed.Visible = false;
+        }
+
         #endregion
 
     
