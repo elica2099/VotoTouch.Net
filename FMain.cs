@@ -55,7 +55,6 @@ namespace VotoTouch
         public ConfigDbData DBConfig;           // database
         public TAppStato Stato;                 // macchina a stato
         public string Data_Path;                // path della cartella data
-        //public string   NomeTotem;              // nome della macchina
         public string   LogVotiNomeFile;        // nome file del log
         public bool CtrlPrimoAvvio;             // serve per chiudere la finestra in modo corretto
         
@@ -63,16 +62,16 @@ namespace VotoTouch
 	    public TListaVotazioni Votazioni;
         // Dati dell'azionista e delle deleghe che si porta dietro
         public TListaAzionisti Azionisti;
-
+        // variabili relative alla votazione
         public bool IsVotazioneDifferenziata = false;
-         // cpontrollo degli eventi di voto
+        public bool LocalAbilitaVotazDifferenziataSuRichiesta = false;
+        // cpontrollo degli eventi di voto
 	    private bool AperturaVotoEsterno;
         // flag uscita in votazione
         public bool UscitaInVotazione;
 
         // Variabile temporanea voti espressi Nuova Versione (Array)
         public ArrayList FVotiExpr;
-
         // risorse per l'internazionalizzazione
         ResourceManager rm;
 
@@ -542,14 +541,17 @@ namespace VotoTouch
                 //    oVotoTouch.PaintButtonCandidatoSingola(sender, e);
                 
                 // se sono nello stato di votostart e il n. di voti è > 1
-                if (Stato == TAppStato.ssvVotoStart && Azionisti.HaDirittiDiVotoMultipli())
+                if (Stato == TAppStato.ssvVotoStart) // && Azionisti.HaDirittiDiVotoMultipli())
                 {
                     // faccio il paint del numero di diritti di voto nel bottone in basso a sx , 
                     // in questo caso uso un paint e non una label per un problema grafico di visibilità
                     int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
                                    ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
                                    : Azionisti.DammiMaxNumeroVotiTotali();
-                    oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
+                    string ss = string.Format("{0:N0}", VVoti.ToString());
+                    if (Azionisti.HaDirittiDiVotoMultipli()) ss += "(d)";
+                    oVotoTheme.PaintDirittiDiVoto(sender, e, ss);
+                    //oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
                 }
             }
 
@@ -923,6 +925,7 @@ namespace VotoTouch
             lbVersion.Items.Add("     0: Non controllare, 1: Blocca");
             lbVersion.Items.Add("     2: Forza Ingresso (ora) 3: Forza ingresso Geas");
             lbVersion.Items.Add("MaxDeleghe: " + VTConfig.MaxDeleghe);
+            lbVersion.Items.Add("AbilitaDifferenziataSuRichiesta: " + VTConfig.AbilitaDifferenziatoSuRichiesta.ToString());
             lbVersion.Items.Add("CodiceUscita: " + VTConfig.CodiceUscita);
             lbVersion.Items.Add("SalvaLinkVoto: " + VTConfig.SalvaLinkVoto.ToString());
             lbVersion.Items.Add("SalvaVotoNonConfermato: " + VTConfig.SalvaVotoNonConfermato.ToString());
@@ -999,6 +1002,11 @@ namespace VotoTouch
         private void btnRipetiz_Click(object sender, EventArgs e)
         {
             BadgeLetto("88889999");
+        }
+
+        private void btnAbilitaDifferenziata_Click(object sender, EventArgs e)
+        {
+            BadgeLetto("88889900");
         }
 
         public void onTouchWatchDog(object source, int VParam)
@@ -1191,6 +1199,7 @@ namespace VotoTouch
                + "Globalis " + Cursor.Position.X + ", " + Cursor.Position.Y + ".";
 #endif
         }
+
 
 
 

@@ -365,6 +365,36 @@ namespace VotoTouch
             th.AFont.Dispose();
         }
 
+        public void PaintDirittiDiVoto(object sender, PaintEventArgs e, string Diritti)
+        {
+            //string ss = string.Format("{0:N0}", Diritti.ToString());
+
+            string ss = Diritti;
+
+            TTheme th = new TTheme();
+            StringFormat stringFormat = new StringFormat();
+            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.LineAlignment = StringAlignment.Center;
+            GetZone(ref th.a, 16, 60, 34, 77);
+            // cerco il tema
+            if (!ThemeToPaint("lbDirittiStartMin", ref th))
+            {
+                th.AFont = new System.Drawing.Font("Tahoma", 66, FontStyle.Bold);
+                th.AColor = Color.Firebrick;
+            }
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            SizeF sf = e.Graphics.MeasureString(ss, th.AFont);
+            float fx = th.a.Left + ((th.a.Width - sf.Width) / 2);
+            float fy = th.a.Top + ((th.a.Height - sf.Height) / 2);
+            if (th.Shadow)
+            {
+                Brush myBrush1 = new System.Drawing.SolidBrush(Color.Gray); //E3E3E3
+                e.Graphics.DrawString(ss, th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
+            }
+            Brush myBrush = new System.Drawing.SolidBrush(th.AColor);
+            e.Graphics.DrawString(ss, th.AFont, myBrush, fx, fy); //th.a, stringFormat);
+            th.AFont.Dispose();
+        }
 
         //-----------------------------------------------------------------------------
         //  PAINT DELLE LABEL MULTICANDIDATO

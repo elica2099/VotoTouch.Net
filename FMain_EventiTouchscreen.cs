@@ -42,6 +42,10 @@ namespace VotoTouch
 
         public void onPremutoVotaDifferenziato(object source, int VParam)
         {
+            // prima di tutto devo verificare se è abilitato il flag 
+            // AbilitaDifferenziatoSuRichiesta e se LocalAbilitaVotazDifferenziataSuRichiesta è false, in tal caso esco
+            if (VTConfig.AbilitaDifferenziatoSuRichiesta && !LocalAbilitaVotazDifferenziataSuRichiesta)
+                return;
             // ok, questo evento arriva all'inizio votazione 
             // nel caso di scelta differenziato/normale, evidenzia il voto in soluzioni separate
             IsVotazioneDifferenziata = true;

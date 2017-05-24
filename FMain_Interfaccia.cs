@@ -51,19 +51,28 @@ namespace VotoTouch
                 lbDirittiDiVoto.Text = ss;
                 lbDirittiStart.Text = ss;
             }
+            // diritti di voto
+            lbDirittiStart.Visible = true;
             // in funzione del n. di deleghe metto
             if (Azionisti.HaDirittiDiVotoMultipli())
             {
-                oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
-                // sono le label del differenziato
-                lbDirittiStart.Visible = true;
+                // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
+                if (VTConfig.AbilitaDifferenziatoSuRichiesta)
+                {
+                    oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
+                                            ? VSDecl.IMG_VotostartD
+                                            : VSDecl.IMG_Votostart1);
+                }
+                else
+                {
+                    // si comporta normalmente
+                    oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
+                }
             }
             else
             {
                 // immagine di 1 voto
                 oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
-                if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_SPA)
-                    lbDirittiStart.Visible = true;
             }
         }
 

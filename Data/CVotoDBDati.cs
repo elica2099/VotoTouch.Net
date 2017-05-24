@@ -376,6 +376,8 @@ namespace VotoTouch
                     VTConfig.TimeAutoRitornoVoto = Convert.ToInt32(a["TimeAutoRitornoVoto"]);
                     // AbilitaDirittiNonVoglioVotare
                     VTConfig.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
+                    // AbilitaDifferenziatoSuRichiesta
+                    VTConfig.AbilitaDifferenziatoSuRichiesta = Convert.ToBoolean(a["AbilitaDifferenziatoSuRichiesta"]);
 
                     // qua dovrei in teoria controllare che vada bene
                     // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre

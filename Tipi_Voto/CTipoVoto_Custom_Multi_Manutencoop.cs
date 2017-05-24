@@ -181,12 +181,12 @@ namespace VotoTouch
             a.Text = ""; a.ev = TTEvento.steMultiAvanti; a.pag = 0; a.cda = false; a.Multi = 0;
             Tz.Add(a);
 
-            // devo aggiungere il tasto uscita           
-            a = new TTZone();
-            GetZone(ref a, 24, 895, 240, 1000);
-            a.expr = VSDecl.VOTO_BTN_USCITA;
-            a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; 
-            Tz.Add(a);
+            //// devo aggiungere il tasto uscita           
+            //a = new TTZone();
+            //GetZone(ref a, 24, 895, 240, 1000);
+            //a.expr = VSDecl.VOTO_BTN_USCITA;
+            //a.Text = ""; a.ev = TTEvento.steBottoneUscita; a.pag = 0; a.Multi = 0; 
+            //Tz.Add(a);
 
         }
 

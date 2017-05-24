@@ -85,7 +85,6 @@ namespace VotoTouch
                     oVotoTouch.CalcolaTouchSpecial(Azionisti.HaDirittiDiVotoMultipli()
                                                        ? Votazioni.ClasseTipoVotoStartDiff
                                                        : Votazioni.ClasseTipoVotoStartNorm);
-                    //oVotoTouch.CalcolaTouchSpecial(Stato, Azionisti.HaDirittiDiVotoMultipli());
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
                     MettiComponentiStartVoto();
@@ -118,10 +117,14 @@ namespace VotoTouch
                         //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
                         int dir_riman = IsVotazioneDifferenziata
                                             ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
+                                            : Azionisti.DammiCountAzioniVoto_VotoCorrente(); // DammiCountDirittiDiVoto_VotoCorrente();
+                        int deleghe_riman = IsVotazioneDifferenziata
+                                            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
                                             : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
-                        if (!IsVotazioneDifferenziata && dir_riman > 1)
+                        if (!IsVotazioneDifferenziata && deleghe_riman > 1)
                             lbNomeDisgiunto.Text += " e altre " + (dir_riman - 1).ToString() + " deleghe";
                         lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
+                        if (IsVotazioneDifferenziata) lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
                         lbDirittiDiVoto.Visible = true;
                     }
                     else
@@ -182,6 +185,9 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvSalvaVoto:
+                    // resetto l'eventuale richiesta di votaz differeniata
+                    LocalAbilitaVotazDifferenziataSuRichiesta = false;
+
                     if (Azionisti.DammiQuantiDirittiSonoStatiVotati() > VSDecl.MINVOTI_PROGRESSIVO)
                     {
                         // metti lo spinning wheel

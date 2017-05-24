@@ -63,6 +63,7 @@ namespace VotoTouch
             this.button1 = new System.Windows.Forms.Button();
             this.lbVersion = new System.Windows.Forms.ListBox();
             this.pnBadge = new System.Windows.Forms.Panel();
+            this.btnAbilitaDifferenziata = new System.Windows.Forms.Button();
             this.btnRipetiz = new System.Windows.Forms.Button();
             this.btnExitVoto = new System.Windows.Forms.Button();
             this.btmBadge = new System.Windows.Forms.Button();
@@ -77,6 +78,7 @@ namespace VotoTouch
             this.pnPopupRed = new System.Windows.Forms.Panel();
             this.lblMsgPopup = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Panel4.SuspendLayout();
             this.pnBadge.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSalvaDati)).BeginInit();
@@ -254,6 +256,7 @@ namespace VotoTouch
             // pnBadge
             // 
             this.pnBadge.BackColor = System.Drawing.Color.Transparent;
+            this.pnBadge.Controls.Add(this.btnAbilitaDifferenziata);
             this.pnBadge.Controls.Add(this.btnRipetiz);
             this.pnBadge.Controls.Add(this.btnExitVoto);
             this.pnBadge.Controls.Add(this.btmBadge);
@@ -264,10 +267,22 @@ namespace VotoTouch
             this.pnBadge.TabIndex = 124;
             this.pnBadge.Visible = false;
             // 
+            // btnAbilitaDifferenziata
+            // 
+            this.btnAbilitaDifferenziata.BackColor = System.Drawing.Color.White;
+            this.btnAbilitaDifferenziata.Location = new System.Drawing.Point(78, 88);
+            this.btnAbilitaDifferenziata.Name = "btnAbilitaDifferenziata";
+            this.btnAbilitaDifferenziata.Size = new System.Drawing.Size(70, 26);
+            this.btnAbilitaDifferenziata.TabIndex = 128;
+            this.btnAbilitaDifferenziata.Text = "8888900";
+            this.toolTip1.SetToolTip(this.btnAbilitaDifferenziata, "Abilita la votazione differenziata");
+            this.btnAbilitaDifferenziata.UseVisualStyleBackColor = false;
+            this.btnAbilitaDifferenziata.Click += new System.EventHandler(this.btnAbilitaDifferenziata_Click);
+            // 
             // btnRipetiz
             // 
             this.btnRipetiz.BackColor = System.Drawing.Color.White;
-            this.btnRipetiz.Location = new System.Drawing.Point(76, 84);
+            this.btnRipetiz.Location = new System.Drawing.Point(3, 88);
             this.btnRipetiz.Name = "btnRipetiz";
             this.btnRipetiz.Size = new System.Drawing.Size(70, 26);
             this.btnRipetiz.TabIndex = 127;
@@ -278,7 +293,7 @@ namespace VotoTouch
             // btnExitVoto
             // 
             this.btnExitVoto.BackColor = System.Drawing.Color.White;
-            this.btnExitVoto.Location = new System.Drawing.Point(3, 84);
+            this.btnExitVoto.Location = new System.Drawing.Point(3, 56);
             this.btnExitVoto.Name = "btnExitVoto";
             this.btnExitVoto.Size = new System.Drawing.Size(70, 26);
             this.btnExitVoto.TabIndex = 126;
@@ -289,9 +304,9 @@ namespace VotoTouch
             // btmBadge
             // 
             this.btmBadge.BackColor = System.Drawing.Color.White;
-            this.btmBadge.Location = new System.Drawing.Point(72, 49);
+            this.btmBadge.Location = new System.Drawing.Point(89, 49);
             this.btmBadge.Name = "btmBadge";
-            this.btmBadge.Size = new System.Drawing.Size(70, 26);
+            this.btmBadge.Size = new System.Drawing.Size(58, 26);
             this.btmBadge.TabIndex = 123;
             this.btmBadge.Text = "Badge";
             this.btmBadge.UseVisualStyleBackColor = false;
@@ -387,7 +402,7 @@ namespace VotoTouch
             this.pnPopupRed.BackColor = System.Drawing.Color.Transparent;
             this.pnPopupRed.Controls.Add(this.lblMsgPopup);
             this.pnPopupRed.Controls.Add(this.pictureBox1);
-            this.pnPopupRed.Location = new System.Drawing.Point(21, 425);
+            this.pnPopupRed.Location = new System.Drawing.Point(267, 69);
             this.pnPopupRed.Name = "pnPopupRed";
             this.pnPopupRed.Size = new System.Drawing.Size(543, 133);
             this.pnPopupRed.TabIndex = 132;
@@ -499,5 +514,7 @@ namespace VotoTouch
         private Panel pnPopupRed;
         private PictureBox pictureBox1;
         private Label lblMsgPopup;
+        private Button btnAbilitaDifferenziata;
+        private ToolTip toolTip1;
     }
 }

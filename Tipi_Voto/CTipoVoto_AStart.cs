@@ -29,20 +29,36 @@ namespace VotoTouch
 			{
 			        // differenziato tasto grande
 			        a = new TTZone();
-                    if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE)
-			            GetZone(ref a, 90, 450, 570, 900); 
-                    else
-                        GetZone(ref a, 120, 450, 640, 900);      // VSDecl.MODO_POS_TOUCH_MODERN
+                    switch (VTConfig.ModoPosizioneAreeTouch)
+			        {
+                        case VSDecl.MODO_POS_TOUCH_NORMALE:
+                            GetZone(ref a, 90, 450, 570, 900);
+			                break;
+                        case VSDecl.MODO_POS_TOUCH_MODERN:
+                            GetZone(ref a, 120, 450, 640, 900);      
+			                break;
+                        case VSDecl.MODO_POS_TOUCH_BIG_BTN:
+                            GetZone(ref a, 120, 450, 735, 960);      
+                            break;
+			        }
                     a.expr = 0; a.pag = 0; a.Multi = 0;			        
                     a.Text = "";
 			        a.ev = TTEvento.steVotaNormale;
 			        Tz.Add(a);
 			        // differenziato tasto piccolo
 			        a = new TTZone();
-                    if (VTConfig.ModoPosizioneAreeTouch == VSDecl.MODO_POS_TOUCH_NORMALE    )
-                        GetZone(ref a, 620, 520, 930, 900);
-                    else
-                        GetZone(ref a, 690, 520, 960, 900); // VSDecl.MODO_POS_TOUCH_MODERN
+                    switch (VTConfig.ModoPosizioneAreeTouch)
+                    {
+                        case VSDecl.MODO_POS_TOUCH_NORMALE:
+                            GetZone(ref a, 620, 520, 930, 900);
+                            break;
+                        case VSDecl.MODO_POS_TOUCH_MODERN:
+                            GetZone(ref a, 690, 520, 960, 900);
+                            break;
+                        case VSDecl.MODO_POS_TOUCH_BIG_BTN:
+                            GetZone(ref a, 760, 520, 990, 960);
+                            break;
+                    }
                     a.expr = 1;
 			        a.pag = 0;
 			        a.Multi = 0;

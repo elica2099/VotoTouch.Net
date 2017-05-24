@@ -61,13 +61,19 @@ namespace VotoTouch
             string codimp, bbadge;
             int ErrorFlag = 0;
 
-            // allora prima di tutto controllo se c'è stato un comando di Reset Votazione
-            // cioè 88889999
+            // allora prima di tutto controllo se c'è stato un comando di Reset Votazione cioè 88889999
             if (AText == VSDecl.RIPETIZ_VOTO && VTConfig.VotoAperto)
             {
                 CodiceRipetizioneVoto();
                 return;
-            } // if (AText == VSDecl.RIPETIZ_VOTO && TotCfg.VotoAperto)
+            }
+
+            // se è attiva AbilitaDifferenziatoSuRichiesta devo resettare il voto e attivare la votazione differenziata
+            if (VTConfig.AbilitaDifferenziatoSuRichiesta && AText == VSDecl.ABILITA_DIFFERENZIATO && VTConfig.VotoAperto)
+            {
+                CodiceRipetizioneVotoEAbilitazioneDifferenziatoSuRichiesta();
+                return;
+            } 
 
             // COMANDI SPECIALI
             // poi verifico se è stato premuto
@@ -260,6 +266,7 @@ namespace VotoTouch
 
         private void CodiceRipetizioneVoto()
         {
+            LocalAbilitaVotazDifferenziataSuRichiesta = false;
             // qua è un casino, perché ho due casi:
             // 1. è stato digitato un badge, quindi c'è il messaggio "ha già votato"
             //    devo cancellare i voti
@@ -298,8 +305,31 @@ namespace VotoTouch
             }
         }
 
+        private void CodiceRipetizioneVotoEAbilitazioneDifferenziatoSuRichiesta()
+        {
+            if (Stato == TAppStato.ssvVotoFinito)
+            {
+                MessageBox.Show(
+                    "Il voto è già stato salvato, annullarlo e abilitare successivamente la votazione differenziata ");
+                return;
+            }
+
+            string ss = "";
+            if (Stato != TAppStato.ssvVotoFinito) ss = " sul badge " + Badge_Letto.ToString();
+
+            if (MessageBox.Show("Abilitare la votazione differenziata " + ss + "?", "Voto Differenziato",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                TornaInizio();
+                edtBadge.Text = "";
+                LocalAbilitaVotazDifferenziataSuRichiesta = true;
+            }
+        }
+
         public void CodiceUscitaInVotazione()
         {
+            LocalAbilitaVotazDifferenziataSuRichiesta = false;
             // ok, è proprio l'uscita dalla votazione
             // il problema è che qua devo far votare scheda bianca/nulla, ma non so a che punto sono arrivato
             // qundi devo fare un po di eculubrazioni

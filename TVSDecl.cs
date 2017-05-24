@@ -43,6 +43,7 @@ namespace VotoTouch
         static public bool SalvaVotoNonConfermato;
         static public bool SalvaVotoInGeas;
         static public int MaxDeleghe;
+        static public bool AbilitaDifferenziatoSuRichiesta;
         static public int IDSchedaUscitaForzata;
         static public int ModoPosizioneAreeTouch;
         static public int ControllaPresenze;
@@ -88,6 +89,7 @@ namespace VotoTouch
             ControllaPresenze = VSDecl.PRES_CONTROLLA;
             AbilitaBottoneUscita = false;
             AttivaAutoRitornoVoto = false;
+            AbilitaDifferenziatoSuRichiesta = false;
             TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
             AbilitaDirittiNonVoglioVotare = false;
             IsDemoMode = false;
@@ -167,6 +169,7 @@ namespace VotoTouch
         public const string VTS_VERSION = "4.2  25/05/2017";
 
         public const string RIPETIZ_VOTO = "88889999";
+        public const string ABILITA_DIFFERENZIATO = "88889900";
         public const string CONFIGURA = "88889990";
         public const string PANNELLO_STATO = "88889991";
         public const string PANNELLO_AZION = "88889992";
@@ -263,6 +266,7 @@ namespace VotoTouch
         // Modo Touch aree 
         public const int MODO_POS_TOUCH_NORMALE = 0;
         public const int MODO_POS_TOUCH_MODERN = 1;
+        public const int MODO_POS_TOUCH_BIG_BTN = 2;
         
         // paint mode TTZone
         public const float VOTESCREEN_DIVIDE_WIDTH = 1000;
