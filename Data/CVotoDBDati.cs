@@ -1153,15 +1153,17 @@ namespace VotoTouch
                         // conschede
                         qryStd.Parameters.Clear();
                         qryStd.CommandText = @"INSERT INTO VS_ConSchede with (ROWLOCK) 
-                                                (Badge, NumVotaz, IdAzion, ProgDeleg, IdSeggio, DataOraVotaz, NomeComputer) 
+                                                (Badge, NumVotaz, IdAzion, ProgDeleg, IdSeggio, DataOraVotaz, NomeComputer, voti, voti2) 
                                               VALUES 
-                                                (@Badge, @NumVotaz, @IdAzion, @ProgDeleg, @IdSeggio, { fn NOW() }, @NomeComputer) ";
+                                                (@Badge, @NumVotaz, @IdAzion, @ProgDeleg, @IdSeggio, { fn NOW() }, @NomeComputer, @voti, @voti2) ";
                         qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
                         qryStd.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                         qryStd.Parameters.Add("@IdAzion", System.Data.SqlDbType.Int).Value = az.IDAzion;
                         qryStd.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
                         qryStd.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
                         qryStd.Parameters.Add("@NomeComputer", System.Data.SqlDbType.VarChar).Value = VTConfig.NomeTotem;
+                        qryStd.Parameters.Add("@voti", System.Data.SqlDbType.Int).Value = az.Voti1;
+                        qryStd.Parameters.Add("@voti2", System.Data.SqlDbType.Int).Value = az.Voti2;
                         qryStd.ExecuteNonQuery();
                         // 
                         foreach (TVotoEspresso vt in az.VotiEspressi)
