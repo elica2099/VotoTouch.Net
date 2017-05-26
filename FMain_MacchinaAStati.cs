@@ -95,7 +95,15 @@ namespace VotoTouch
                     // ma dipende dai diritti di voto dell'azionista, espressi o no, potrei avere espresso
                     // tutti i voti sulla prima e nessuno sulla seconda votazione.
                     // lo vedo caricando di volta in volta l'azionista che non ha diritti di voto espressi (havotato = false)
-
+                    if (!RitornaDaAnnulla)
+                    {
+                        foreach (TTZone item in Votazioni.VotoCorrente.TouchZoneVoto.TouchZone)
+                        {
+                            item.Multi = 0;
+                        }
+                    }
+                    else
+                        RitornaDaAnnulla = false;
                     // ok, ora estraggo l'azionista o il gruppo di azionisti (se non è differenziato) che devono votare
                     // in Azionisti.AzionistiInVotoCorrente ho l'elenco dei diritti
                     // setto il voto corrente sul primo item dell'oggetto

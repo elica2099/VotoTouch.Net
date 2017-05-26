@@ -77,7 +77,7 @@ namespace VotoTouch
 	/// </summary>
 	public class CVotoTouchScreen
 	{
-        public const int TIMER_TOUCH_INTERVAL = 500;
+        public const int TIMER_TOUCH_INTERVAL = 250;
         public const int TIMER_TOUCHWATCH_INTERVAL = 1000;
 
         public event ehShowPopup ShowPopup;
@@ -281,6 +281,10 @@ namespace VotoTouch
             Tz = null;
             if (FVotaz != null && FVotaz.TouchZoneVoto != null && FVotaz.TouchZoneVoto.TouchZone != null)
             {
+                //foreach (TTZone item in FVotaz.TouchZoneVoto.TouchZone)
+                //{
+                //    item.Multi = 0;
+                //}
                 Tz = FVotaz.TouchZoneVoto.TouchZone;
                 MaxMultiCandSelezionabili = FVotaz.DammiMaxMultiCandSelezionabili();
                 MinMultiCandSelezionabili = FVotaz.DammiMinMultiCandSelezionabili();

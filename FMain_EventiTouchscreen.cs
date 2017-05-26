@@ -264,6 +264,7 @@ namespace VotoTouch
 
         public void onPremutoAnnulla(object source, int VParam)
         {
+            RitornaDaAnnulla = true;
             // ok, questo evento arriva quando, nella conferma del voto, è stata scelta l'opzione
             //  annulla, cioè il ritorno all'espressione del voto
             CancellaTempVotiCorrenti();
@@ -279,6 +280,14 @@ namespace VotoTouch
             VotoEspresso = -1;
             VotoEspressoStr = "";
             VotoEspressoStrUp = "";
+        }
+
+        public void CancellaTempMultiVotiCorrenti()
+        {
+            foreach (TTZone item in Votazioni.VotoCorrente.TouchZoneVoto.TouchZone)
+            {
+                item.Multi = 0;
+            }
         }
 
         #endregion

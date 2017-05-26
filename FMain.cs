@@ -69,6 +69,8 @@ namespace VotoTouch
 	    private bool AperturaVotoEsterno;
         // flag uscita in votazione
         public bool UscitaInVotazione;
+        // public bool 
+	    public bool RitornaDaAnnulla = false;
 
         // Variabile temporanea voti espressi Nuova Versione (Array)
         public ArrayList FVotiExpr;
