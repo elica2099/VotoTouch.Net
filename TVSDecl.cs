@@ -166,7 +166,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.2  25/05/2017";
+        public const string VTS_VERSION = "4.21  26/09/2017 vs13";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string ABILITA_DIFFERENZIATO = "88889900";
