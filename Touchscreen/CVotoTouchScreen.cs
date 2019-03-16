@@ -40,11 +40,14 @@ namespace VotoTouch
         public bool MultiNoPrint;
         public int Multi;
         public Rectangle CKRect;
+        // per il gruppo
+        public int IDVotaz;
 
         public TTZone()
         {
             MultiNoPrint = false;
             PaintMode = VSDecl.PM_NONE;
+            IDVotaz = 0;
         }
     }
 

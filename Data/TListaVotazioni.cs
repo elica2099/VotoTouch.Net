@@ -12,9 +12,19 @@ using System.Windows.Forms;
 namespace VotoTouch
 {
     // DR16 - Classe intera
+    public class TMainVotazione    //Era TNewVotazione
+    {
+        public int TipoVoto;        // Normale, Gruppo
+        //public int IDVoto { get; set; }
+        public int IDGruppoVoto;
+        public TVotazione vot = new TVotazione();
+        public List<TVotazione> grvot = null;
+
+    }
+
 
     // struttura per le votazioni
-    public class TNewVotazione
+    public class TVotazione
     {
         public int IDVoto { get; set; }
         public int IDGruppoVoto { get; set; }
@@ -49,7 +59,7 @@ namespace VotoTouch
         public List<TNewLista> Liste;     // collection di strutture Tliste
         public ArrayList Pagine;    // collection delle pagine (per le votazioni candidato)
 
-        public TNewVotazione()
+        public TVotazione()
         {
             Liste = new List<TNewLista>();
             Pagine = new ArrayList();
@@ -67,7 +77,7 @@ namespace VotoTouch
             return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MinScelte : 0;
         }
 
-        ~TNewVotazione()
+        ~TVotazione()
         {
             // Distruttore
             Liste.Clear();
@@ -97,8 +107,8 @@ namespace VotoTouch
     public class TListaVotazioni
     {
         // oggetto lista votazioni
-        protected List<TNewVotazione> _Votazioni;
-        public List<TNewVotazione> Votazioni
+        protected List<TMainVotazione> _Votazioni;
+        public List<TMainVotazione> Votazioni
         {
             get { return _Votazioni; }
             set
@@ -108,7 +118,7 @@ namespace VotoTouch
         }
 
         private int idxVotoCorrente;
-        public TNewVotazione VotoCorrente
+        public TMainVotazione VotoCorrente
         {
             get { return _Votazioni.Count == 0 ? null : _Votazioni[idxVotoCorrente]; }
             set
@@ -131,7 +141,7 @@ namespace VotoTouch
         {
             // costruttore
             DBDati = ADBDati;
-            _Votazioni = new List<TNewVotazione>();
+            _Votazioni = new List<TMainVotazione>();
 
             idxVotoCorrente = 0;
         }
@@ -248,7 +258,7 @@ namespace VotoTouch
 
         public void CalcolaTouchZoneVotazioni(Rectangle AFormRect)
         {
-            foreach (TNewVotazione voto in _Votazioni)
+            foreach (TMainVotazione voto in _Votazioni)
             {
                 // prima cancello eventuali oggetti se ci sono
                 if (voto.TouchZoneVoto != null)
@@ -302,7 +312,25 @@ namespace VotoTouch
                             }
                             break;
 
-                            #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                        //case VSDecl.VOTO_GRUPPO:
+                        //    // chiamo la classe del voto apposito
+                        //    switch (voto.TipoSubVoto)
+                        //    {
+                        //        case VSDecl.SUBVOTO_CUSTOM_BPER_2019:
+                        //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
+                        //            //if (voto.NListe <= 6)
+                        //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
+                        //            //else
+                        //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                        //            break;
+
+                        //        default:
+                        //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
+                        //            break;
+                        //    }
+                        //    break;
+
+                        #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
 
                         case VSDecl.VOTO_CANDIDATO_SING:
                             // chiamo la classe del voto apposito

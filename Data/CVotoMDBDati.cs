@@ -160,12 +160,12 @@ namespace VotoTouch
 
         #region CARICAMENTO DATI VOTAZIONI
 
-        override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        override public bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             OleDbConnection conn = null;
             OleDbCommand qryStd = null;
             OleDbDataReader a = null;
-            TNewVotazione v;
+            TMainVotazione v;
             bool result = false;
 
             string source = AData_path + "DemoVotoTouchData.mdb";
@@ -188,22 +188,26 @@ namespace VotoTouch
                 {
                     while (a.Read())
                     {
-                        v = new TNewVotazione
+                        v = new TMainVotazione
                         {
-                            IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                            IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                            TipoSubVoto = 0,
-                            Descrizione = a["Argomento"].ToString(),
-                            SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                            SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                            SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                            SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                            SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                            //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
-                            MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
-                            AbilitaBottoneUscita = VTConfig.AbilitaBottoneUscita
+                            TipoVoto = VSDecl.MODO_VOTO_NORMALE,
+                            vot =
+                            {
+                                IDVoto = Convert.ToInt32(a["NumVotaz"]),
+                                IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
+                                TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                                TipoSubVoto = 0,
+                                Descrizione = a["Argomento"].ToString(),
+                                SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
+                                SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                                SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                                SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
+                                SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
+                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                                AbilitaBottoneUscita = VTConfig.AbilitaBottoneUscita
+                            }
                         };
+                        //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
                         AVotazioni.Add(v);
                     }
                     a.Close();
@@ -227,7 +231,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+        override public bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             OleDbConnection conn = null;
             OleDbCommand qryStd = null;
@@ -245,7 +249,7 @@ namespace VotoTouch
                 // open the connection
                 conn.Open();
                 // ciclo sulle votazioni e carico le liste
-                foreach (TNewVotazione votaz in AVotazioni)
+                foreach (TMainVotazione votaz in AVotazioni)
                 {
                     // ok ora carico le votazioni
                     qryStd.Parameters.Clear();
@@ -270,7 +274,7 @@ namespace VotoTouch
                             qryStd.CommandText += " order by idlista";
                             break;
                     }
-                    qryStd.Parameters.AddWithValue("@IDVoto", votaz.IDVoto); // System.Data.SqlDbType.Int).Value = votaz.IDVoto;
+                    qryStd.Parameters.AddWithValue("@IDVoto", votaz.vot.IDVoto); // System.Data.SqlDbType.Int).Value = votaz.IDVoto;
                     a = qryStd.ExecuteReader();
                     if (a.HasRows)
                     {
@@ -288,7 +292,7 @@ namespace VotoTouch
                                 Capolista = a.IsDBNull(a.GetOrdinal("Capolista")) ? "" : a["Capolista"].ToString(),
                                 ListaElenco = a.IsDBNull(a.GetOrdinal("ListaElenco")) ? "DESCRIZIONE" : a["ListaElenco"].ToString()
                             };
-                            votaz.Liste.Add(l);
+                            votaz.vot.Liste.Add(l);
                         }
                     }
                     a.Close();
@@ -414,9 +418,9 @@ namespace VotoTouch
             AAzionisti.Clear();
             TAzionista a;
 
-            foreach (TNewVotazione voto in AVotazioni.Votazioni)
+            foreach (TMainVotazione voto in AVotazioni.Votazioni)
             {
-                IDVotazione = voto.IDVoto;
+                IDVotazione = voto.vot.IDVoto;
                 // un voto
                 if (AIDBadge == 1000)
                 {

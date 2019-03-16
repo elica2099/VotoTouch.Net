@@ -78,12 +78,12 @@ namespace VotoTouch
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------
 
-        virtual public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        virtual public bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             return true;
         }
 
-        virtual public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+        virtual public bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
 
         {
             return true;

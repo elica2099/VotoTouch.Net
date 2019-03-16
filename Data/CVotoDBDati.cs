@@ -514,11 +514,10 @@ namespace VotoTouch
 
         #region Caricamento dati votazioni
 
-        override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        public override bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             SqlDataReader a = null;
             SqlCommand qryStd = null;
-            TNewVotazione v;
             bool result = false; //, naz;
 
             // testo la connessione
@@ -529,36 +528,49 @@ namespace VotoTouch
             qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
-                // ok ora carico le votazioni
+                // ok ora carico le votazioni 
                 qryStd.Parameters.Clear();
                 qryStd.CommandText = qry_DammiVotazioniTotem;
-                //qryStd.CommandText =   "SELECT * from VS_MatchVot_Totem with (NOLOCK)  where GruppoVotaz < 999 order by NumVotaz";
                 a = qryStd.ExecuteReader();
                 if (a.HasRows)
                 {
                     while (a.Read())
                     {
-                        v = new TNewVotazione
+                        // verifica se la votazione appartiene a un gruppo
+                        int idgr = Convert.ToInt32(a["GruppoVotaz"]);
+                        
+                        // se il gruppo è 0 mi comporto normalmente
+                        if (idgr == 0)
                         {
-                            IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                            IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                            TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
-                            Descrizione = a["Argomento"].ToString(),
-                            SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                            SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                            SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                            SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                            SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                            //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
-                            MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
-                            MinScelte = a.IsDBNull(a.GetOrdinal("MinScelte")) ? 1 : Convert.ToInt32(a["MinScelte"]),
-                            AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
+                            
+                        }
+
+                        TMainVotazione v = new TMainVotazione
+                        {
+                            TipoVoto = VSDecl.MODO_VOTO_NORMALE,
+                            vot =
+                            {
+                                IDVoto = Convert.ToInt32(a["NumVotaz"]),
+                                IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
+                                TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                                TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
+                                Descrizione = a["Argomento"].ToString(),
+                                SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
+                                SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                                SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                                SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
+                                SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
+                                //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
+                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                                MinScelte = a.IsDBNull(a.GetOrdinal("MinScelte")) ? 1 : Convert.ToInt32(a["MinScelte"]),
+                                AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
+                            }
                         };
                         AVotazioni.Add(v);               
                     }
                 }
                 a.Close();
+
                 result = true;
             }
             catch (Exception objExc)

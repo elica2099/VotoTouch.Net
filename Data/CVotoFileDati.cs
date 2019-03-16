@@ -153,31 +153,32 @@ namespace VotoTouch
 
         #region CARICAMENTO DATI VOTAZIONI
 
-        override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        override public bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             //int z;
             DataTable dt = new DataTable();
-            TNewVotazione v;
 
             dt.ReadXml(AData_path + "VS_MatchVot_Totem.xml");
 
             foreach (DataRow a in dt.Rows)
             {
-                v = new TNewVotazione();
+                TMainVotazione v = new TMainVotazione();
 
-                v.IDVoto = Convert.ToInt32(a["NumVotaz"]);
-                v.IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]);
-                v.TipoVoto = Convert.ToInt32(a["TipoVotaz"]);
-                v.TipoSubVoto = 0;
-                v.Descrizione = a["Argomento"].ToString();
-                v.SkBianca = Convert.ToBoolean(a["SchedaBianca"]);
-                v.SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]);
-                v.SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]);
-                v.SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]);
-                v.SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]);
+                v.TipoVoto = VSDecl.MODO_VOTO_NORMALE;
+
+                v.vot.IDVoto = Convert.ToInt32(a["NumVotaz"]);
+                v.vot.IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]);
+                v.vot.TipoVoto = Convert.ToInt32(a["TipoVotaz"]);
+                v.vot.TipoSubVoto = 0;
+                v.vot.Descrizione = a["Argomento"].ToString();
+                v.vot.SkBianca = Convert.ToBoolean(a["SchedaBianca"]);
+                v.vot.SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]);
+                v.vot.SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]);
+                v.vot.SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]);
+                v.vot.SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]);
                 //PreIntermezzo = false,
-                v.MaxScelte = Convert.ToInt32(a["MaxScelte"]);
-                v.AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"]);
+                v.vot.MaxScelte = Convert.ToInt32(a["MaxScelte"]);
+                v.vot.AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"]);
                 
                 AVotazioni.Add(v);
             }
@@ -187,7 +188,7 @@ namespace VotoTouch
             return true;
         }
 
-        override public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+        override public bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             DataTable dt = new DataTable();
             TNewLista Lista;
@@ -195,7 +196,7 @@ namespace VotoTouch
             dt.ReadXml(AData_path + "VS_Liste_Totem.xml");
             string ASort = "idlista asc";
             // cicla lungo le votazioni e carica le liste
-            foreach (TNewVotazione votaz in AVotazioni)
+            foreach (TMainVotazione votaz in AVotazioni)
             {
                 // faccio un sorting delle liste
                 switch (votaz.TipoVoto)
@@ -213,7 +214,7 @@ namespace VotoTouch
                 }
 
                 foreach (DataRow riga in dt.Select("NumVotaz = " +
-                    votaz.IDVoto.ToString(), ASort))
+                    votaz.vot.IDVoto.ToString(), ASort))
                 {
                     Lista = new TNewLista
                     {
@@ -228,7 +229,7 @@ namespace VotoTouch
                         ListaElenco = riga["ListaElenco"].ToString()
                     };
                     // aggiungo
-                    votaz.Liste.Add(Lista);
+                    votaz.vot.Liste.Add(Lista);
                 }
             }
 
@@ -286,9 +287,9 @@ namespace VotoTouch
             AAzionisti.Clear();
             TAzionista a;
 
-            foreach (TNewVotazione voto in AVotazioni.Votazioni)
+            foreach (TMainVotazione voto in AVotazioni.Votazioni)
             {
-                IDVotazione = voto.IDVoto;
+                IDVotazione = voto.vot.IDVoto;
                 // un voto
                 if (AIDBadge == 1000)
                 {

@@ -166,7 +166,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.22  10/05/2018 vs17";
+        public const string VTS_VERSION = "4.5  10/04/2019 vs17";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string ABILITA_DIFFERENZIATO = "88889900";
@@ -217,16 +217,22 @@ namespace VotoTouch
         public const int MODO_AGM_POP = 0;            // popolari
         public const int MODO_AGM_SPA = 1;            // spa
 
+        // Modo Assemblea
+        public const int MODO_VOTO_NORMALE = 0;            // popolari
+        public const int MODO_VOTO_GRUPPO = 1;            // spa
+
         // tipi di Votazione
         public const int VOTO_LISTA = 1;            // voto di lista
         public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
         public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
         public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
+        public const int VOTO_GRUPPO = 5;           // voto gruppo, cioè più voti insieme
 
         // tipo di sottovoto
         public const int SUBVOTO_NORMAL = 0;
         public const int SUBVOTO_NEW = 1;
         public const int SUBVOTO_CUSTOM_MANUTENCOOP = 40;
+        public const int SUBVOTO_CUSTOM_BPER_2019 = 41;
 
         // Voti
         public const int LISTA_1 = 0;

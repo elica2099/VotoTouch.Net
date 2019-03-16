@@ -18,7 +18,7 @@ namespace VotoTouch
             CustomPaint = true;
         }
 
-       override public void GetTouchVoteZone(TNewVotazione AVotazione)
+       public override void GetTouchVoteZone(TNewVotazione AVotazione)
         {
             // DR12 OK
             Tz.Clear();
