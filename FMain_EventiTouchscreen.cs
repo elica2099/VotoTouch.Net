@@ -61,7 +61,7 @@ namespace VotoTouch
             // ok, questo evento arriva quando, nella selezione del voto, è stata
             // premuta una zona valida devo veder in funzione della lista selezionata
             TNewLista a;
-            TVotoEspresso VExp;
+            //TVotoEspresso2 VExp;
             // verifico se è null
             if (Votazioni.VotoCorrente.Liste == null) return;
 
@@ -76,9 +76,10 @@ namespace VotoTouch
                 VotoEspressoStrUp = a.DescrLista;
                 VotoEspressoStrNote = a.Presentatore;
                 // da aggiungere successivamente:
-                VExp = new TVotoEspresso
+                TVotoEspresso2 VExp = new TVotoEspresso2
                     {
                         NumVotaz = a.NumVotaz,
+                        NumSubVotaz = a.NumSubVotaz,
                         VotoExp_IDScheda = a.IDScheda,
                         TipoCarica = a.TipoCarica,
                     };
@@ -92,9 +93,10 @@ namespace VotoTouch
                 VotoEspressoStr = "";
                 VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
                 VotoEspressoStrNote = "";
-                VExp = new TVotoEspresso
+                TVotoEspresso2 VExp = new TVotoEspresso2
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
                 };
@@ -111,7 +113,7 @@ namespace VotoTouch
             // in realtà corrisponde all'AVANTI
             if (voti == null) return;  // in teoria non serve
             TNewLista a;
-            TVotoEspresso vt;
+            //TVotoEspresso vt;
             int ct = Votazioni.VotoCorrente.Liste.Count;
             VotoEspressoStr = "";
             VotoEspressoStrUp = "";      // "Scheda Bianca";
@@ -121,9 +123,10 @@ namespace VotoTouch
                 if (voti[i] >= 0 && voti[i] < ct)
                 {
                     a = Votazioni.VotoCorrente.Liste[voti[i]];
-                    vt = new TVotoEspresso
+                    TVotoEspresso2 vt = new TVotoEspresso2
                         {
                             NumVotaz = a.NumVotaz,
+                            NumSubVotaz = a.NumSubVotaz,
                             TipoCarica = a.TipoCarica,
                             VotoExp_IDScheda = a.IDScheda,
                         };
@@ -153,9 +156,10 @@ namespace VotoTouch
             VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso VExp = new TVotoEspresso
+            TVotoEspresso2 VExp = new TVotoEspresso2
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
                 };
@@ -173,9 +177,10 @@ namespace VotoTouch
             VotoEspressoStrUp = VTConfig.ContrarioATutti; // rm.GetString("SAPP_SKCONTRARIOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso VExp = new TVotoEspresso
+            TVotoEspresso2 VExp = new TVotoEspresso2
             {
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                NumSubVotaz = 0,
                 VotoExp_IDScheda = VSDecl.VOTO_CONTRARIO_TUTTI,
                 TipoCarica = 0,
             };
@@ -193,9 +198,10 @@ namespace VotoTouch
             VotoEspressoStrUp = VTConfig.AstenutoATutti; // rm.GetString("SAPP_SKASTENUTOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso VExp = new TVotoEspresso
+            TVotoEspresso2 VExp = new TVotoEspresso2
             {
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                NumSubVotaz = 0,
                 VotoExp_IDScheda = VSDecl.VOTO_ASTENUTO_TUTTI,
                 TipoCarica = 0,
             };
@@ -213,9 +219,10 @@ namespace VotoTouch
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso VExp = new TVotoEspresso
+            TVotoEspresso2 VExp = new TVotoEspresso2
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_NONVOTO,
                     TipoCarica = 0,
                 };

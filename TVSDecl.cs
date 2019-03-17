@@ -17,8 +17,7 @@ using System;
 
 namespace VotoTouch
 {
-	
-	public enum TTipoVoto:  int  {stvNormale, stvLista, stvMulti};
+    public enum TTipoVoto:  int  {stvZero, stvLista, stvCandidato, stvCandidatoSing, stvMultiCandidato, stvGruppo};
 
 	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma,ssvVotoContinua, ssvSalvaVoto, 
                                 ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto};
@@ -154,9 +153,10 @@ namespace VotoTouch
         public int idx_end;
     }
 
-    public struct TVotoEspresso
+    public struct TVotoEspresso2
     {
         public int NumVotaz;
+        public int NumSubVotaz;
         public int TipoCarica;
         public int VotoExp_IDScheda;
         //public string Str_ListaElenco;
@@ -166,7 +166,7 @@ namespace VotoTouch
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.22  10/05/2018 vs17";
+        public const string VTS_VERSION = "4.3  30/03/2019 vs17";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string ABILITA_DIFFERENZIATO = "88889900";
@@ -218,10 +218,10 @@ namespace VotoTouch
         public const int MODO_AGM_SPA = 1;            // spa
 
         // tipi di Votazione
-        public const int VOTO_LISTA = 1;            // voto di lista
-        public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
-        public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
-        public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
+        //public const int VOTO_LISTA = 1;            // voto di lista
+        //public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
+        //public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
+        //public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
 
         // tipo di sottovoto
         public const int SUBVOTO_NORMAL = 0;

@@ -19,7 +19,7 @@ namespace VotoTouch
         public int IDVoto { get; set; }
         public int IDGruppoVoto { get; set; }
         public string Descrizione { get; set; }
-        public int TipoVoto { get; set; }                //1.norm, 2.Lista, 3.Multi
+        public TTipoVoto TipoVoto { get; set; }                //1.norm, 2.Lista, 3.Multi
         public int TipoSubVoto { get; set; }             // a seconda del tipo principale 
         public bool SkBianca { get; set; }               // ha scheda bianca
         public bool SkNonVoto { get; set; }              // ha il non voto
@@ -59,12 +59,12 @@ namespace VotoTouch
 
         public int DammiMaxMultiCandSelezionabili()
         {
-            return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MaxScelte : 0;
+            return TipoVoto == TTipoVoto.stvMultiCandidato ? MaxScelte : 0;  //VSDecl.VOTO_MULTICANDIDATO
         }
 
         public int DammiMinMultiCandSelezionabili()
         {
-            return TipoVoto == VSDecl.VOTO_MULTICANDIDATO ? MinScelte : 0;
+            return TipoVoto == TTipoVoto.stvMultiCandidato ? MinScelte : 0;  // VSDecl.VOTO_MULTICANDIDATO
         }
 
         ~TNewVotazione()
@@ -78,6 +78,7 @@ namespace VotoTouch
     public class TNewLista
     {
         public int NumVotaz;
+        public int NumSubVotaz;
         public int IDLista;
         public int IDScheda;
         public string DescrLista;
@@ -259,11 +260,11 @@ namespace VotoTouch
                 {
                     switch (voto.TipoVoto)
                     {
-                        case VSDecl.VOTO_LISTA:
+                        case TTipoVoto.stvLista:  //VSDecl.VOTO_LISTA:
                             voto.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
                             break;
 
-                        case VSDecl.VOTO_CANDIDATO:
+                        case TTipoVoto.stvCandidato: // VSDecl.VOTO_CANDIDATO:
                             // chiamo la classe del voto apposito
                             switch (voto.TipoSubVoto)
                             {
@@ -280,7 +281,7 @@ namespace VotoTouch
                             } 
                             break;
 
-                        case VSDecl.VOTO_MULTICANDIDATO:
+                        case TTipoVoto.stvMultiCandidato: //VSDecl.VOTO_MULTICANDIDATO:
                             // chiamo la classe del voto apposito
                             switch (voto.TipoSubVoto)
                             {
@@ -302,9 +303,13 @@ namespace VotoTouch
                             }
                             break;
 
-                            #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                        case TTipoVoto.stvGruppo:
+                            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
+                            break;
 
-                        case VSDecl.VOTO_CANDIDATO_SING:
+                        #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+
+                        case TTipoVoto.stvCandidatoSing:   //VSDecl.VOTO_CANDIDATO_SING:
                             // chiamo la classe del voto apposito
                             voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
                             break;
@@ -371,9 +376,12 @@ namespace VotoTouch
             foreach (TNewVotazione votazione in _Votazioni)
             {
                 // solo se il voto è di candidato continuo
-                if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
-                    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                //if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                //    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
+                //    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                if (votazione.TipoVoto == TTipoVoto.stvCandidato ||
+                    votazione.TipoVoto == TTipoVoto.stvCandidatoSing ||
+                    votazione.TipoVoto == TTipoVoto.stvMultiCandidato)
                 {
                     // 1° step aree di voto
                     // ok , verifico quanti candidati CDA. So che nell'area di voto c'è spazio per 6x2 righe
@@ -505,9 +513,12 @@ namespace VotoTouch
             foreach (TNewVotazione votazione in _Votazioni)
             {
                 // solo se il voto è di candidato continuo
-                if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
-                    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                //if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                //    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
+                //    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                if (votazione.TipoVoto == TTipoVoto.stvCandidato ||
+                    votazione.TipoVoto == TTipoVoto.stvCandidatoSing ||
+                    votazione.TipoVoto == TTipoVoto.stvMultiCandidato)
                 {
                     // comunque cancello la collection delle pagine
                     votazione.Pagine.Clear();

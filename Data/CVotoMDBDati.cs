@@ -192,7 +192,7 @@ namespace VotoTouch
                         {
                             IDVoto = Convert.ToInt32(a["NumVotaz"]),
                             IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                            TipoVoto = (TTipoVoto)Convert.ToInt32(a["TipoVotaz"]),
                             TipoSubVoto = 0,
                             Descrizione = a["Argomento"].ToString(),
                             SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
@@ -257,13 +257,13 @@ namespace VotoTouch
                     switch (votaz.TipoVoto)
                     {
                         // se è lista ordino per l'id
-                        case VSDecl.VOTO_LISTA:
+                        case TTipoVoto.stvLista: // VSDecl.VOTO_LISTA:
                             qryStd.CommandText += " order by idlista";
                             break;
                         // se è candidato ordino in modo alfabetico
-                        case VSDecl.VOTO_CANDIDATO:
-                        case VSDecl.VOTO_CANDIDATO_SING:
-                        case VSDecl.VOTO_MULTICANDIDATO:
+                        case TTipoVoto.stvCandidato: // VSDecl.VOTO_CANDIDATO:
+                        case TTipoVoto.stvCandidatoSing: // VSDecl.VOTO_CANDIDATO_SING:
+                        case TTipoVoto.stvMultiCandidato: // VSDecl.VOTO_MULTICANDIDATO:
                             qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
                             break;
                         default:
@@ -279,6 +279,7 @@ namespace VotoTouch
                             l = new TNewLista
                             {
                                 NumVotaz = Convert.ToInt32(a["NumVotaz"]),
+                                NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]),
                                 IDLista = Convert.ToInt32(a["idLista"]),
                                 IDScheda = Convert.ToInt32(a["idScheda"]),
                                 DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),

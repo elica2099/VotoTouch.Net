@@ -22,7 +22,7 @@ namespace VotoTouch
         // dati del voto 
         public int IDVotaz { get; set; }
         // voti
-        public List<TVotoEspresso> VotiEspressi;
+        public List<TVotoEspresso2> VotiEspressi;
 
         // test se sk nonvoto
         public bool HaNonVotato { 
@@ -50,7 +50,7 @@ namespace VotoTouch
         public TAzionista()
         {
             HaVotato = TListaAzionisti.VOTATO_NO;
-            VotiEspressi = new List<TVotoEspresso>();
+            VotiEspressi = new List<TVotoEspresso2>();
         }
 
         public void CopyFrom(ref TAzionista cp)
@@ -415,7 +415,7 @@ namespace VotoTouch
                 // resetto i voti, non si sa mai che possano essere doppi
                 a.VotiEspressi.Clear();
                 // carico i voti sull'array
-                foreach (TVotoEspresso v in AVotiDaSalvare)
+                foreach (TVotoEspresso2 v in AVotiDaSalvare)
                 {
                     a.VotiEspressi.Add(v);
                 }
@@ -425,7 +425,7 @@ namespace VotoTouch
             return true;
         }
 
-        public bool ConfermaVotiDaInterruzione(TVotoEspresso vz)
+        public bool ConfermaVotiDaInterruzione(TVotoEspresso2 vz)
         {
             foreach (TAzionista a in _Azionisti)
             {

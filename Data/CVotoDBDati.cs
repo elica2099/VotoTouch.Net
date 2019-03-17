@@ -542,7 +542,7 @@ namespace VotoTouch
                         {
                             IDVoto = Convert.ToInt32(a["NumVotaz"]),
                             IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                            TipoVoto = (TTipoVoto)Convert.ToInt32(a["TipoVotaz"]),
                             TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
                             Descrizione = a["Argomento"].ToString(),
                             SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
@@ -601,13 +601,13 @@ namespace VotoTouch
                     switch (votaz.TipoVoto)
                     {
                         // se è lista ordino per l'id
-                        case VSDecl.VOTO_LISTA:
+                        case TTipoVoto.stvLista: // VSDecl.VOTO_LISTA:
                             qryStd.CommandText += " order by idlista";
                             break;
                         // se è candidato ordino in modo alfabetico
-                        case VSDecl.VOTO_CANDIDATO:
-                        case VSDecl.VOTO_CANDIDATO_SING:
-                        case VSDecl.VOTO_MULTICANDIDATO:
+                        case TTipoVoto.stvCandidato: // VSDecl.VOTO_CANDIDATO:
+                        case TTipoVoto.stvCandidatoSing: // VSDecl.VOTO_CANDIDATO_SING:
+                        case TTipoVoto.stvMultiCandidato: // VSDecl.VOTO_MULTICANDIDATO:
                             qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
                             break;
                         default:
@@ -623,6 +623,7 @@ namespace VotoTouch
                             l = new TNewLista
                             {
                                 NumVotaz = Convert.ToInt32(a["NumVotaz"]),
+                                NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]),
                                 IDLista = Convert.ToInt32(a["idLista"]),
                                 IDScheda = Convert.ToInt32(a["idScheda"]),
                                 DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),
@@ -1166,7 +1167,7 @@ namespace VotoTouch
                         qryStd.Parameters.Add("@voti2", System.Data.SqlDbType.Int).Value = az.Voti2;
                         qryStd.ExecuteNonQuery();
                         // 
-                        foreach (TVotoEspresso vt in az.VotiEspressi)
+                        foreach (TVotoEspresso2 vt in az.VotiEspressi)
                         {
                             // intonse_totem, salvo il voto, ma prima devo fare qualche elaborazione
                             // 1. testo se devo togliere il link voto-azionista
@@ -1177,10 +1178,11 @@ namespace VotoTouch
                             // salvo nel db
                             qryVoti.Parameters.Clear();
                             qryVoti.CommandText = @"insert into VS_Intonse_Totem  with (rowlock) 
-                                                   (NumVotaz, idTipoScheda, idSeggio, voti, voti2, Badge, ProgDeleg, IdCarica) 
+                                                   (NumVotaz, NumSubVotaz, idTipoScheda, idSeggio, voti, voti2, Badge, ProgDeleg, IdCarica) 
                                                    VALUES 
-                                                   (@NumVotaz, @idTipoScheda, @idSeggio, @voti, @voti2, @Badge, @ProgDeleg, @IdCarica) ";
+                                                   (@NumVotaz, @NumSubVotaz, @idTipoScheda, @idSeggio, @voti, @voti2, @Badge, @ProgDeleg, @IdCarica) ";
                             qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
+                            qryVoti.Parameters.Add("@NumSubVotaz", System.Data.SqlDbType.Int).Value = vt.NumSubVotaz;
                             qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
                             qryVoti.Parameters.Add("@idSeggio", System.Data.SqlDbType.Int).Value = FIDSeggio;
                             qryVoti.Parameters.Add("@voti", System.Data.SqlDbType.Float).Value = az.Voti1;
@@ -1291,7 +1293,7 @@ namespace VotoTouch
                     foreach (TAzionista az in AAzionisti.Azionisti)
                     {
                                                
-                        foreach (TVotoEspresso vt in az.VotiEspressi)
+                        foreach (TVotoEspresso2 vt in az.VotiEspressi)
                         {
                             double ASi = 0, VSi = 0, PSi = 0, ANo = 0, VNo = 0, PNo = 0, AAst = 0, VAst = 0,
                                    PAst = 0, ANv = 0, VNv = 0, PNv = 0;

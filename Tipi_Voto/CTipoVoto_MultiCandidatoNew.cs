@@ -51,7 +51,7 @@ namespace VotoTouch
             // in funzione della votazione seleziono l'evento corrispondente al tocco del voto
             // se è Multicandidato, l'evento sarà solo locale e setterà un flag nella collection, 
             // altrimenti richiamerà il voto valido all'esterno
-            if (AVotazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            if (AVotazione.TipoVoto == TTipoVoto.stvMultiCandidato) //VSDecl.VOTO_MULTICANDIDATO)
                 evento = TTEvento.steMultiValido;
             else
                 evento = TTEvento.steVotoValido;
@@ -167,7 +167,7 @@ namespace VotoTouch
             //}
             // Attenzione, nel caso la votazione sia di tipo Multicandidato, devo Aggiungere un tasto
             // "Avanti" o "Conferma" per continuare ed è possibile che ci sia un tasto SelezionaTuttiCDA
-            if (AVotazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            if (AVotazione.TipoVoto == TTipoVoto.stvMultiCandidato) //VSDecl.VOTO_MULTICANDIDATO)
             {
                 // devo aggiungere il tasto avanti con evento           
                 a = new TTZone();

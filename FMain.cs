@@ -515,9 +515,11 @@ namespace VotoTouch
                 oVotoTouch.PaintTouch(sender, e);
 
                 // se la votazione corrente è di candidato su più pagine disegno i rettangoli
-                if (Stato == TAppStato.ssvVoto && 
-                    (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                        Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
+                if (Stato == TAppStato.ssvVoto &&
+                    (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvCandidato ||
+                     Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvCandidatoSing))
+                    //(Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                    //    Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
                 {
                     // paint delle label Aggiuntive
                     //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, true);
@@ -527,7 +529,7 @@ namespace VotoTouch
                         oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
                 }
                 // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
-                if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato) // VSDecl.VOTO_MULTICANDIDATO)
                 {
                     // paint delle label Aggiuntive
                     oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
@@ -661,9 +663,10 @@ namespace VotoTouch
 
             if (!VTConfig.AbilitaDirittiNonVoglioVotare)
             {
-                TVotoEspresso vz = new TVotoEspresso
+                TVotoEspresso2 vz = new TVotoEspresso2
                     {
                         NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                        NumSubVotaz = 0,
                         VotoExp_IDScheda = VTConfig.IDSchedaUscitaForzata,
                         TipoCarica = 0,
                         //Str_ListaElenco = "",

@@ -115,7 +115,7 @@ namespace VotoTouch
             // ok, per ora distinguiamo tra i due metodi di voto, quello normale e quello multicandidato
             // che ha i voti salvati in una collection
             // in un secondo tempo dovrà essere unificato
-            if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+            if (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato) // VSDecl.VOTO_MULTICANDIDATO)
             {
                 /*
                 // ciclo e metto i candidati
