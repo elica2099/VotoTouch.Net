@@ -12,16 +12,15 @@ using System.Windows.Forms;
 namespace VotoTouch
 {
     // DR16 - Classe intera
+    // classe nuova della votazione, che contiene più votazioni, anche quella di gruppo
     public class TMainVotazione    //Era TNewVotazione
     {
-        public int TipoVoto;        // Normale, Gruppo
-        //public int IDVoto { get; set; }
+        public int ModoVoto;        // Normale, Gruppo
         public int IDGruppoVoto;
-        public TVotazione vot = new TVotazione();
-        public List<TVotazione> grvot = null;
-
+        public List<TVotazione> lvot = new List<TVotazione>();
+        // ho una propietà calcolata che mi da la prima
+        public TVotazione svot => lvot.Count > 0 ? null : lvot[0];
     }
-
 
     // struttura per le votazioni
     public class TVotazione
@@ -258,94 +257,97 @@ namespace VotoTouch
 
         public void CalcolaTouchZoneVotazioni(Rectangle AFormRect)
         {
-            foreach (TMainVotazione voto in _Votazioni)
+            foreach (TMainVotazione mvotaz in Votazioni)
             {
-                // prima cancello eventuali oggetti se ci sono
-                if (voto.TouchZoneVoto != null)
+                foreach (TVotazione votazione in mvotaz.lvot)
                 {
-                    voto.TouchZoneVoto.FFormRect = AFormRect;
-                }
-                else
-                {
-                    switch (voto.TipoVoto)
+                    // prima cancello eventuali oggetti se ci sono
+                    if (votazione.TouchZoneVoto != null)
                     {
-                        case VSDecl.VOTO_LISTA:
-                            voto.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
-                            break;
+                        votazione.TouchZoneVoto.FFormRect = AFormRect;
+                    }
+                    else
+                    {
+                        switch (votazione.TipoVoto)
+                        {
+                            case VSDecl.VOTO_LISTA:
+                                votazione.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
+                                break;
 
-                        case VSDecl.VOTO_CANDIDATO:
-                            // chiamo la classe del voto apposito
-                            switch (voto.TipoSubVoto)
-                            {
-                                case VSDecl.SUBVOTO_NORMAL:
-                                    if (voto.NListe <= 6)
-                                         voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
-                                    else
-                                        voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);                                    
-                                    break;
+                            case VSDecl.VOTO_CANDIDATO:
+                                // chiamo la classe del voto apposito
+                                switch (votazione.TipoSubVoto)
+                                {
+                                    case VSDecl.SUBVOTO_NORMAL:
+                                        if (votazione.NListe <= 6)
+                                            votazione.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
+                                        else
+                                            votazione.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                                        break;
 
-                                default:
-                                    voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
-                                    break;
-                            } 
-                            break;
+                                    default:
+                                        votazione.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                                        break;
+                                }
+                                break;
 
-                        case VSDecl.VOTO_MULTICANDIDATO:
-                            // chiamo la classe del voto apposito
-                            switch (voto.TipoSubVoto)
-                            {
-                                case VSDecl.SUBVOTO_NORMAL:
-                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
-                                    break;
-                                case VSDecl.SUBVOTO_NEW:
-                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoNew(AFormRect);
-                                    break;
+                            case VSDecl.VOTO_MULTICANDIDATO:
+                                // chiamo la classe del voto apposito
+                                switch (votazione.TipoSubVoto)
+                                {
+                                    case VSDecl.SUBVOTO_NORMAL:
+                                        votazione.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
+                                        break;
+                                    case VSDecl.SUBVOTO_NEW:
+                                        votazione.TouchZoneVoto = new CTipoVoto_MultiCandidatoNew(AFormRect);
+                                        break;
 
-                                // subvoti speciali
-                                case VSDecl.SUBVOTO_CUSTOM_MANUTENCOOP:
-                                    voto.TouchZoneVoto = new CTipoVoto_Custom_Multi_Manutencoop(AFormRect);
-                                    break;
+                                    // subvoti speciali
+                                    case VSDecl.SUBVOTO_CUSTOM_MANUTENCOOP:
+                                        votazione.TouchZoneVoto = new CTipoVoto_Custom_Multi_Manutencoop(AFormRect);
+                                        break;
 
-                                default:
-                                    voto.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
-                                    break;
-                            }
-                            break;
+                                    default:
+                                        votazione.TouchZoneVoto = new CTipoVoto_MultiCandidatoOriginal(AFormRect);
+                                        break;
+                                }
+                                break;
 
-                        //case VSDecl.VOTO_GRUPPO:
-                        //    // chiamo la classe del voto apposito
-                        //    switch (voto.TipoSubVoto)
-                        //    {
-                        //        case VSDecl.SUBVOTO_CUSTOM_BPER_2019:
-                        //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
-                        //            //if (voto.NListe <= 6)
-                        //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
-                        //            //else
-                        //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
-                        //            break;
+                            //case VSDecl.VOTO_GRUPPO:
+                            //    // chiamo la classe del voto apposito
+                            //    switch (voto.TipoSubVoto)
+                            //    {
+                            //        case VSDecl.SUBVOTO_CUSTOM_BPER_2019:
+                            //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
+                            //            //if (voto.NListe <= 6)
+                            //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoSmall(AFormRect);
+                            //            //else
+                            //            //    voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                            //            break;
 
-                        //        default:
-                        //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
-                        //            break;
-                        //    }
-                        //    break;
+                            //        default:
+                            //            voto.TouchZoneVoto = new CTipoVoto_Custom_Group_Bper2019(AFormRect);
+                            //            break;
+                            //    }
+                            //    break;
 
-                        #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                            #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
 
-                        case VSDecl.VOTO_CANDIDATO_SING:
-                            // chiamo la classe del voto apposito
-                            voto.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
-                            break;
+                            case VSDecl.VOTO_CANDIDATO_SING:
+                                // chiamo la classe del voto apposito
+                                votazione.TouchZoneVoto = new CTipoVoto_CandidatoOriginal(AFormRect);
+                                break;
 
                             #endregion
 
-                        default:
-                            voto.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
-                            break;
+                            default:
+                                votazione.TouchZoneVoto = new CTipoVoto_Lista(AFormRect);
+                                break;
+                        }
                     }
+                    // calcolo le zone
+                    votazione.TouchZoneVoto.GetTouchVoteZone(votazione);
                 }
-                // calcolo le zone
-                voto.TouchZoneVoto.GetTouchVoteZone(voto);
             }
         }
 
@@ -395,116 +397,120 @@ namespace VotoTouch
 
             // area di voto standard x Candidati è:
             // x: 20 y:180 ax:980 (w:960) ay:810 (h:630)  
-
-            foreach (TNewVotazione votazione in _Votazioni)
+            //foreach (TNewVotazione votazione in _Votazioni)
+            //{
+            foreach (TMainVotazione mvotaz in _Votazioni)
             {
-                // solo se il voto è di candidato continuo
-                if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
-                    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
-                {
-                    // 1° step aree di voto
-                    // ok , verifico quanti candidati CDA. So che nell'area di voto c'è spazio per 6x2 righe
-                    // in realtà devo lasciare uno spazio in mezzo tra i cda e i normali.
-                    // i casi sono:
-                    // CDA 0       :  5x2 Righe Alt = Candidati x pagina 10, 14 Linguette x 140 Candidati Totale
-                    // CDA da 1 a 3:  1 Riga CDA e 4x2 Righe Alt = Candidati x pagina 8, 12 Linguette x 96 Candidati Totale
-                    // CDA da 4 a 6:  2 Righe CDA e 3x2 Righe alt = Candidati Pagina 6, 10 Linguette x 60 Candidati Totale
-                    // ma deve essere dinamico in funzione dei candidati
-                    // calcolo i candidati alternativi
-                    CandAlt = votazione.NListe - votazione.NPresentatoCDA;
-
-                    switch (votazione.NPresentatoCDA)
+                foreach (TVotazione votazione in mvotaz.lvot)
+                {           
+                    // solo se il voto è di candidato continuo
+                    if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                        votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
+                        votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
                     {
-                        case 0:
-                            // vedo se mi servono i tabs
-                            votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_10);
-                            // ok, ora setto l'area in pixel dei Alt
-                            votazione.AreaVoto.XAlt = 3; //40px;
-                            votazione.AreaVoto.YAlt = 25; //265px;
-                            if (votazione.AreaVoto.NeedTabs)
-                                votazione.AreaVoto.WAlt = 72; //930px;
-                            else
-                                votazione.AreaVoto.WAlt = 94; //1200px;
-                            votazione.AreaVoto.HAlt = 52; //535px;
-                            votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_10;
-                            if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
-                            {
-                                votazione.AreaVoto.CandidatiPerPagina = CandAlt;
-                                // correttivo per centrare i bottoni in caso di meno righe
-                                int[] x10 = new int[] { 0, 6, 6, 4, 4, 2, 2, 0, 0, 0, 0 };
-                                votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x10[CandAlt];
-                                votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x10[CandAlt] * 2);
-                            }
-                            break;
+                        // 1° step aree di voto
+                        // ok , verifico quanti candidati CDA. So che nell'area di voto c'è spazio per 6x2 righe
+                        // in realtà devo lasciare uno spazio in mezzo tra i cda e i normali.
+                        // i casi sono:
+                        // CDA 0       :  5x2 Righe Alt = Candidati x pagina 10, 14 Linguette x 140 Candidati Totale
+                        // CDA da 1 a 3:  1 Riga CDA e 4x2 Righe Alt = Candidati x pagina 8, 12 Linguette x 96 Candidati Totale
+                        // CDA da 4 a 6:  2 Righe CDA e 3x2 Righe alt = Candidati Pagina 6, 10 Linguette x 60 Candidati Totale
+                        // ma deve essere dinamico in funzione dei candidati
+                        // calcolo i candidati alternativi
+                        CandAlt = votazione.NListe - votazione.NPresentatoCDA;
 
-                        case 1:
-                        case 2:
-                        case 3:
-                            // vedo se mi servono i tabs
-                            votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_8);
-                            // ok, ora setto l'area in pixel
-                            votazione.AreaVoto.XCda = 3; //40px;
-                            votazione.AreaVoto.YCda = 25; //265px;
-                            votazione.AreaVoto.WCda = 94; //1200px;
-                            votazione.AreaVoto.HCda = 8; //80px;
-                            // ok, ora setto l'area in pixel dei Alt
-                            votazione.AreaVoto.XAlt = 3; //40px;
-                            votazione.AreaVoto.YAlt = 42; //430px;
-                            if (votazione.AreaVoto.NeedTabs)
-                                votazione.AreaVoto.WAlt = 72; //930px;
-                            else
-                                votazione.AreaVoto.WAlt = 94; //1200px;
-                            votazione.AreaVoto.HAlt = 36; //370px;
-                            votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_8;
-                            if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
-                            {
-                                votazione.AreaVoto.CandidatiPerPagina = CandAlt;
-                                // correttivo per centrare i bottoni in caso di meno righe
-                                int[] x8 = new int[] { 0, 6, 6, 4, 4, 2, 2, 0, 0, 0, 0 };
-                                votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x8[CandAlt];
-                                votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x8[CandAlt] * 2);
-                            }
-                            break;
+                        switch (votazione.NPresentatoCDA)
+                        {
+                            case 0:
+                                // vedo se mi servono i tabs
+                                votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_10);
+                                // ok, ora setto l'area in pixel dei Alt
+                                votazione.AreaVoto.XAlt = 3; //40px;
+                                votazione.AreaVoto.YAlt = 25; //265px;
+                                if (votazione.AreaVoto.NeedTabs)
+                                    votazione.AreaVoto.WAlt = 72; //930px;
+                                else
+                                    votazione.AreaVoto.WAlt = 94; //1200px;
+                                votazione.AreaVoto.HAlt = 52; //535px;
+                                votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_10;
+                                if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
+                                {
+                                    votazione.AreaVoto.CandidatiPerPagina = CandAlt;
+                                    // correttivo per centrare i bottoni in caso di meno righe
+                                    int[] x10 = new int[] {0, 6, 6, 4, 4, 2, 2, 0, 0, 0, 0};
+                                    votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x10[CandAlt];
+                                    votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x10[CandAlt] * 2);
+                                }
+                                break;
 
-                        case 4:
-                        case 5:
-                        case 6:
-                            // vedo se mi servono i tabs
-                            votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_6);
-                            // ok, ora setto l'area in pixel dei CDA
-                            votazione.AreaVoto.XCda = 3; //40px;
-                            votazione.AreaVoto.YCda = 25; //265px;
-                            votazione.AreaVoto.WCda = 94; //1200px;
-                            votazione.AreaVoto.HCda = 17; //178px;
-                            // ok, ora setto l'area in pixel dei Alt
-                            votazione.AreaVoto.XAlt = 3; //40px;
-                            votazione.AreaVoto.YAlt = 51; //520px;
-                            if (votazione.AreaVoto.NeedTabs)
-                                votazione.AreaVoto.WAlt = 72; //930px;
-                            else
-                                votazione.AreaVoto.WAlt = 94; //1200px;
-                            votazione.AreaVoto.HAlt = 27; //280px;
-                            votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_6;
-                            if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
-                            {
-                                votazione.AreaVoto.CandidatiPerPagina = CandAlt;
-                                // correttivo per centrare i bottoni in caso di meno righe
-                                int[] x6 = new int[] { 0, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0 };
-                                votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x6[CandAlt];
-                                votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x6[CandAlt] * 2);
-                            }
-                            break;
+                            case 1:
+                            case 2:
+                            case 3:
+                                // vedo se mi servono i tabs
+                                votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_8);
+                                // ok, ora setto l'area in pixel
+                                votazione.AreaVoto.XCda = 3; //40px;
+                                votazione.AreaVoto.YCda = 25; //265px;
+                                votazione.AreaVoto.WCda = 94; //1200px;
+                                votazione.AreaVoto.HCda = 8; //80px;
+                                // ok, ora setto l'area in pixel dei Alt
+                                votazione.AreaVoto.XAlt = 3; //40px;
+                                votazione.AreaVoto.YAlt = 42; //430px;
+                                if (votazione.AreaVoto.NeedTabs)
+                                    votazione.AreaVoto.WAlt = 72; //930px;
+                                else
+                                    votazione.AreaVoto.WAlt = 94; //1200px;
+                                votazione.AreaVoto.HAlt = 36; //370px;
+                                votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_8;
+                                if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
+                                {
+                                    votazione.AreaVoto.CandidatiPerPagina = CandAlt;
+                                    // correttivo per centrare i bottoni in caso di meno righe
+                                    int[] x8 = new int[] {0, 6, 6, 4, 4, 2, 2, 0, 0, 0, 0};
+                                    votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x8[CandAlt];
+                                    votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x8[CandAlt] * 2);
+                                }
+                                break;
+
+                            case 4:
+                            case 5:
+                            case 6:
+                                // vedo se mi servono i tabs
+                                votazione.AreaVoto.NeedTabs = (CandAlt > VSDecl.CANDXPAG_6);
+                                // ok, ora setto l'area in pixel dei CDA
+                                votazione.AreaVoto.XCda = 3; //40px;
+                                votazione.AreaVoto.YCda = 25; //265px;
+                                votazione.AreaVoto.WCda = 94; //1200px;
+                                votazione.AreaVoto.HCda = 17; //178px;
+                                // ok, ora setto l'area in pixel dei Alt
+                                votazione.AreaVoto.XAlt = 3; //40px;
+                                votazione.AreaVoto.YAlt = 51; //520px;
+                                if (votazione.AreaVoto.NeedTabs)
+                                    votazione.AreaVoto.WAlt = 72; //930px;
+                                else
+                                    votazione.AreaVoto.WAlt = 94; //1200px;
+                                votazione.AreaVoto.HAlt = 27; //280px;
+                                votazione.AreaVoto.CandidatiPerPagina = VSDecl.CANDXPAG_6;
+                                if (CandAlt < votazione.AreaVoto.CandidatiPerPagina)
+                                {
+                                    votazione.AreaVoto.CandidatiPerPagina = CandAlt;
+                                    // correttivo per centrare i bottoni in caso di meno righe
+                                    int[] x6 = new int[] {0, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0};
+                                    votazione.AreaVoto.YAlt = votazione.AreaVoto.YAlt + x6[CandAlt];
+                                    votazione.AreaVoto.HAlt = votazione.AreaVoto.HAlt - (x6[CandAlt] * 2);
+                                }
+                                break;
+                        }
+
+                        // DA TOGLIERE SE FUNZIONA IL PEZZO NUOVO
+                        // pezzo compatibilità vecchia                    
+                        //if (FParVoto[i].TipoVoto == VSDecl.VOTO_CANDIDATO_SING) //!= VSDecl.VOTO_MULTICANDIDATO)
+                        //{
+                        //    FParVoto[i].AreaVoto.CandidatiPerPagina = VSDecl.CANDIDATI_PER_PAGINA;
+                        //    FParVoto[i].AreaVoto.NeedTabs = true;
+                        //}
+                        // FINE DA TOGLIERE
                     }
-
-                    // DA TOGLIERE SE FUNZIONA IL PEZZO NUOVO
-                    // pezzo compatibilità vecchia                    
-                    //if (FParVoto[i].TipoVoto == VSDecl.VOTO_CANDIDATO_SING) //!= VSDecl.VOTO_MULTICANDIDATO)
-                    //{
-                    //    FParVoto[i].AreaVoto.CandidatiPerPagina = VSDecl.CANDIDATI_PER_PAGINA;
-                    //    FParVoto[i].AreaVoto.NeedTabs = true;
-                    //}
-                    // FINE DA TOGLIERE
                 }
             }
         }
@@ -530,97 +536,102 @@ namespace VotoTouch
             TIndiceListe idx; //, idx1;
 
             // innanzitutto ciclo sulle votazioni
-            foreach (TNewVotazione votazione in _Votazioni)
+            //foreach (TNewVotazione votazione in _Votazioni)
+            //{
+            foreach (TMainVotazione mvotaz in _Votazioni)
             {
-                // solo se il voto è di candidato continuo
-                if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                    votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
-                    votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                foreach (TVotazione votazione in mvotaz.lvot)
                 {
-                    // comunque cancello la collection delle pagine
-                    votazione.Pagine.Clear();
-                    // ok ora faccio una prima scansione per crearmi l'indice alfabetico
-                    // e settare le pagine
-                    // NOTA : i candidati presentati dal cda sono SEMPRE in pagina 0
-                    // in più mi creo un array dei range di cognomi
-                    pg = 1;
-                    pgind = 1;
-                    sp = "";
-                    // la prima pagina, quella del cda la metto sempre, anche se non c'è il candidato
-                    idx = new TIndiceListe();
-                    idx.pag = 0;
-                    idx.indice = "A - Z";
-                    votazione.Pagine.Add(idx);
-                    // ok, ora ciclo
-                    for (z = 0; z < votazione.Liste.Count; z++)
+                    // solo se il voto è di candidato continuo
+                    if (votazione.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                        votazione.TipoVoto == VSDecl.VOTO_CANDIDATO_SING ||
+                        votazione.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
                     {
-                        // prelevo la lista che dovrebbe già essere ordinata in modo alfabetico
-                        li = (TNewLista)votazione.Liste[z];
-                        // testo se è presentato dal cda
-                        if (li.PresentatodaCDA)
+                        // comunque cancello la collection delle pagine
+                        votazione.Pagine.Clear();
+                        // ok ora faccio una prima scansione per crearmi l'indice alfabetico
+                        // e settare le pagine
+                        // NOTA : i candidati presentati dal cda sono SEMPRE in pagina 0
+                        // in più mi creo un array dei range di cognomi
+                        pg = 1;
+                        pgind = 1;
+                        sp = "";
+                        // la prima pagina, quella del cda la metto sempre, anche se non c'è il candidato
+                        idx = new TIndiceListe();
+                        idx.pag = 0;
+                        idx.indice = "A - Z";
+                        votazione.Pagine.Add(idx);
+                        // ok, ora ciclo
+                        for (z = 0; z < votazione.Liste.Count; z++)
                         {
-                            li.Pag = 0;
-                            li.PagInd = "CdA";
-                        }
-                        else
-                        {
-                            // setto la pagina
-                            li.Pag = pg;
-                            // cognome di inizio
-                            if (sp == "") sp = li.DescrLista;
-                            // controllo ed eventualmente cambio pagina
-                            pgind++;
-                            // se sono arrivato ai 10 oppure sono arrivato alla fine
-                            //if (pgind > VSDecl.CANDIDATI_PER_PAGINA ||
-                            if (pgind > votazione.AreaVoto.CandidatiPerPagina ||
-                                z == (votazione.Liste.Count - 1))
+                            // prelevo la lista che dovrebbe già essere ordinata in modo alfabetico
+                            li = (TNewLista) votazione.Liste[z];
+                            // testo se è presentato dal cda
+                            if (li.PresentatodaCDA)
                             {
-                                // cognome di fine e aggiungo pagina
-                                idx = new TIndiceListe();
-                                idx.pag = pg;
-                                idx.sp = sp + "    ";  // metto gli spazi per il substring dopo
-                                idx.ep = li.DescrLista + "    "; // come sopra, brutta ma efficace
-                                votazione.Pagine.Add(idx);
-
-                                // setto le variabili per la pagina successiva
-                                sp = "";
-                                pg++;
-                                pgind = 1;
+                                li.Pag = 0;
+                                li.PagInd = "CdA";
                             }
-                        }
-                        // aggiorno
-                        votazione.Liste[z] = li;
-                    } //for (z = 0; z < FParVoto[i].Liste.Count; z++)
+                            else
+                            {
+                                // setto la pagina
+                                li.Pag = pg;
+                                // cognome di inizio
+                                if (sp == "") sp = li.DescrLista;
+                                // controllo ed eventualmente cambio pagina
+                                pgind++;
+                                // se sono arrivato ai 10 oppure sono arrivato alla fine
+                                //if (pgind > VSDecl.CANDIDATI_PER_PAGINA ||
+                                if (pgind > votazione.AreaVoto.CandidatiPerPagina ||
+                                    z == (votazione.Liste.Count - 1))
+                                {
+                                    // cognome di fine e aggiungo pagina
+                                    idx = new TIndiceListe();
+                                    idx.pag = pg;
+                                    idx.sp = sp + "    "; // metto gli spazi per il substring dopo
+                                    idx.ep = li.DescrLista + "    "; // come sopra, brutta ma efficace
+                                    votazione.Pagine.Add(idx);
 
-                    // ok ora devo creare l'indice nella collection
-                    for (z = 1; z < votazione.Pagine.Count; z++)
-                    {
-                        idx = (TIndiceListe)votazione.Pagine[z];
+                                    // setto le variabili per la pagina successiva
+                                    sp = "";
+                                    pg++;
+                                    pgind = 1;
+                                }
+                            }
+                            // aggiorno
+                            votazione.Liste[z] = li;
+                        } //for (z = 0; z < FParVoto[i].Liste.Count; z++)
 
-                        if (z == 1) idx.sp = "A  ";
-                        if (z == (votazione.Pagine.Count - 1)) idx.ep = "Z  ";
-                        idx.indice = idx.sp.Substring(0, 3).Trim() + "-" +
-                                idx.ep.Substring(0, 3).Trim();
-                        idx.indice = idx.indice.Trim();
-                        votazione.Pagine[z] = idx;
-                    }
-
-                    // ok, ora metto le informazioni nelle liste
-                    for (z = 0; z < votazione.Liste.Count; z++)
-                    {
-                        // prelevo la lista che dovrebbe già essere ordinata in modo alfabetico
-                        li = (TNewLista)votazione.Liste[z];
-                        // controllo per scrupolo l'indice
-                        if (li.Pag < votazione.Liste.Count)
+                        // ok ora devo creare l'indice nella collection
+                        for (z = 1; z < votazione.Pagine.Count; z++)
                         {
-                            idx = (TIndiceListe)votazione.Pagine[li.Pag];
-                            li.PagInd = idx.indice.ToLower();
-                        }
-                        votazione.Liste[z] = li;
-                    }
+                            idx = (TIndiceListe) votazione.Pagine[z];
 
-                }  //if (FParVoto[i].TipoVoto == VSDecl.VOTO_CANDIDATO
-            }  // for (i = 0; i < NVoti; i++)
+                            if (z == 1) idx.sp = "A  ";
+                            if (z == (votazione.Pagine.Count - 1)) idx.ep = "Z  ";
+                            idx.indice = idx.sp.Substring(0, 3).Trim() + "-" +
+                                         idx.ep.Substring(0, 3).Trim();
+                            idx.indice = idx.indice.Trim();
+                            votazione.Pagine[z] = idx;
+                        }
+
+                        // ok, ora metto le informazioni nelle liste
+                        for (z = 0; z < votazione.Liste.Count; z++)
+                        {
+                            // prelevo la lista che dovrebbe già essere ordinata in modo alfabetico
+                            li = (TNewLista) votazione.Liste[z];
+                            // controllo per scrupolo l'indice
+                            if (li.Pag < votazione.Liste.Count)
+                            {
+                                idx = (TIndiceListe) votazione.Pagine[li.Pag];
+                                li.PagInd = idx.indice.ToLower();
+                            }
+                            votazione.Liste[z] = li;
+                        }
+
+                    } //if (FParVoto[i].TipoVoto == VSDecl.VOTO_CANDIDATO
+                } // for (i = 0; i < NVoti; i++)
+            }
         }
 
     }

@@ -168,7 +168,7 @@
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoSmall.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOld.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOriginal.cs" />
-    <Compile Include="Tipi_Voto\CTipoVoto_Custom_Multi_Bper2019.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_Custom_Group_Bper2019.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_Custom_Multi_Manutencoop.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_Lista.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_MultiCandidatoNew.cs" />

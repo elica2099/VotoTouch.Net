@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Data;
-using System.Collections; 
+using System.Collections;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Data.Common;
+using System.Linq;
 using System.Reflection;
 using System.Windows; //.Forms.Design;
 using System.Windows.Forms;
@@ -26,38 +27,38 @@ using System.Threading;
 
 namespace VotoTouch
 {
-	/// <summary>
-	/// Summary description for CVotoDBDati.
-	/// </summary>
+    /// <summary>
+    /// Summary description for CVotoDBDati.
+    /// </summary>
     public class CVotoDBDati : CVotoBaseDati
-	{
-	    private const string DriveM = @"M:\";
-	    // connessione database
-		private SqlConnection STDBConn;
+    {
+        private const string DriveM = @"M:\";
+        // connessione database
+        private SqlConnection STDBConn;
 
         // stringhe sql
-	    private string qry_DammiDirittiDiVoto_Titolare = "";
-	    private string qry_DammiDirittiDiVoto_Deleganti = "";
+        private string qry_DammiDirittiDiVoto_Titolare = "";
+        private string qry_DammiDirittiDiVoto_Deleganti = "";
         private string qry_DammiVotazioniTotem = "";
         private string qry_DammiBadgePresenteGeas = "";
         private string qry_MettiBadgePresenteGeas = "";
 
-        public CVotoDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) : 
+        public CVotoDBDati(ConfigDbData AFDBConfig, Boolean AADataLocal, string AAData_path) :
             base(AFDBConfig, AADataLocal, AAData_path)
-		{
-			//
-			STDBConn = new SqlConnection();
-			FConnesso = false;
-			// setto i parametri di default di DBConfig
-			FDBConfig.DB_ConfigOK = false;
-			FDBConfig.DB_Type = "ODBC";
-			FDBConfig.DB_Dsn = "GEAS";
-			FDBConfig.DB_Name = "GEAS_BPER";
-			FDBConfig.DB_Uid = "geas";
-			FDBConfig.DB_Pwd = "geas";
-			FDBConfig.DB_Server = @"TOGTA-SRVSQL2k\SQL2kGTA";
-			//
-			FIDSeggio = 2;
+        {
+            //
+            STDBConn = new SqlConnection();
+            FConnesso = false;
+            // setto i parametri di default di DBConfig
+            FDBConfig.DB_ConfigOK = false;
+            FDBConfig.DB_Type = "ODBC";
+            FDBConfig.DB_Dsn = "GEAS";
+            FDBConfig.DB_Name = "GEAS_BPER";
+            FDBConfig.DB_Uid = "geas";
+            FDBConfig.DB_Pwd = "geas";
+            FDBConfig.DB_Server = @"TOGTA-SRVSQL2k\SQL2kGTA";
+            //
+            FIDSeggio = 2;
 
             // load the query
             qry_DammiDirittiDiVoto_Titolare = getModelsQueryProcedure("DammiDirittiDiVoto_Titolare.sql");
@@ -146,7 +147,7 @@ namespace VotoTouch
         }
 
         #endregion
-        
+
         // --------------------------------------------------------------------------
         //  LETTURA CONFIGURAZIONE NEL DATABASE
         // --------------------------------------------------------------------------
@@ -227,15 +228,15 @@ namespace VotoTouch
 
             // testo la connessione
             if (!OpenConnection("DammiConfigTotem")) return 0;
-            
+
             int result = 0;
             // preparo gli oggetti
             SqlCommand qryStd = new SqlCommand
-                {
-                    Connection = STDBConn,
-                    CommandText =
+            {
+                Connection = STDBConn,
+                CommandText =
                         "select * from CONFIG_POSTAZIONI_TOTEM with (nolock) where Postazione = '" + VTConfig.NomeTotem + "'"
-                };
+            };
             // registra il totem aggiungendo il record in CONFIG_POSTAZIONI, e chiaramente verifica che ci sia già
             SqlTransaction traStd = STDBConn.BeginTransaction();
             qryStd.Transaction = traStd;
@@ -281,12 +282,12 @@ namespace VotoTouch
                 {
                     // non c'è configurazione, devo inserirla
                     qryStd.CommandText = "INSERT into CONFIG_POSTAZIONI_TOTEM " +
-                        "(Postazione, Descrizione, IdSeggio, Attivo, VotoAperto, UsaSemaforo, "+
+                        "(Postazione, Descrizione, IdSeggio, Attivo, VotoAperto, UsaSemaforo, " +
                         " IPCOMSemaforo, TipoSemaforo, UsaLettore, PortaLettore, CodiceUscita, " +
                         " UsaController, IPController, Sala) " +
                         " VALUES ('" + VTConfig.NomeTotem + "', 'Desc_" + VTConfig.NomeTotem + "', 999, 1, 0, 0, " +
                         "'127.0.0.1', 2, 0, 1, '999999', 0, '127.0.0.1', 1)";
-                    
+
                     // metto in quadro i valori
                     VTConfig.Postazione = VTConfig.NomeTotem;
                     VTConfig.Descrizione = VTConfig.NomeTotem;
@@ -339,10 +340,10 @@ namespace VotoTouch
 
             // preparo gli oggetti
             SqlCommand qryStd = new SqlCommand
-                {
-                    Connection = STDBConn,
-                    CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock) where attivo = 1"
-                };
+            {
+                Connection = STDBConn,
+                CommandText = "select * from CONFIG_CfgVotoSegreto with (nolock) where attivo = 1"
+            };
             // la configurazione ci deve essere, non è necessario inserirla
             try
             {
@@ -421,7 +422,7 @@ namespace VotoTouch
 
             return result;
         }
-        
+
         override public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             // testo la connessione
@@ -431,7 +432,7 @@ namespace VotoTouch
             // preparo gli oggetti
             int usal = VTConfig.UsaLettore ? 1 : 0;
             int usas = VTConfig.UsaSemaforo ? 1 : 0;
-            SqlCommand qryStd = new SqlCommand {Connection = STDBConn};
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             // devo inserirlo
             SqlTransaction traStd = STDBConn.BeginTransaction();
             try
@@ -506,8 +507,8 @@ namespace VotoTouch
             return result;
         }
 
-        #endregion       
-        
+        #endregion
+
         // --------------------------------------------------------------------------
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------
@@ -538,37 +539,62 @@ namespace VotoTouch
                     {
                         // verifica se la votazione appartiene a un gruppo
                         int idgr = Convert.ToInt32(a["GruppoVotaz"]);
-                        
-                        // se il gruppo è 0 mi comporto normalmente
+
+                        // leggo i campi in TVotazione comunque, per non farlo due volte
+                        TVotazione votaz = new TVotazione
+                        {
+                            IDVoto = Convert.ToInt32(a["NumVotaz"]),
+                            IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
+                            TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                            TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
+                            Descrizione = a["Argomento"].ToString(),
+                            SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
+                            SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                            SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                            SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
+                            SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
+                            //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
+                            MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
+                            MinScelte = a.IsDBNull(a.GetOrdinal("MinScelte")) ? 1 : Convert.ToInt32(a["MinScelte"]),
+                            AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
+                        };
+
+                        // testo se il gruppo è 0, cioè un voto normale
                         if (idgr == 0)
                         {
-                            
-                        }
-
-                        TMainVotazione v = new TMainVotazione
-                        {
-                            TipoVoto = VSDecl.MODO_VOTO_NORMALE,
-                            vot =
+                            // se il gruppo è 0 mi comporto normalmente
+                            TMainVotazione v = new TMainVotazione
                             {
-                                IDVoto = Convert.ToInt32(a["NumVotaz"]),
-                                IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
-                                TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
-                                TipoSubVoto = Convert.ToInt32(a["TipoSubVotaz"]),
-                                Descrizione = a["Argomento"].ToString(),
-                                SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
-                                SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
-                                SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
-                                SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
-                                SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
-                                //PreIntermezzo = Convert.ToBoolean(a["PreIntermezzo"]),
-                                MaxScelte = a.IsDBNull(a.GetOrdinal("MaxScelte")) ? 1 : Convert.ToInt32(a["MaxScelte"]),
-                                MinScelte = a.IsDBNull(a.GetOrdinal("MinScelte")) ? 1 : Convert.ToInt32(a["MinScelte"]),
-                                AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
+                                ModoVoto = VSDecl.MODO_VOTO_NORMALE,
+                                IDGruppoVoto = 0,
+                                //vot = votaz
+                            };
+                            v.lvot.Add(votaz);
+                            AVotazioni.Add(v);
+                        }
+                        else
+                        {
+                            // se il gruppo è > 0 vuol dire che la votazione fa parte di un gruppo
+                            // per prima cosa, testo nella lista se il gruppo esiste, se si aggiungo la votazione a questo gruppo
+                            // se no, devo crearlo all'interno di TMainVotazione e aggiungerlo alla lista
+                            TMainVotazione gvot = AVotazioni.First(v => v.IDGruppoVoto == idgr);
+                            if (gvot != null)
+                            {
+                                // devo aggiungerlo
+                                gvot.lvot.Add(votaz);
                             }
-                        };
-                        AVotazioni.Add(v);               
-                    }
-                }
+                            else
+                            {
+                                // devo creare 
+                                TMainVotazione vg = new TMainVotazione();
+                                vg.ModoVoto = VSDecl.MODO_VOTO_GRUPPO;
+                                vg.IDGruppoVoto = idgr;
+                                vg.lvot.Add(votaz);
+                                AVotazioni.Add(vg);
+                            }
+                        }
+                    }       // while (a.Read())
+                }       // if (a.HasRows)
                 a.Close();
 
                 result = true;
@@ -588,91 +614,92 @@ namespace VotoTouch
             return result;
         }
 
-        override public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+        public override bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
             TNewLista l;
             bool result = false; //, naz;
 
             // testo la connessione
             if (!OpenConnection("CaricaVotazioniDaDatabase")) return false;
 
-            qryStd = new SqlCommand { Connection = STDBConn };
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
                 // TODO: CaricaListeDaDatabase da vedere in futuro di fare un solo ciclo di caricamento senza ordine
                 // ciclo sulle votazioni e carico le liste
-                foreach (TNewVotazione votaz in AVotazioni)
+                foreach (TMainVotazione mvotaz in AVotazioni)
                 {
-                    // ok ora carico le votazioni
-                    qryStd.Parameters.Clear();
-                    qryStd.CommandText = "SELECT * from VS_Liste_Totem with (NOLOCK) " +
-                                         "where NumVotaz = @IDVoto and Attivo = 1 ";
-                    // ecco, in funzione del tipo di voto
-                    switch (votaz.TipoVoto)
+                    foreach (TVotazione votazione in mvotaz.lvot)
                     {
-                        // se è lista ordino per l'id
-                        case VSDecl.VOTO_LISTA:
-                            qryStd.CommandText += " order by idlista";
-                            break;
-                        // se è candidato ordino in modo alfabetico
-                        case VSDecl.VOTO_CANDIDATO:
-                        case VSDecl.VOTO_CANDIDATO_SING:
-                        case VSDecl.VOTO_MULTICANDIDATO:
-                            qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
-                            break;
-                        default:
-                            qryStd.CommandText += " order by idlista";
-                            break;
-                    }
-                    qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votaz.IDVoto;
-                    a = qryStd.ExecuteReader();
-                    if (a.HasRows)
-                    {
-                        while (a.Read())
+                        // ok ora carico le votazioni
+                        qryStd.Parameters.Clear();
+                        qryStd.CommandText = "SELECT * from VS_Liste_Totem with (NOLOCK) " +
+                                             "where NumVotaz = @IDVoto and Attivo = 1 ";
+                        // ecco, in funzione del tipo di voto
+                        switch (votazione.TipoVoto)
                         {
-                            l = new TNewLista
+                            // se è lista ordino per l'id
+                            case VSDecl.VOTO_LISTA:
+                                qryStd.CommandText += " order by idlista";
+                                break;
+                            // se è candidato ordino in modo alfabetico
+                            case VSDecl.VOTO_CANDIDATO:
+                            case VSDecl.VOTO_CANDIDATO_SING:
+                            case VSDecl.VOTO_MULTICANDIDATO:
+                                qryStd.CommandText += " order by PresentatoDaCdA desc, OrdineCarica, DescrLista "; //DescrLista ";
+                                break;
+                            default:
+                                qryStd.CommandText += " order by idlista";
+                                break;
+                        }
+                        qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votazione.IDVoto;
+                        SqlDataReader a = qryStd.ExecuteReader();
+                        if (a.HasRows)
+                        {
+                            while (a.Read())
                             {
-                                NumVotaz = Convert.ToInt32(a["NumVotaz"]),
-                                IDLista = Convert.ToInt32(a["idLista"]),
-                                IDScheda = Convert.ToInt32(a["idScheda"]),
-                                DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),
-                                TipoCarica = Convert.ToInt32(a["TipoCarica"]),
-                                PresentatodaCDA = Convert.ToBoolean(a["PresentatodaCDA"]),
-                                Presentatore = a.IsDBNull(a.GetOrdinal("Presentatore")) ? "" : a["Presentatore"].ToString(),
-                                Capolista = a.IsDBNull(a.GetOrdinal("Capolista")) ? "" : a["Capolista"].ToString(),
-                                ListaElenco = a.IsDBNull(a.GetOrdinal("ListaElenco")) ? "DESCRIZIONE" : a["ListaElenco"].ToString()
-                            };
-                            votaz.Liste.Add(l);
+                                l = new TNewLista
+                                {
+                                    NumVotaz = Convert.ToInt32(a["NumVotaz"]),
+                                    IDLista = Convert.ToInt32(a["idLista"]),
+                                    IDScheda = Convert.ToInt32(a["idScheda"]),
+                                    DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString(),
+                                    TipoCarica = Convert.ToInt32(a["TipoCarica"]),
+                                    PresentatodaCDA = Convert.ToBoolean(a["PresentatodaCDA"]),
+                                    Presentatore = a.IsDBNull(a.GetOrdinal("Presentatore")) ? "" : a["Presentatore"].ToString(),
+                                    Capolista = a.IsDBNull(a.GetOrdinal("Capolista")) ? "" : a["Capolista"].ToString(),
+                                    ListaElenco = a.IsDBNull(a.GetOrdinal("ListaElenco")) ? "DESCRIZIONE" : a["ListaElenco"].ToString()
+                                };
+                                votazione.Liste.Add(l);
+                            }
                         }
-                    }
-                    a.Close();
-                
-                    // TODO: DA RIVEDERE CHE FUNZIONA SOLO SU UN VOTO SOLO
-                    // carica la dicitira astenuto e contrario
-                    int IDScheda;
-                    string DescrLista;
-                    qryStd.Parameters.Clear();
-                    qryStd.CommandText = @"select distinct IDscheda, descrLista from VS_Liste_Totem
-                                            where IdScheda = 226 or IdScheda = 227 ";
-                     a = qryStd.ExecuteReader();
-                    if (a.HasRows)
-                    {
-                        while (a.Read())
-                        {
-                            IDScheda = Convert.ToInt32(a["idScheda"]);
-                            DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString();
-                            if (IDScheda == VSDecl.VOTO_CONTRARIO_TUTTI)
-                                VTConfig.ContrarioATutti = DescrLista;
-                            if (IDScheda == VSDecl.VOTO_ASTENUTO_TUTTI)
-                                VTConfig.AstenutoATutti = DescrLista;
-                        }
-                    }
-                    a.Close();
+                        a.Close();
 
+                        // TODO: DA RIVEDERE CHE FUNZIONA SOLO SU UN VOTO SOLO
+                        // carica la dicitira astenuto e contrario
+                        int IDScheda;
+                        string DescrLista;
+                        qryStd.Parameters.Clear();
+                        qryStd.CommandText = @"select distinct IDscheda, descrLista from VS_Liste_Totem
+                                            where IdScheda = 226 or IdScheda = 227 ";
+                        a = qryStd.ExecuteReader();
+                        if (a.HasRows)
+                        {
+                            while (a.Read())
+                            {
+                                IDScheda = Convert.ToInt32(a["idScheda"]);
+                                DescrLista = a.IsDBNull(a.GetOrdinal("DescrLista")) ? "DESCRIZIONE" : a["DescrLista"].ToString();
+                                if (IDScheda == VSDecl.VOTO_CONTRARIO_TUTTI)
+                                    VTConfig.ContrarioATutti = DescrLista;
+                                if (IDScheda == VSDecl.VOTO_ASTENUTO_TUTTI)
+                                    VTConfig.AstenutoATutti = DescrLista;
+                            }
+                        }
+                        a.Close();
+
+                    }
+                    result = true;
                 }
-                result = true;
             }
             catch (Exception objExc)
             {
@@ -692,8 +719,8 @@ namespace VotoTouch
         #endregion
 
         // --------------------------------------------------------------------------
-		//  METODI SUI BADGE
-		// --------------------------------------------------------------------------
+        //  METODI SUI BADGE
+        // --------------------------------------------------------------------------
 
         #region Metodi sui Badge (Presenza, ha già votato...)
 
@@ -715,14 +742,14 @@ namespace VotoTouch
             if (!OpenConnection("ControllaBadge")) return false;
 
             bool result = true;
-            SqlCommand qryStd = new SqlCommand {Connection = STDBConn};
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             // apro una transazione atomica
             // metto sotto try
             try
             {
                 traStd = STDBConn.BeginTransaction();
                 qryStd.Transaction = traStd;
-                
+
                 // -------------------------------------------------
                 // ok, ora testo se è annullato
                 BAnnull = false;
@@ -852,7 +879,7 @@ namespace VotoTouch
                         resCons = a.HasRows;
                         a.Close();
                     }
-                }               
+                }
                 traStd.Commit();
 
                 // ok, ora devo elaborare il risultato che deve essere
@@ -952,13 +979,13 @@ namespace VotoTouch
 
         #endregion
 
-		// --------------------------------------------------------------------------
-		//  LETTURA DATI AZIONISTA
-		// --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
+        //  LETTURA DATI AZIONISTA
+        // --------------------------------------------------------------------------
 
         #region Caricamento dati Azionista 
 
-        override public bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
+        public override bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
                                                                 ref TAzionista ATitolare_badge, ref TListaVotazioni AVotazioni)
         {
             // ok, questa funziomne carica i diritti di voto in funzione
@@ -968,9 +995,6 @@ namespace VotoTouch
             // ok, questa procedura mi carica tutti i dati
             //SqlConnection STDBConn = null;
             SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TAzionista c;
-            int IDVotazione = -1;
             bool result = false; //, naz;
 
             // testo la connessione
@@ -978,114 +1002,118 @@ namespace VotoTouch
 
             AAzionisti.Clear();
 
-            qryStd = new SqlCommand { Connection = STDBConn };
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
                 // ciclo sul voto per crearmi l'array dei diritti di voto per ogni singola votazione
                 //for (int i = 0  ; i < NVoti; i++)
                 // TODO: CVotoDBDati|CaricaDirittidiVotoDaDatabase - Inutile chiamare n volte la query
-                foreach (TNewVotazione voto in AVotazioni.Votazioni)
+                foreach (TMainVotazione votaz in AVotazioni.Votazioni)
                 {
-                    IDVotazione = voto.IDVoto;
-
-                    // resetto la query
-                    qryStd.Parameters.Clear();
-
-                    // ok ora carico il titolare
-                    qryStd.CommandText = qry_DammiDirittiDiVoto_Titolare;
-                    qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
-                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                    a = qryStd.ExecuteReader();
-                    // in teoria non può non avere righe, testa anche se ha azioni, se no è un rappr
-                    if (a.HasRows && a.Read())
+                    foreach (TVotazione votazione in votaz.lvot)
                     {
-                        c = new TAzionista();
-                        c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
-                        c.IDAzion = Convert.ToInt32(a["IdAzion"]);
-                        c.IDBadge = AIDBadge;
-                        c.ProgDeleg = 0;
-                        c.RaSo = a["Raso1"].ToString();
-                        // TODO: GEAS VERSIONE
-                        if (VTConfig.IsOrdinaria) // becca O, O/S o S/O
+                        int IDVotazione = votazione.IDVoto;
+
+                        // resetto la query
+                        qryStd.Parameters.Clear();
+
+                        // ok ora carico il titolare
+                        qryStd.CommandText = qry_DammiDirittiDiVoto_Titolare;
+                        qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        a = qryStd.ExecuteReader();
+                        // in teoria non può non avere righe, testa anche se ha azioni, se no è un rappr
+                        if (a.HasRows && a.Read())
                         {
-                            c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
-                            c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
-                            c.NVoti = c.Voti1 + c.Voti2;
-                        }
-                        else
-                        {
-                            if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria) // BECCA S
+                            TAzionista c = new TAzionista();
+                            c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
+                            c.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                            c.IDBadge = AIDBadge;
+                            c.ProgDeleg = 0;
+                            c.RaSo = a["Raso1"].ToString();
+                            // TODO: GEAS VERSIONE
+                            if (VTConfig.IsOrdinaria) // becca O, O/S o S/O
                             {
-                                c.Voti1 = Convert.ToDouble(a["VtStr1"]);
-                                c.Voti2 = Convert.ToDouble(a["VtStr2"]);
-                                c.NVoti = c.Voti1 + c.Voti2;   
+                                c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
+                                c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
+                                c.NVoti = c.Voti1 + c.Voti2;
                             }
-                        }
-                        c.Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
-                        c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
-                                         ? TListaAzionisti.VOTATO_DBASE
-                                         : TListaAzionisti.VOTATO_NO;
-                        c.IDVotaz = IDVotazione;
-
-                        // ok, ora se è titolare e ha azioni l'aggiungo alla lista
-                        if (c.NVoti > 0)
-                        //if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
-                            AAzionisti.Add(c);
-
-                        // poi lo salvo come titolare
-                        ATitolare_badge.CopyFrom(ref c);
-                    }
-                    a.Close();
-
-                    // resetto la query
-                    qryStd.Parameters.Clear();
-
-                    // ora carico i deleganti
-                    qryStd.CommandText = qry_DammiDirittiDiVoto_Deleganti;
-                    qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
-                    qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                    a = qryStd.ExecuteReader();
-                    if (a.HasRows)
-                    {
-                        while (a.Read())        // qua posso avere più righe
-                        {
-                            // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
-                            if ((Convert.ToInt32(a["VtOrd1"]) + Convert.ToInt32(a["VtStr1"]) +
-                                Convert.ToInt32(a["VtOrd2"]) + Convert.ToInt32(a["VtStr2"])) > 0)
+                            else
                             {
-                                c = new TAzionista();
-                                c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
-                                c.IDAzion = Convert.ToInt32(a["IdAzion"]);
-                                c.IDBadge = AIDBadge;
-                                c.ProgDeleg = Convert.ToInt32(a["ProgDeleg"]);
-                                c.RaSo = a["Raso1"].ToString();
-                                // TODO: GEAS VERSIONE
-                                if (VTConfig.IsOrdinaria)
+                                if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria) // BECCA S
                                 {
-                                    c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
-                                    c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
-                                    c.NVoti = c.Voti1 + c.Voti2;                                    
+                                    c.Voti1 = Convert.ToDouble(a["VtStr1"]);
+                                    c.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                    c.NVoti = c.Voti1 + c.Voti2;
                                 }
-                                else
+                            }
+                            c.Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
+                            c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
+                                ? TListaAzionisti.VOTATO_DBASE
+                                : TListaAzionisti.VOTATO_NO;
+                            c.IDVotaz = IDVotazione;
+
+                            // ok, ora se è titolare e ha azioni l'aggiungo alla lista
+                            if (c.NVoti > 0)
+                                //if ((Convert.ToInt32(a["AzOrd"]) + Convert.ToInt32(a["AzStr"])) > 0)
+                                AAzionisti.Add(c);
+
+                            // poi lo salvo come titolare
+                            ATitolare_badge.CopyFrom(ref c);
+                        }
+                        a.Close();
+
+                        // resetto la query
+                        qryStd.Parameters.Clear();
+
+                        // ora carico i deleganti
+                        qryStd.CommandText = qry_DammiDirittiDiVoto_Deleganti;
+                        qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
+                        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
+                        a = qryStd.ExecuteReader();
+                        if (a.HasRows)
+                        {
+                            while (a.Read()) // qua posso avere più righe
+                            {
+                                // anche qua devo testare se ha azioni 0, potrebbe essere un badge banana
+                                if ((Convert.ToInt32(a["VtOrd1"]) + Convert.ToInt32(a["VtStr1"]) +
+                                     Convert.ToInt32(a["VtOrd2"]) + Convert.ToInt32(a["VtStr2"])) > 0)
                                 {
-                                    if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
+                                    TAzionista c = new TAzionista();
+                                    c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
+                                    c.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                                    c.IDBadge = AIDBadge;
+                                    c.ProgDeleg = Convert.ToInt32(a["ProgDeleg"]);
+                                    c.RaSo = a["Raso1"].ToString();
+                                    // TODO: GEAS VERSIONE
+                                    if (VTConfig.IsOrdinaria)
                                     {
-                                        c.Voti1 = Convert.ToDouble(a["VtStr1"]);
-                                        c.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                        c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
+                                        c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
                                         c.NVoti = c.Voti1 + c.Voti2;
                                     }
+                                    else
+                                    {
+                                        if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
+                                        {
+                                            c.Voti1 = Convert.ToDouble(a["VtStr1"]);
+                                            c.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                            c.NVoti = c.Voti1 + c.Voti2;
+                                        }
+                                    }
+                                    c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
+                                    c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0
+                                        ? TListaAzionisti.VOTATO_DBASE
+                                        : TListaAzionisti.VOTATO_NO;
+                                    c.IDVotaz = IDVotazione;
+                                    // aggiungo
+                                    AAzionisti.Add(c);
                                 }
-                                c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
-                                c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
-                                c.IDVotaz = IDVotazione;
-                                // aggiungo
-                                AAzionisti.Add(c);
-                            }
-                        }   //while (a.Read()) 
-                    }   //if (a.HasRows)
-                    a.Close();
-
-                }   //for (int i = 0...
+                            } //while (a.Read()) 
+                        } //if (a.HasRows)
+                        a.Close();
+                    }   //foreach (TVotazione votazione in
+                }   //  foreach (TMainVotazione
                 result = true;
 
             }
@@ -1104,7 +1132,7 @@ namespace VotoTouch
             return result;
         }
 
-	    #endregion
+        #endregion
 
         // --------------------------------------------------------------------------
         //  CONTROLLO DELLA VOTAZIONE
@@ -1131,7 +1159,7 @@ namespace VotoTouch
             // testo la connessione
             if (!OpenConnection("SalvaTutto")) return 0;
 
-            qryStd = new SqlCommand {Connection = STDBConn};
+            qryStd = new SqlCommand { Connection = STDBConn };
             qryVoti = new SqlCommand { Connection = STDBConn };
             try
             {
@@ -1243,7 +1271,7 @@ namespace VotoTouch
             // testo la connessione
             if (!OpenConnection("SalvaTuttoInGeas")) return 0;
 
-            qryStd = new SqlCommand {Connection = STDBConn};
+            qryStd = new SqlCommand { Connection = STDBConn };
             qryVoti = new SqlCommand { Connection = STDBConn };
             try
             {
@@ -1302,12 +1330,12 @@ namespace VotoTouch
                     // 3 . ok ora salvo i singoli voti in geas_diff
                     foreach (TAzionista az in AAzionisti.Azionisti)
                     {
-                                               
+
                         foreach (TVotoEspresso vt in az.VotiEspressi)
                         {
                             double ASi = 0, VSi = 0, PSi = 0, ANo = 0, VNo = 0, PNo = 0, AAst = 0, VAst = 0,
                                    PAst = 0, ANv = 0, VNv = 0, PNv = 0;
-                            
+
                             int TipoVoto = vt.VotoExp_IDScheda;
 
                             switch (vt.VotoExp_IDScheda)
@@ -1451,14 +1479,14 @@ namespace VotoTouch
                 // possono essere nulli
                 if (VTConfig.IsOrdinaria)
                     result = ab.IsDBNull(ab.GetOrdinal("AzOrd")) ? 0 : Convert.ToInt32(ab["AzOrd"]);
-                    //c.NAzioni = Convert.ToDouble(a["AzOrd"]);
+                //c.NAzioni = Convert.ToDouble(a["AzOrd"]);
                 else
                 {
                     if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
                         result = ab.IsDBNull(ab.GetOrdinal("AzStr")) ? 0 : Convert.ToInt32(ab["AzStr"]);
                     //c.NAzioni = Convert.ToDouble(a["AzStr"]);
                 }
-                
+
                 //if (ab.IsDBNull(ab.GetOrdinal("AzOrd"))) AzO = 0;
                 //else AzO = Convert.ToInt32(ab["AzOrd"]);
 
@@ -1502,7 +1530,7 @@ namespace VotoTouch
                     return -1;
                 }
             }
-            
+
             qryStd1 = new SqlCommand();
             qryStd1.Connection = STDBConn;
             try
@@ -1519,7 +1547,7 @@ namespace VotoTouch
                     else
                     {
                         bool pippo = Convert.ToBoolean(ab["VotoAperto"]);
-                        if (pippo) result = 1; else  result = 0;
+                        if (pippo) result = 1; else result = 0;
                     }
                 }
                 ab.Close();
@@ -1664,13 +1692,13 @@ namespace VotoTouch
         #endregion
 
         // --------------------------------------------------------------
-		//  METODI DI CONFIGURAZIONE
-		// --------------------------------------------------------------
-		
-		// carica la configurazione 
+        //  METODI DI CONFIGURAZIONE
+        // --------------------------------------------------------------
+
+        // carica la configurazione 
         override public Boolean CaricaConfig()
-		{
-			string ss = "", GeasFileName = "";
+        {
+            string ss = "", GeasFileName = "";
 
             // verifica se è locale oppure no
             if (ADataLocal)
@@ -1690,7 +1718,7 @@ namespace VotoTouch
 
             // leggo cosa c'è dentro
             try
-            {               
+            {
                 StreamReader file1 = File.OpenText(GeasFileName);
                 ss = file1.ReadLine();
                 // testo se il file è giusto
@@ -1715,7 +1743,7 @@ namespace VotoTouch
             {
                 Logging.WriteToLog("<dberror> fn CaricaConfig: " + VTConfig.NomeTotem + " err: " + e.Message);
                 return false;
-            }		
+            }
 
         }
 
@@ -1729,7 +1757,7 @@ namespace VotoTouch
 
             SqlDataReader a;
             string bdg = "0";
- 
+
             badgelist.Clear();
 
             // testo la connessione
@@ -1766,5 +1794,5 @@ namespace VotoTouch
             return true;
         }
 
-	}
+    }
 }

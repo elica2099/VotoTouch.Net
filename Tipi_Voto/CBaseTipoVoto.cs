@@ -41,7 +41,7 @@ namespace VotoTouch
         //  FUNZIONI VIRTUALI
         // --------------------------------------------------------------------------
 
-        virtual public void GetTouchVoteZone(TNewVotazione AVotazione) //ref ArrayList Tz)
+        public virtual void GetTouchVoteZone(TVotazione AVotazione) //ref ArrayList Tz)
         {
             // l'implementazione è nelle varie classi
 
@@ -57,7 +57,7 @@ namespace VotoTouch
             }
         }
 
-        virtual public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita) //, ref ArrayList Tz
+        public virtual void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita) //, ref ArrayList Tz
         {
             // l'implementazione è nelle varie classi
 
@@ -74,7 +74,7 @@ namespace VotoTouch
         }
 
 
-        virtual public void CallbackPaintTouch(object sender, PaintEventArgs e)
+        public virtual void CallbackPaintTouch(object sender, PaintEventArgs e)
         {
             // ok questo metodo viene chiamato da paint della finestra principale 
             // nel caso in cui debba fare dei disegni speciali
@@ -84,7 +84,7 @@ namespace VotoTouch
         //  SCHEDE SPECIALI
         // --------------------------------------------------------------
 
-        protected void MettiSchedeSpeciali(TNewVotazione AVotazione)
+        protected void MettiSchedeSpeciali(TVotazione AVotazione)
         {
             TTZone a;
             

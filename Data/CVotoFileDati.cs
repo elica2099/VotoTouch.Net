@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace VotoTouch
 {
@@ -18,12 +19,12 @@ namespace VotoTouch
         //  METODI DATABASE
         // --------------------------------------------------------------------------
 
-        override public object DBConnect()
+        public override object DBConnect()
         {
             return this;
         }
 
-        override public object DBDisconnect()
+        public override object DBDisconnect()
         {
             return this;
         }
@@ -153,7 +154,7 @@ namespace VotoTouch
 
         #region CARICAMENTO DATI VOTAZIONI
 
-        override public bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
+        public override bool CaricaVotazioniDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             //int z;
             DataTable dt = new DataTable();
@@ -162,74 +163,106 @@ namespace VotoTouch
 
             foreach (DataRow a in dt.Rows)
             {
-                TMainVotazione v = new TMainVotazione();
-
-                v.TipoVoto = VSDecl.MODO_VOTO_NORMALE;
-
-                v.vot.IDVoto = Convert.ToInt32(a["NumVotaz"]);
-                v.vot.IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]);
-                v.vot.TipoVoto = Convert.ToInt32(a["TipoVotaz"]);
-                v.vot.TipoSubVoto = 0;
-                v.vot.Descrizione = a["Argomento"].ToString();
-                v.vot.SkBianca = Convert.ToBoolean(a["SchedaBianca"]);
-                v.vot.SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]);
-                v.vot.SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]);
-                v.vot.SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]);
-                v.vot.SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]);
-                //PreIntermezzo = false,
-                v.vot.MaxScelte = Convert.ToInt32(a["MaxScelte"]);
-                v.vot.AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"]);
-                
-                AVotazioni.Add(v);
+                TVotazione votaz = new TVotazione
+                {
+                    IDVoto = Convert.ToInt32(a["NumVotaz"]),
+                    IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
+                    TipoVoto = Convert.ToInt32(a["TipoVotaz"]),
+                    TipoSubVoto = 0,
+                    Descrizione = a["Argomento"].ToString(),
+                    SkBianca = Convert.ToBoolean(a["SchedaBianca"]),
+                    SkNonVoto = Convert.ToBoolean(a["SchedaNonVoto"]),
+                    SkContrarioTutte = Convert.ToBoolean(a["SchedaContrarioTutte"]),
+                    SkAstenutoTutte = Convert.ToBoolean(a["SchedaAstenutoTutte"]),
+                    SelezionaTuttiCDA = Convert.ToBoolean(a["SelezTuttiCDA"]),
+                    //PreIntermezzo = false,
+                    MaxScelte = Convert.ToInt32(a["MaxScelte"]),
+                    AbilitaBottoneUscita = Convert.ToBoolean(a["AbilitaBottoneUscita"])
+                };
+                int idgr = votaz.IDGruppoVoto;
+                // testo se il gruppo è 0, cioè un voto normale
+                if (idgr == 0)
+                {
+                    // se il gruppo è 0 mi comporto normalmente
+                    TMainVotazione v = new TMainVotazione
+                    {
+                        ModoVoto = VSDecl.MODO_VOTO_NORMALE,
+                        IDGruppoVoto = 0,
+                    };
+                    v.lvot.Add(votaz);
+                    AVotazioni.Add(v);
+                }
+                else
+                {
+                    // se il gruppo è > 0 vuol dire che la votazione fa parte di un gruppo
+                    // per prima cosa, testo nella lista se il gruppo esiste, se si aggiungo la votazione a questo gruppo
+                    // se no, devo crearlo all'interno di TMainVotazione e aggiungerlo alla lista
+                    TMainVotazione gvot = AVotazioni.First(v => v.IDGruppoVoto == idgr);
+                    if (gvot != null)
+                    {
+                        // devo aggiungerlo
+                        gvot.lvot.Add(votaz);
+                    }
+                    else
+                    {
+                        // devo creare 
+                        TMainVotazione vg = new TMainVotazione();
+                        vg.ModoVoto = VSDecl.MODO_VOTO_GRUPPO;
+                        vg.IDGruppoVoto = idgr;
+                        vg.lvot.Add(votaz);
+                        AVotazioni.Add(vg);
+                    }
+                }
             }
-
             dt.Dispose();
 
             return true;
         }
 
-        override public bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
+        public override bool CaricaListeDaDatabase(ref List<TMainVotazione> AVotazioni)
         {
             DataTable dt = new DataTable();
-            TNewLista Lista;
 
             dt.ReadXml(AData_path + "VS_Liste_Totem.xml");
             string ASort = "idlista asc";
             // cicla lungo le votazioni e carica le liste
-            foreach (TMainVotazione votaz in AVotazioni)
+            foreach (TMainVotazione mvotaz in AVotazioni)
             {
-                // faccio un sorting delle liste
-                switch (votaz.TipoVoto)
+                foreach (TVotazione votazione in mvotaz.lvot)
                 {
-                    // se è lista ordino per l'id
-                    case VSDecl.VOTO_LISTA:
-                        ASort = "idlista asc";
-                        break;
-                    // se è candidato ordino in modo alfabetico
-                    case VSDecl.VOTO_CANDIDATO:
-                    case VSDecl.VOTO_CANDIDATO_SING:
-                    case VSDecl.VOTO_MULTICANDIDATO:
-                        ASort = "PresentatoDaCdA desc, OrdineCarica, DescrLista asc";
-                        break;
-                }
-
-                foreach (DataRow riga in dt.Select("NumVotaz = " +
-                    votaz.vot.IDVoto.ToString(), ASort))
-                {
-                    Lista = new TNewLista
+                    // faccio un sorting delle liste
+                    switch (votazione.TipoVoto)
                     {
-                        NumVotaz = Convert.ToInt32(riga["NumVotaz"]),
-                        IDLista = Convert.ToInt32(riga["idLista"]),
-                        IDScheda = Convert.ToInt32(riga["idScheda"]),
-                        DescrLista = riga["DescrLista"].ToString(),
-                        TipoCarica = Convert.ToInt32(riga["TipoCarica"]),
-                        PresentatodaCDA = Convert.ToBoolean(riga["PresentatodaCDA"]),
-                        Presentatore = riga["Presentatore"].ToString(),
-                        Capolista = riga["Capolista"].ToString(),
-                        ListaElenco = riga["ListaElenco"].ToString()
-                    };
-                    // aggiungo
-                    votaz.vot.Liste.Add(Lista);
+                        // se è lista ordino per l'id
+                        case VSDecl.VOTO_LISTA:
+                            ASort = "idlista asc";
+                            break;
+                        // se è candidato ordino in modo alfabetico
+                        case VSDecl.VOTO_CANDIDATO:
+                        case VSDecl.VOTO_CANDIDATO_SING:
+                        case VSDecl.VOTO_MULTICANDIDATO:
+                            ASort = "PresentatoDaCdA desc, OrdineCarica, DescrLista asc";
+                            break;
+                    }
+
+                    foreach (DataRow riga in dt.Select("NumVotaz = " +
+                                                       votazione.IDVoto.ToString(), ASort))
+                    {
+                        TNewLista Lista = new TNewLista
+                        {
+                            NumVotaz = Convert.ToInt32(riga["NumVotaz"]),
+                            IDLista = Convert.ToInt32(riga["idLista"]),
+                            IDScheda = Convert.ToInt32(riga["idScheda"]),
+                            DescrLista = riga["DescrLista"].ToString(),
+                            TipoCarica = Convert.ToInt32(riga["TipoCarica"]),
+                            PresentatodaCDA = Convert.ToBoolean(riga["PresentatodaCDA"]),
+                            Presentatore = riga["Presentatore"].ToString(),
+                            Capolista = riga["Capolista"].ToString(),
+                            ListaElenco = riga["ListaElenco"].ToString()
+                        };
+                        // aggiungo
+                        votazione.Liste.Add(Lista);
+                    }
                 }
             }
 
@@ -280,20 +313,21 @@ namespace VotoTouch
 
         #region CaricaDirittidiVotoDaDatabase
 
-        override public bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
+        public override bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
                                                   ref TAzionista ATitolare_badge, ref TListaVotazioni AVotazioni)
         {
-            int IDVotazione = -1;
             AAzionisti.Clear();
             TAzionista a;
 
-            foreach (TMainVotazione voto in AVotazioni.Votazioni)
+            foreach (TMainVotazione mvotaz in AVotazioni.Votazioni)
             {
-                IDVotazione = voto.vot.IDVoto;
-                // un voto
-                if (AIDBadge == 1000)
+                foreach (TVotazione votazione in mvotaz.lvot)
                 {
-                    a = new TAzionista
+                    int IDVotazione = votazione.IDVoto;
+                    // un voto
+                    if (AIDBadge == 1000)
+                    {
+                        a = new TAzionista
                         {
                             CoAz = "10000",
                             IDAzion = 10000,
@@ -305,14 +339,14 @@ namespace VotoTouch
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
-                    AAzionisti.Add(a);
-                    // poi lo salvo come titolare
-                    ATitolare_badge.CopyFrom(ref a);
-                }
-                // tre voti
-                if (AIDBadge == 1001)
-                {
-                    a = new TAzionista
+                        AAzionisti.Add(a);
+                        // poi lo salvo come titolare
+                        ATitolare_badge.CopyFrom(ref a);
+                    }
+                    // tre voti
+                    if (AIDBadge == 1001)
+                    {
+                        a = new TAzionista
                         {
                             CoAz = "10001",
                             IDAzion = 10001,
@@ -324,11 +358,11 @@ namespace VotoTouch
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
-                    AAzionisti.Add(a);
-                    // poi lo salvo come titolare
-                    ATitolare_badge.CopyFrom(ref a);
+                        AAzionisti.Add(a);
+                        // poi lo salvo come titolare
+                        ATitolare_badge.CopyFrom(ref a);
 
-                    a = new TAzionista
+                        a = new TAzionista
                         {
                             CoAz = "10002",
                             IDAzion = 10002,
@@ -340,9 +374,9 @@ namespace VotoTouch
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
-                    AAzionisti.Add(a);
+                        AAzionisti.Add(a);
 
-                    a = new TAzionista
+                        a = new TAzionista
                         {
                             CoAz = "10003",
                             IDAzion = 10003,
@@ -354,24 +388,25 @@ namespace VotoTouch
                             IDVotaz = IDVotazione,
                             HaVotato = TListaAzionisti.VOTATO_NO
                         };
-                    AAzionisti.Add(a);
+                        AAzionisti.Add(a);
+                    }
                 }
             }
 
             return true;
         }
 
-        override public int SalvaTutto(int AIDBadge, ref TListaAzionisti FAzionisti)
+        public override int SalvaTutto(int AIDBadge, ref TListaAzionisti FAzionisti)
         {
             return 0;
         }
 
-        override public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
+        public override int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
         {
             return 0;
         }
 
-        override public int NumAzTitolare(int AIDBadge)
+        public override int NumAzTitolare(int AIDBadge)
         {
             return 0;
         }
