@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 using System.Media;
 
@@ -137,6 +138,63 @@ namespace VotoTouch
                     VotoEspressoStrNote = "";
                 }
             }
+            // a questo punto vado in conferma con la stessa CurrVote
+            Stato = TAppStato.ssvVotoConferma;
+            CambiaStato();
+        }
+
+        public void onPremutoVotoValidoGruppo(object source, int VParam, ref List<int> voti)
+        {
+            // in realtà corrisponde all'AVANTI dei gruppi
+            if (voti == null) return;  // in teoria non serve
+            // devo aggiungere ai voti espressi, ma uso il valore dell'idscheda invece che l'indice della lista
+            VotoEspressoStr = "";
+            VotoEspressoStrUp = "";      // "Scheda Bianca";
+            foreach (int voto in voti)
+            {
+                // cerco quale lista è
+                TNewLista li = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == voto);
+                if (li != null)
+                {
+                    TVotoEspresso2 vt = new TVotoEspresso2
+                    {
+                        NumVotaz = li.NumVotaz,
+                        NumSubVotaz = li.NumSubVotaz,
+                        TipoCarica = li.TipoCarica,
+                        VotoExp_IDScheda = li.IDScheda,
+                    };
+                    FVotiExpr.Add(vt);
+                    // ora aggiungo il candidato
+                    VotoEspressoStr += li.ListaElenco + ";";
+                    VotoEspressoStrUp += li.DescrLista + ";";
+                    VotoEspressoStrNote = "";
+                }
+            }
+
+            //TNewLista a;
+            //int ct = Votazioni.VotoCorrente.Liste.Count;
+            //VotoEspressoStr = "";
+            //VotoEspressoStrUp = "";      // "Scheda Bianca";
+            //// ok, ora riempio la collection di voti
+            //for (int i = 0; i < voti.Count; i++)
+            //{
+            //    if (voti[i] >= 0 && voti[i] < ct)
+            //    {
+            //        a = Votazioni.VotoCorrente.Liste[voti[i]];
+            //        TVotoEspresso2 vt = new TVotoEspresso2
+            //        {
+            //            NumVotaz = a.NumVotaz,
+            //            NumSubVotaz = a.NumSubVotaz,
+            //            TipoCarica = a.TipoCarica,
+            //            VotoExp_IDScheda = a.IDScheda,
+            //        };
+            //        FVotiExpr.Add(vt);
+            //        // ora aggiungo il candidato
+            //        VotoEspressoStr += a.ListaElenco + ";";
+            //        VotoEspressoStrUp += a.DescrLista + ";";
+            //        VotoEspressoStrNote = "";
+            //    }
+            //}
             // a questo punto vado in conferma con la stessa CurrVote
             Stato = TAppStato.ssvVotoConferma;
             CambiaStato();

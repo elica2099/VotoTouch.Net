@@ -604,6 +604,9 @@ namespace VotoTouch
                         case TTipoVoto.stvLista: // VSDecl.VOTO_LISTA:
                             qryStd.CommandText += " order by idlista";
                             break;
+                        case TTipoVoto.stvGruppo:
+                            qryStd.CommandText += " order by NumSubVotaz, idlista";
+                            break;
                         // se è candidato ordino in modo alfabetico
                         case TTipoVoto.stvCandidato: // VSDecl.VOTO_CANDIDATO:
                         case TTipoVoto.stvCandidatoSing: // VSDecl.VOTO_CANDIDATO_SING:

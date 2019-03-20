@@ -212,5 +212,19 @@ namespace VotoTouch
         #endregion
 
 
+        protected bool checkEven(int AN)
+        {
+            if (AN % 2 == 0)
+            {
+                //Console.WriteLine("Number is even")
+                return true;
+            }
+            else
+            {
+                //Console.WriteLine("Number is odd")
+                return false;
+            }
+        }
+
     }
 }

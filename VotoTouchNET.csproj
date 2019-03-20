@@ -254,6 +254,9 @@
     <EmbeddedResource Include="Data\Query\MettiBadgePresenteGeas.sql" />
     <Content Include="Resources\barcode_red.png" />
     <EmbeddedResource Include="Resources\check.png" />
+    <EmbeddedResource Include="Resources\btn_tondo.png" />
+    <EmbeddedResource Include="Resources\btn_tondo_check.png" />
+    <EmbeddedResource Include="Resources\check_tondo.png" />
     <Content Include="vote.ico" />
     <EmbeddedResource Include="Resources\tab_rev.png" />
     <EmbeddedResource Include="Resources\tab.png" />
@@ -287,6 +290,7 @@
     <EmbeddedResource Include="SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="Tipi_Voto\CTipoVoto_Custom_Group_Bper2019.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

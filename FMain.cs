@@ -330,6 +330,7 @@ namespace VotoTouch
             oVotoTouch.PremutoBottoneUscita += new ehPremutoBottoneUscita(onPremutoBottoneUscita);
             oVotoTouch.PremutoContrarioTutti += new ehPremutoContrarioTutti(onPremutoContrarioTutti);
             oVotoTouch.PremutoAstenutoTutti += new ehPremutoAstenutoTutti(onPremutoAstenutoTutti);
+		    oVotoTouch.PremutoGruppiAvanti += new ehPremutoGruppiAvanti(onPremutoVotoValidoGruppo);
 
             // classe del tema
             oVotoTheme = new CVotoTheme();
@@ -529,7 +530,9 @@ namespace VotoTouch
                         oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
                 }
                 // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
-                if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato) // VSDecl.VOTO_MULTICANDIDATO)
+                if (Stato == TAppStato.ssvVoto && 
+                    (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato || 
+                        Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvGruppo)) // VSDecl.VOTO_MULTICANDIDATO)
                 {
                     // paint delle label Aggiuntive
                     oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
@@ -943,7 +946,8 @@ namespace VotoTouch
             // le votazioni
             foreach (TNewVotazione fVoto in Votazioni.Votazioni)
             {
-                lbVersion.Items.Add("Voto: " + fVoto.IDVoto.ToString() + ", Tipo: " +
+                lbVersion.Items.Add("Voto: " + fVoto.IDVoto.ToString() +
+                    ", Tipo: " +
                     fVoto.TipoVoto.ToString() + ", " + fVoto.Descrizione);
                 lbVersion.Items.Add("   NListe: " + fVoto.NListe + ", MaxScelte: " +
                     fVoto.MaxScelte);
@@ -953,7 +957,9 @@ namespace VotoTouch
                 for (z = 0; z < fVoto.NListe; z++)
                 {
                     a = (TNewLista)fVoto.Liste[z];
-                    lbVersion.Items.Add("    Lista:" + a.IDLista.ToString() + ", IdSk:" +
+                    lbVersion.Items.Add("    Lista:" + a.IDLista.ToString() + 
+                        ", idSubV: " + a.NumSubVotaz + 
+                        ", IdSk:" +
                         a.IDScheda.ToString() + ", " + a.DescrLista + ", p" +
                         a.Pag.ToString() + " " + a.PagInd + "  cda: " + a.PresentatodaCDA.ToString());
                 }
