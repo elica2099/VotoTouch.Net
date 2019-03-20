@@ -402,6 +402,7 @@ namespace VotoTouch
 
         public void PaintlabelNSelezioni(object sender, PaintEventArgs e, TNewVotazione vt, bool Candidato)
         {
+            return;
             int nsel = vt.NMultiSelezioni;
             Brush myBrush1;
             Font myFont2 = new System.Drawing.Font("Arial", 50, FontStyle.Bold);

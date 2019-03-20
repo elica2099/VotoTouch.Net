@@ -148,6 +148,7 @@ namespace VotoTouch
             // in realtà corrisponde all'AVANTI dei gruppi
             if (voti == null) return;  // in teoria non serve
             // devo aggiungere ai voti espressi, ma uso il valore dell'idscheda invece che l'indice della lista
+            int vt1 = 0, vt2 = 0;
             VotoEspressoStr = "";
             VotoEspressoStrUp = "";      // "Scheda Bianca";
             foreach (int voto in voti)
@@ -156,48 +157,60 @@ namespace VotoTouch
                 TNewLista li = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == voto);
                 if (li != null)
                 {
-                    TVotoEspresso2 vt = new TVotoEspresso2
-                    {
-                        NumVotaz = li.NumVotaz,
-                        NumSubVotaz = li.NumSubVotaz,
-                        TipoCarica = li.TipoCarica,
-                        VotoExp_IDScheda = li.IDScheda,
-                    };
-                    FVotiExpr.Add(vt);
-                    // ora aggiungo il candidato
+                    if (li.NumSubVotaz == 1) vt1++;
+                    if (li.NumSubVotaz == 2) vt2++;
+                    FVotiExpr.Add(getVoto(li));
+                    //TVotoEspresso2 vt = new TVotoEspresso2
+                    //{
+                    //    NumVotaz = li.NumVotaz,
+                    //    NumSubVotaz = li.NumSubVotaz,
+                    //    TipoCarica = li.TipoCarica,
+                    //    VotoExp_IDScheda = li.IDScheda,
+                    //};
+                    //FVotiExpr.Add(vt);
+                    //// ora aggiungo il candidato
                     VotoEspressoStr += li.ListaElenco + ";";
                     VotoEspressoStrUp += li.DescrLista + ";";
                     VotoEspressoStrNote = "";
                 }
             }
-
-            //TNewLista a;
-            //int ct = Votazioni.VotoCorrente.Liste.Count;
-            //VotoEspressoStr = "";
-            //VotoEspressoStrUp = "";      // "Scheda Bianca";
-            //// ok, ora riempio la collection di voti
-            //for (int i = 0; i < voti.Count; i++)
-            //{
-            //    if (voti[i] >= 0 && voti[i] < ct)
-            //    {
-            //        a = Votazioni.VotoCorrente.Liste[voti[i]];
-            //        TVotoEspresso2 vt = new TVotoEspresso2
-            //        {
-            //            NumVotaz = a.NumVotaz,
-            //            NumSubVotaz = a.NumSubVotaz,
-            //            TipoCarica = a.TipoCarica,
-            //            VotoExp_IDScheda = a.IDScheda,
-            //        };
-            //        FVotiExpr.Add(vt);
-            //        // ora aggiungo il candidato
-            //        VotoEspressoStr += a.ListaElenco + ";";
-            //        VotoEspressoStrUp += a.DescrLista + ";";
-            //        VotoEspressoStrNote = "";
-            //    }
-            //}
+            // se però non ci sono voti o ce ne è solo uno devo mettere il non voglio votare
+            if (vt1 == 0)
+            {
+                TNewLista li1 = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == 100);
+                if (li1 != null)
+                {
+                    FVotiExpr.Add(getVoto(li1));
+                    VotoEspressoStr += li1.ListaElenco + ";";
+                    VotoEspressoStrUp += li1.DescrLista + ";";
+                }
+            }
+            // anche il secondo
+            if (vt2 == 0)
+            {
+                TNewLista li2 = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == 200);
+                if (li2 != null)
+                {
+                    FVotiExpr.Add(getVoto(li2));
+                    VotoEspressoStr += li2.ListaElenco + ";";
+                    VotoEspressoStrUp += li2.DescrLista + ";";
+                }
+            }
             // a questo punto vado in conferma con la stessa CurrVote
             Stato = TAppStato.ssvVotoConferma;
             CambiaStato();
+        }
+
+        private TVotoEspresso2 getVoto(TNewLista li)
+        {
+            TVotoEspresso2 vt = new TVotoEspresso2
+            {
+                NumVotaz = li.NumVotaz,
+                NumSubVotaz = li.NumSubVotaz,
+                TipoCarica = li.TipoCarica,
+                VotoExp_IDScheda = li.IDScheda,
+            };
+            return vt;
         }
 
         public void onPremutoVotoMulti(object source, int VParam)
