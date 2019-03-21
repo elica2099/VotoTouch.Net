@@ -514,7 +514,7 @@ namespace VotoTouch
 
         #region Caricamento dati votazioni
 
-        override public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        public override bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
             SqlDataReader a = null;
             SqlCommand qryStd = null;
@@ -576,7 +576,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
+        public override bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
             SqlDataReader a = null;
             SqlCommand qryStd = null;
@@ -1105,7 +1105,7 @@ namespace VotoTouch
         #region Salvataggio Voti
 
         //override public int SalvaTutto(int AIDBadge, TTotemConfig ATotCfg, ref TListaAzionisti AAzionisti)
-        override public int SalvaTutto(int AIDBadge, ref TListaAzionisti AAzionisti)
+        public override int SalvaTutto(int AIDBadge, ref TListaAzionisti AAzionisti)
         {
             // questa funzione viene chhiamata alla fine della votazione ed effettua le operazioni 
             // IN UN UNICA TRANSAZIONE:
@@ -1181,9 +1181,11 @@ namespace VotoTouch
                             // salvo nel db
                             qryVoti.Parameters.Clear();
                             qryVoti.CommandText = @"insert into VS_Intonse_Totem  with (rowlock) 
-                                                   (NumVotaz, NumSubVotaz, idTipoScheda, idSeggio, voti, voti2, Badge, ProgDeleg, IdCarica) 
+                                                   (NumVotaz, NumSubVotaz, idTipoScheda, idSeggio, voti, voti2, 
+                                                        Badge, ProgDeleg, IdCarica, idAzion) 
                                                    VALUES 
-                                                   (@NumVotaz, @NumSubVotaz, @idTipoScheda, @idSeggio, @voti, @voti2, @Badge, @ProgDeleg, @IdCarica) ";
+                                                   (@NumVotaz, @NumSubVotaz, @idTipoScheda, @idSeggio, @voti, @voti2, 
+                                                        @Badge, @ProgDeleg, @IdCarica, @idAzion) ";
                             qryVoti.Parameters.Add("@NumVotaz", System.Data.SqlDbType.Int).Value = az.IDVotaz;
                             qryVoti.Parameters.Add("@NumSubVotaz", System.Data.SqlDbType.Int).Value = vt.NumSubVotaz;
                             qryVoti.Parameters.Add("@idTipoScheda", System.Data.SqlDbType.Int).Value = vt.VotoExp_IDScheda;
@@ -1193,6 +1195,7 @@ namespace VotoTouch
                             qryVoti.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge_OK.ToString();
                             qryVoti.Parameters.Add("@ProgDeleg", System.Data.SqlDbType.Int).Value = az.ProgDeleg;
                             qryVoti.Parameters.Add("@IdCarica", System.Data.SqlDbType.Int).Value = vt.TipoCarica;
+                            qryVoti.Parameters.Add("@idAzion", System.Data.SqlDbType.Int).Value = az.IDAzion;
                             qryVoti.ExecuteNonQuery();
                         }
                     }
@@ -1222,7 +1225,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
+        public override int SalvaTuttoInGeas(int AIDBadge, ref TListaAzionisti AAzionisti)
         {
             SqlCommand qryStd = null, qryVoti = null;
             SqlTransaction traStd = null;
@@ -1661,7 +1664,7 @@ namespace VotoTouch
 		// --------------------------------------------------------------
 		
 		// carica la configurazione 
-        override public Boolean CaricaConfig()
+        public override Boolean CaricaConfig()
 		{
 			string ss = "", GeasFileName = "";
 
@@ -1716,7 +1719,7 @@ namespace VotoTouch
         //  METODI Di TEST
         // --------------------------------------------------------------------------
 
-        override public bool DammiTuttiIBadgeValidi(ref ArrayList badgelist)
+        public override bool DammiTuttiIBadgeValidi(ref ArrayList badgelist)
         {
             if (badgelist == null) return false;
 
