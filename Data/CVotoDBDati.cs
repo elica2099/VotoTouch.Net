@@ -78,7 +78,7 @@ namespace VotoTouch
 
         #region Metodi Database
 
-        override public object DBConnect()
+        public override object DBConnect()
         {
             // connessione al DB in funzione dei parametri che ci sono in TSTConfig
             STDBConn.ConnectionString = DammiStringaConnessione();
@@ -95,7 +95,7 @@ namespace VotoTouch
             }
         }
 
-        override public object DBDisconnect()
+        public override object DBDisconnect()
         {
             // disconnessione al DB
             STDBConn.Close();
@@ -103,7 +103,7 @@ namespace VotoTouch
             return STDBConn;
         }
 
-        override public string DammiStringaConnessione()
+        public override string DammiStringaConnessione()
         {
             // devo aggiungere dei controlli
             // compone la stringa di connessione in funzione di TSTConfig
@@ -153,7 +153,7 @@ namespace VotoTouch
 
         #region Lettura/Scrittura Configurazione
 
-        override public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
+        public override int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
             // mi dice la lunghezza del badge e il codice impianto per il lettore
             SqlDataReader a;
@@ -221,10 +221,8 @@ namespace VotoTouch
             return Tok;
         }
 
-        override public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
+        public override int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
-            SqlDataReader a;
-
             // testo la connessione
             if (!OpenConnection("DammiConfigTotem")) return 0;
             
@@ -243,7 +241,7 @@ namespace VotoTouch
 
             try
             {
-                a = qryStd.ExecuteReader();
+                SqlDataReader a = qryStd.ExecuteReader();
                 // se c'è il record
                 if (a.HasRows)
                 {
@@ -329,7 +327,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
+        public override int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
             SqlDataReader a;
             int result = 0;
@@ -378,6 +376,8 @@ namespace VotoTouch
                     VTConfig.AbilitaDirittiNonVoglioVotare = Convert.ToBoolean(a["AbilitaDirittiNonVoglioVotare"]);
                     // AbilitaDifferenziatoSuRichiesta
                     VTConfig.AbilitaDifferenziatoSuRichiesta = Convert.ToBoolean(a["AbilitaDifferenziatoSuRichiesta"]);
+                    // AKCheckSubVote
+                    VTConfig.AKCheckSubVote = Convert.ToBoolean(a["AKCheckSubVote"]);
 
                     // qua dovrei in teoria controllare che vada bene
                     // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre
@@ -388,18 +388,6 @@ namespace VotoTouch
                     // ok, ora il tasto ricomincia da capo
                     //TotCfg.TastoRicominciaDaCapo = Convert.ToBoolean(a["TastoRicominciaDaCapo"]);
                 }
-                //else
-                //{
-                //    VTConfig.SalvaLinkVoto = true;
-                //    VTConfig.SalvaVotoNonConfermato = false;
-                //    VTConfig.IDSchedaUscitaForzata = VSDecl.VOTO_NONVOTO;
-                //    VTConfig.ModoPosizioneAreeTouch = VSDecl.MODO_POS_TOUCH_NORMALE;
-                //    VTConfig.ControllaPresenze = VSDecl.PRES_CONTROLLA;
-                //    VTConfig.AbilitaBottoneUscita = false;
-                //    VTConfig.AttivaAutoRitornoVoto = false;
-                //    VTConfig.TimeAutoRitornoVoto = VSDecl.TIME_AUTOCLOSEVOTO;
-                //    VTConfig.AbilitaDirittiNonVoglioVotare = false;
-                //}
                 // chiudo
                 a.Close();
 
@@ -422,7 +410,7 @@ namespace VotoTouch
             return result;
         }
         
-        override public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
+        public override int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             // testo la connessione
             if (!OpenConnection("SalvaConfigurazione")) return 0;
@@ -465,7 +453,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
+        public override int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
         {
             // testo la connessione
             if (!OpenConnection("SalvaConfigurazionePistolaBarcode")) return 0;
@@ -516,9 +504,6 @@ namespace VotoTouch
 
         public override bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TNewVotazione v;
             bool result = false; //, naz;
 
             // testo la connessione
@@ -526,19 +511,19 @@ namespace VotoTouch
 
             AVotazioni.Clear();
 
-            qryStd = new SqlCommand { Connection = STDBConn };
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
                 // ok ora carico le votazioni
                 qryStd.Parameters.Clear();
                 qryStd.CommandText = qry_DammiVotazioniTotem;
                 //qryStd.CommandText =   "SELECT * from VS_MatchVot_Totem with (NOLOCK)  where GruppoVotaz < 999 order by NumVotaz";
-                a = qryStd.ExecuteReader();
+                SqlDataReader a = qryStd.ExecuteReader();
                 if (a.HasRows)
                 {
                     while (a.Read())
                     {
-                        v = new TNewVotazione
+                        TNewVotazione v = new TNewVotazione
                         {
                             IDVoto = Convert.ToInt32(a["NumVotaz"]),
                             IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]),
@@ -578,15 +563,12 @@ namespace VotoTouch
 
         public override bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TNewLista l;
             bool result = false; //, naz;
 
             // testo la connessione
-            if (!OpenConnection("CaricaVotazioniDaDatabase")) return false;
+            if (!OpenConnection("CaricaListeDaDatabase")) return false;
 
-            qryStd = new SqlCommand { Connection = STDBConn };
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
                 // TODO: CaricaListeDaDatabase da vedere in futuro di fare un solo ciclo di caricamento senza ordine
@@ -618,12 +600,12 @@ namespace VotoTouch
                             break;
                     }
                     qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votaz.IDVoto;
-                    a = qryStd.ExecuteReader();
+                    SqlDataReader a = qryStd.ExecuteReader();
                     if (a.HasRows)
                     {
                         while (a.Read())
                         {
-                            l = new TNewLista
+                            TNewLista l = new TNewLista
                             {
                                 NumVotaz = Convert.ToInt32(a["NumVotaz"]),
                                 NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]),
@@ -648,7 +630,7 @@ namespace VotoTouch
                     qryStd.Parameters.Clear();
                     qryStd.CommandText = @"select distinct IDscheda, descrLista from VS_Liste_Totem
                                             where IdScheda = 226 or IdScheda = 227 ";
-                     a = qryStd.ExecuteReader();
+                    a = qryStd.ExecuteReader();
                     if (a.HasRows)
                     {
                         while (a.Read())
@@ -662,7 +644,6 @@ namespace VotoTouch
                         }
                     }
                     a.Close();
-
                 }
                 result = true;
             }
@@ -681,16 +662,65 @@ namespace VotoTouch
             return result;
         }
 
+	    public override bool CaricaAKCheckSubVoteDaDatabase(ref List<TNewVotazione> AVotazioni)
+	    {
+	        bool result = false; //, naz;
+
+	        // testo la connessione
+	        if (!OpenConnection("CaricaAKCheckSubVoteDaDatabase")) return false;
+
+	        SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
+	        try
+	        {
+	            // ciclo sulle votazioni e carico le liste
+	            foreach (TNewVotazione votaz in AVotazioni)
+	            {
+	                qryStd.Parameters.Clear();
+	                qryStd.CommandText = @"SELECT * from VS_AK_Parametri_SubVoto with (NOLOCK)
+	                                        where NumVotaz = @IDVoto ";
+	                qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votaz.IDVoto;
+	                SqlDataReader a = qryStd.ExecuteReader();
+	                if (a.HasRows)
+	                {
+	                    while (a.Read())
+	                    {
+	                        TAKCheckSubvote c = new TAKCheckSubvote();
+                            c.NumVotaz = Convert.ToInt32(a["NumVotaz"]);
+	                        c.NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]);
+	                        c.CheckAttivo = Convert.ToBoolean(a["CheckAttivo"]);
+	                        c.IDSchedaDisabilitaVoto = Convert.ToInt32(a["IDSchedaDisabilitaVoto"]);
+                            votaz.AKCheckSubvote.Add(c);
+                        }
+                    }
+	                a.Close();
+	            }
+                result = true;
+	        }
+            catch (Exception objExc)
+	        {
+	            Logging.WriteToLog("Errore fn CaricaAKCheckSubVoteDaDatabase: err: " + objExc.Message);
+	            MessageBox.Show("Errore nella funzione CaricaAKCheckSubVoteDaDatabase" + "\n\n" +
+	                            "Chiamare operatore esterno.\n\n " +
+	                            "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+	        }
+	        finally
+	        {
+	            qryStd.Dispose();
+	            CloseConnection("");
+	        }
+	        return result;
+	    }
+
         #endregion
 
         // --------------------------------------------------------------------------
-		//  METODI SUI BADGE
-		// --------------------------------------------------------------------------
+        //  METODI SUI BADGE
+        // --------------------------------------------------------------------------
 
         #region Metodi sui Badge (Presenza, ha già votato...)
 
         //override public bool ControllaBadge(int AIDBadge, TTotemConfig ATotCfg, ref int AReturnFlags)
-        override public bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
+        public override bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
         {
             // questa procedura effettua in un colpo solo tutti i controlli relativi al badge
             // 1 - Se il badge è annullato
@@ -890,58 +920,6 @@ namespace VotoTouch
             return result;
         }
 
-        //override public string DammiNomeAzionista(int AIDBadge)
-        //{
-        //    // mi dice la lunghezza del badge e il codice impianto per il lettore
-        //    SqlDataReader a;
-        //    SqlCommand qryStd;
-        //    string NomeAz = "", Sesso = "";
-
-        //    // testo la connessione
-        //    if (!OpenConnection("DammiNomeAzionista")) return "";
-
-        //    qryStd = new SqlCommand();
-        //    try
-        //    {
-        //        qryStd.Connection = STDBConn;
-        //        // Leggo ora da GEAS_Titolari	
-        //        qryStd.CommandText = "select T.badge, T.idazion, A.Sesso, " + 
-        //                             " CASE WHEN A.FisGiu ='F' THEN A.Cognome+ ' ' + A.Nome ELSE A.Raso END as Raso1 " +
-        //                             " from geas_titolari T " + 
-        //                             " INNER JOIN GEAS_Anagrafe As A  with (NOLOCK) ON T.IdAzion = A.IdAzion " + 
-        //                             " WHERE T.Badge = @Badge AND T.Reale=1";
-        //        qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-        //        a = qryStd.ExecuteReader();
-        //        if (a.HasRows)
-        //        {
-        //            // devo verificare 
-        //            a.Read();
-        //            NomeAz = a.IsDBNull(a.GetOrdinal("Raso1")) ? "" : (a["Raso1"]).ToString();
-        //            Sesso = a.IsDBNull(a.GetOrdinal("Sesso")) ? "" : (a["Sesso"]).ToString();
-        //        }
-        //        a.Close();
-
-        //        if (Sesso == "M")
-        //            NomeAz = "Sig. " + NomeAz;
-        //        if (Sesso == "F")
-        //            NomeAz = "Sig.ra " + NomeAz;
-
-        //    }
-        //    catch (Exception objExc)
-        //    {
-        //        Logging.WriteToLog("<dberror> Errore nella funzione DammiNomeAzionista: " + objExc.Message);
-        //        MessageBox.Show("Errore nella funzione DammiNomeAzionista" + "\n" +
-        //            "Eccezione : \n" + objExc.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //    finally
-        //    {
-        //        qryStd.Dispose();
-        //        CloseConnection("");
-        //    }
-
-        //    return NomeAz;
-        //}
-
         #endregion
 
 		// --------------------------------------------------------------------------
@@ -950,7 +928,7 @@ namespace VotoTouch
 
         #region Caricamento dati Azionista 
 
-        override public bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
+        public override bool CaricaDirittidiVotoDaDatabase(int AIDBadge, ref List<TAzionista> AAzionisti,
                                                                 ref TAzionista ATitolare_badge, ref TListaVotazioni AVotazioni)
         {
             // ok, questa funziomne carica i diritti di voto in funzione
@@ -959,10 +937,6 @@ namespace VotoTouch
 
             // ok, questa procedura mi carica tutti i dati
             //SqlConnection STDBConn = null;
-            SqlDataReader a = null;
-            SqlCommand qryStd = null;
-            TAzionista c;
-            int IDVotazione = -1;
             bool result = false; //, naz;
 
             // testo la connessione
@@ -970,7 +944,7 @@ namespace VotoTouch
 
             AAzionisti.Clear();
 
-            qryStd = new SqlCommand { Connection = STDBConn };
+            SqlCommand qryStd = new SqlCommand { Connection = STDBConn };
             try
             {
                 // ciclo sul voto per crearmi l'array dei diritti di voto per ogni singola votazione
@@ -978,7 +952,7 @@ namespace VotoTouch
                 // TODO: CVotoDBDati|CaricaDirittidiVotoDaDatabase - Inutile chiamare n volte la query
                 foreach (TNewVotazione voto in AVotazioni.Votazioni)
                 {
-                    IDVotazione = voto.IDVoto;
+                    int IDVotazione = voto.IDVoto;
 
                     // resetto la query
                     qryStd.Parameters.Clear();
@@ -987,13 +961,14 @@ namespace VotoTouch
                     qryStd.CommandText = qry_DammiDirittiDiVoto_Titolare;
                     qryStd.Parameters.Add("@IDVotaz", System.Data.SqlDbType.Int).Value = IDVotazione;
                     qryStd.Parameters.Add("@Badge", System.Data.SqlDbType.VarChar).Value = AIDBadge.ToString();
-                    a = qryStd.ExecuteReader();
+                    SqlDataReader a = qryStd.ExecuteReader();
                     // in teoria non può non avere righe, testa anche se ha azioni, se no è un rappr
                     if (a.HasRows && a.Read())
                     {
-                        c = new TAzionista();
+                        TAzionista c = new TAzionista();
                         c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
                         c.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                        c.CoFi = a["CoFi"].ToString();
                         c.IDBadge = AIDBadge;
                         c.ProgDeleg = 0;
                         c.RaSo = a["Raso1"].ToString();
@@ -1045,33 +1020,34 @@ namespace VotoTouch
                             if ((Convert.ToInt32(a["VtOrd1"]) + Convert.ToInt32(a["VtStr1"]) +
                                 Convert.ToInt32(a["VtOrd2"]) + Convert.ToInt32(a["VtStr2"])) > 0)
                             {
-                                c = new TAzionista();
-                                c.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
-                                c.IDAzion = Convert.ToInt32(a["IdAzion"]);
-                                c.IDBadge = AIDBadge;
-                                c.ProgDeleg = Convert.ToInt32(a["ProgDeleg"]);
-                                c.RaSo = a["Raso1"].ToString();
+                                TAzionista d = new TAzionista();
+                                d.CoAz = a.IsDBNull(a.GetOrdinal("CoAz")) ? "0000000" : a["CoAz"].ToString();
+                                d.IDAzion = Convert.ToInt32(a["IdAzion"]);
+                                d.CoFi = a["CoFi"].ToString();
+                                d.IDBadge = AIDBadge;
+                                d.ProgDeleg = Convert.ToInt32(a["ProgDeleg"]);
+                                d.RaSo = a["Raso1"].ToString();
                                 // TODO: GEAS VERSIONE
                                 if (VTConfig.IsOrdinaria)
                                 {
-                                    c.Voti1 = Convert.ToDouble(a["VtOrd1"]);
-                                    c.Voti2 = Convert.ToDouble(a["VtOrd2"]);
-                                    c.NVoti = c.Voti1 + c.Voti2;                                    
+                                    d.Voti1 = Convert.ToDouble(a["VtOrd1"]);
+                                    d.Voti2 = Convert.ToDouble(a["VtOrd2"]);
+                                    d.NVoti = d.Voti1 + d.Voti2;                                    
                                 }
                                 else
                                 {
                                     if (!VTConfig.IsOrdinaria && VTConfig.IsStraordinaria)
                                     {
-                                        c.Voti1 = Convert.ToDouble(a["VtStr1"]);
-                                        c.Voti2 = Convert.ToDouble(a["VtStr2"]);
-                                        c.NVoti = c.Voti1 + c.Voti2;
+                                        d.Voti1 = Convert.ToDouble(a["VtStr1"]);
+                                        d.Voti2 = Convert.ToDouble(a["VtStr2"]);
+                                        d.NVoti = d.Voti1 + d.Voti2;
                                     }
                                 }
-                                c.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
-                                c.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
-                                c.IDVotaz = IDVotazione;
+                                d.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
+                                d.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
+                                d.IDVotaz = IDVotazione;
                                 // aggiungo
-                                AAzionisti.Add(c);
+                                AAzionisti.Add(d);
                             }
                         }   //while (a.Read()) 
                     }   //if (a.HasRows)
@@ -1424,7 +1400,7 @@ namespace VotoTouch
 
         #region Altre funzioni votazione
 
-        override public int NumAzTitolare(int AIDBadge)
+        public override int NumAzTitolare(int AIDBadge)
         {
             //  mi da quante azioni ha un titolare
             SqlDataReader ab;
@@ -1470,7 +1446,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public int CheckStatoVoto(string ANomeTotem)
+        public override int CheckStatoVoto(string ANomeTotem)
         {
             //  mi da quante azioni ha un titolare
             SqlDataReader ab;
@@ -1537,7 +1513,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public bool CancellaBadgeVotazioni(int AIDBadge)
+        public override bool CancellaBadgeVotazioni(int AIDBadge)
         {
             // questa routine cancella i dati di un badge
 
@@ -1609,7 +1585,7 @@ namespace VotoTouch
             return result;
         }
 
-        override public Boolean CancellaTuttiVoti()
+        public override Boolean CancellaTuttiVoti()
         {
             // questa routine cancella tutti i voti
 

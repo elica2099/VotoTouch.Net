@@ -32,8 +32,9 @@ namespace VotoTouch
 
         public bool SelezionaTuttiCDA;
 
-        public int NListe { get { return (Liste == null) ? 0 : Liste.Count; } }
-        public int NPresentatoCDA { get { return (Liste == null) ? 0 : Liste.Count(a => a.PresentatodaCDA == true); } }               
+        public int NListe => (Liste == null) ? 0 : Liste.Count;
+        public int NPresentatoCDA { get { return (Liste == null) ? 0 : Liste.Count(a => a.PresentatodaCDA == true); } }
+        public bool IsAKCheckSubvote => (AKCheckSubvote == null || AKCheckSubvote.Count == 0);
 
         public int NMultiSelezioni
         {
@@ -46,13 +47,15 @@ namespace VotoTouch
         public CBaseTipoVoto TouchZoneVoto;
         public TAreaVotazione AreaVoto;
 
-        public List<TNewLista> Liste;     // collection di strutture Tliste
+        public List<TNewLista> Liste;            // collection di strutture Tliste
+        public List<TAKCheckSubvote> AKCheckSubvote;   // check del subvoto (vedi BPER)
         public ArrayList Pagine;    // collection delle pagine (per le votazioni candidato)
 
         public TNewVotazione()
         {
             Liste = new List<TNewLista>();
             Pagine = new ArrayList();
+            AKCheckSubvote = new List<TAKCheckSubvote>();
             TouchZoneVoto = null;
             AbilitaBottoneUscita = false;
         }
@@ -198,23 +201,18 @@ namespace VotoTouch
 
             _Votazioni.Clear();
 
-            //if (DemoMode)
-            //{
-            //    CaricaDatiDemo(AData_path);
-            //    result = true;
-            //}
-            //else
-            //{
-                // carica le votazioni dal database
-                if (DBDati.CaricaVotazioniDaDatabase(ref _Votazioni))
+            // carica le votazioni dal database
+            if (DBDati.CaricaVotazioniDaDatabase(ref _Votazioni))
+            {
+                // carica i dettagli delle votazioni
+                if (DBDati.CaricaListeDaDatabase(ref _Votazioni))
                 {
-                    // carica i dettagli delle votazioni
-                    if (DBDati.CaricaListeDaDatabase(ref _Votazioni))
-                    {
-                        result = true;
-                    }
+                    result = true;
                 }
-            //}
+                // carico anche gli eventuali check
+                if (VTConfig.AKCheckSubVote)
+                    DBDati.CaricaAKCheckSubVoteDaDatabase(ref _Votazioni);
+            }
             // Calcolo l'area di voto per Candidati e multicandidati
             CalcolaAreaDiVotoCandidatiMultiCandidato();
             // ok, ora ordino le liste nel caso in cui siano di candidato

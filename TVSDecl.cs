@@ -27,7 +27,7 @@ namespace VotoTouch
 
     // configurazione del programma
 //    static public class TTotemConfig
-    static public class VTConfig
+    public static class VTConfig
     {
         // CONFIGURAZIONE DINAMICA
         public static bool IsDemoMode;
@@ -36,48 +36,47 @@ namespace VotoTouch
         public static bool IsPaintTouch;
 
         // CONFIGURAZIONE GENERALE
-        static public int ModoAssemblea;
+        public static int ModoAssemblea;
         public static string ValAssemblea;
-        static public bool SalvaLinkVoto;
-        static public bool SalvaVotoNonConfermato;
-        static public bool SalvaVotoInGeas;
-        static public int MaxDeleghe;
-        static public bool AbilitaDifferenziatoSuRichiesta;
-        static public int IDSchedaUscitaForzata;
-        static public int ModoPosizioneAreeTouch;
-        static public int ControllaPresenze;
-        static public bool AbilitaBottoneUscita;
-        static public bool AttivaAutoRitornoVoto;
-        static public int TimeAutoRitornoVoto;
-        static public bool AbilitaDirittiNonVoglioVotare;
-        
+        public static bool SalvaLinkVoto;
+        public static bool SalvaVotoNonConfermato;
+        public static bool SalvaVotoInGeas;
+        public static int MaxDeleghe;
+        public static bool AbilitaDifferenziatoSuRichiesta;
+        public static int IDSchedaUscitaForzata;
+        public static int ModoPosizioneAreeTouch;
+        public static int ControllaPresenze;
+        public static bool AbilitaBottoneUscita;
+        public static bool AttivaAutoRitornoVoto;
+        public static int TimeAutoRitornoVoto;
+        public static bool AbilitaDirittiNonVoglioVotare;
+        public static bool AKCheckSubVote;
+
         // CONFIGURAZIONE LOCALE
-        static public string Postazione;
-        static public string Descrizione;
-        static public int IDSeggio;
-        static public bool Attivo;
-        static public bool VotoAperto;
-        static public int Sala;
+        public static string Postazione;
+        public static string Descrizione;
+        public static int IDSeggio;
+        public static bool Attivo;
+        public static bool VotoAperto;
+        public static int Sala;
         // Semaforo
-        static public bool UsaSemaforo;
-        static public string IP_Com_Semaforo;
-        static public int TipoSemaforo;
+        public static bool UsaSemaforo;
+        public static string IP_Com_Semaforo;
+        public static int TipoSemaforo;
         // Variabili di configurazione Lettore
-        static public bool UsaLettore;
-        static public int PortaLettore;
-        static public string CodiceUscita;
+        public static bool UsaLettore;
+        public static int PortaLettore;
+        public static string CodiceUscita;
         // codici impianto
-        static public int BadgeLen;
-        static public string CodImpianto;
+        public static int BadgeLen;
+        public static string CodImpianto;
 
         public static bool IsOrdinaria; // = ValAssemblea.Contains("O"); //CheckOrdinariaValAssem();
         public static bool IsStraordinaria; // = ValAssemblea.Contains("S"); //CheckStraordinariaValAssem();
 
         // Diciture Votazioni
-        static public string ContrarioATutti;
-        static public string AstenutoATutti;
-
-
+        public static string ContrarioATutti;
+        public static string AstenutoATutti;
 
         static VTConfig()
         {
@@ -93,6 +92,7 @@ namespace VotoTouch
             AbilitaDirittiNonVoglioVotare = false;
             IsDemoMode = false;
             NomeTotem = "";
+            AKCheckSubVote = false;
             ContrarioATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKCONTRARIOTUTTI");
             AstenutoATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKASTENUTOTUTTI");
         }
@@ -161,6 +161,15 @@ namespace VotoTouch
         public int VotoExp_IDScheda;
         //public string Str_ListaElenco;
         //public string StrUp_DescrLista;
+    }
+
+    public struct TAKCheckSubvote
+    {
+        public int NumVotaz;
+        public int NumSubVotaz;
+        public bool CheckAttivo;
+        public int IDSchedaDisabilitaVoto;
+
     }
 
     public class VSDecl

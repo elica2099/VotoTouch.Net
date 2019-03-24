@@ -13,6 +13,7 @@ namespace VotoTouch
         public int IDAzion { get; set; }
         public int ProgDeleg { get; set; }
         public string RaSo { get; set; }
+	    public string CoFi { get; set; }
         public double NVoti { get; set; }
         public double Voti1 { get; set; }
         public double Voti2 { get; set; }
@@ -57,7 +58,7 @@ namespace VotoTouch
         {
             IDBadge = cp.IDBadge; CoAz = cp.CoAz; IDAzion = cp.IDAzion; ProgDeleg = cp.ProgDeleg;
             RaSo = cp.RaSo; NVoti = cp.NVoti; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
-            IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2;
+            IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2; CoFi = cp.CoFi;
         }
 	}
 
@@ -334,7 +335,6 @@ namespace VotoTouch
             else
                 return 0;
         }
-
 
         public int DammiTotaleDirittiRimanenti_VotoCorrente()
         {

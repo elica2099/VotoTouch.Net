@@ -1,4 +1,4 @@
-SELECT	A.CoAz, A.IdAzion, A.Sesso,
+SELECT	A.CoAz, A.IdAzion, A.Sesso, isnull(A.CoFi, ''),
 		CASE WHEN A.FisGiu ='F' THEN A.Cognome+ ' ' + A.Nome ELSE A.Raso END as Raso1,
 		isnull(VS_conschede.IDAzion, -1) as TitIdAzion
 
