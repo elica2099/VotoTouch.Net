@@ -1,4 +1,4 @@
-SELECT	A.CoAz, A.IdAzion, A.Sesso, isnull(A.CoFi, ''),
+SELECT	A.CoAz, A.IdAzion, A.Sesso, isnull(A.CoFi, '') as CoFi,
 		CASE WHEN A.FisGiu ='F' THEN A.Cognome+ ' ' + A.Nome ELSE A.Raso END as Raso1,
 		isnull(C.IDAzion, -1) as TitIdAzion, isnull(C.NumVotaz, -1) as TitIDVotaz,
 		isnull(T.Voti1Ord,0) as VtOrd1, isnull(T.Voti2Ord,0) as VtOrd2,

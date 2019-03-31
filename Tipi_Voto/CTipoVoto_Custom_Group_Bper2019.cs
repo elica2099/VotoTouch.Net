@@ -74,7 +74,7 @@ namespace VotoTouch
                 case 1:     // in centro
                     TNewLista firstOrDefault = newListas.FirstOrDefault();
                     if (firstOrDefault != null)
-                        Tz.Add(calczone(firstOrDefault.IDScheda, 1, firstOrDefault.DescrLista, 310, 235, 725, 335));
+                        Tz.Add(calczone(firstOrDefault.IDScheda, 1, firstOrDefault.DescrLista, 280, 225, 745, 345));
                     break;
                 case 2:     // in centro due colonne
                     int x2 = 53;
@@ -182,10 +182,10 @@ namespace VotoTouch
             const int c_y = 140;
             switch (NListe1)
             {
-                case 1:     // in centro
+                case 1:     // in centro   300, 235, 725, 335
                     TNewLista firstOrDefault = newListas.FirstOrDefault();
                     if (firstOrDefault != null)
-                        Tz.Add(calczone(firstOrDefault.IDScheda, 2, firstOrDefault.DescrLista, 310 + dy, 235, 725, 335));
+                        Tz.Add(calczone(firstOrDefault.IDScheda, 2, firstOrDefault.DescrLista, 280, 225 + dy, 745, 345 +dy));
                     break;
                 case 2:     // in centro due colonne
                     int x2 = 53;

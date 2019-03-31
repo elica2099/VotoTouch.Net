@@ -616,7 +616,7 @@ namespace VotoTouch
             Font myFont2 = new System.Drawing.Font("Arial", 20, FontStyle.Regular);
             Font myFont3 = new System.Drawing.Font("Arial", 10, FontStyle.Italic | FontStyle.Bold);
             StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Center;
+            stringFormat.Alignment = StringAlignment.Center ;
             stringFormat.LineAlignment = StringAlignment.Center;
             //stringFormat.Trimming = StringTrimming.EllipsisCharacter;
             stringFormat.Trimming = StringTrimming.None;
@@ -644,7 +644,7 @@ namespace VotoTouch
                             {
                                 e.Graphics.DrawImage(btnBmpTabSelez, r);
                                 e.Graphics.DrawString(a.Text, myFont2, Brushes.White,
-                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
+                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1 ), stringFormat);
                             }
                             else
                             {
@@ -713,7 +713,7 @@ namespace VotoTouch
                                         a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
                                         e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),
                                                               //Brushes.DarkSlateGray,
-                                                              new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20),
+                                                              new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20 - 100, 20 ),
                                                               stringFormat);
                                         stringFormat.Alignment = StringAlignment.Center;
                                     }
@@ -726,7 +726,7 @@ namespace VotoTouch
                                     //    myFont = myFont22;
                                     e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),
                                                           //Brushes.DarkSlateGray,
-                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4),
+                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1 - 100, (a.b - a.y) - 4),
                                                           stringFormat);
                                 }
                             }  // if (a.pag == CurrPag || a.pag == 0)

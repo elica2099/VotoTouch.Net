@@ -1,5 +1,5 @@
 SELECT DISTINCT 
-	A.CoAz, A.IdAzion, D.ProgDeleg, isnull(A.CoFi, ''),
+	A.CoAz, A.IdAzion, D.ProgDeleg, isnull(A.CoFi, '') as CoFi,
 	CASE WHEN A.FisGiu ='F' THEN A.Cognome+ ' ' + A.Nome ELSE A.Raso END as Raso1,
 	isnull(C.IDAzion, -1) as ConIdAzion, isnull(C.NumVotaz, -1) as ConIDVotaz,
     isnull(D.Voti1Ord,0) as VtOrd1, isnull(D.Voti2Ord,0) as VtOrd2,
