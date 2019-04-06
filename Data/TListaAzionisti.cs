@@ -19,7 +19,10 @@ namespace VotoTouch
         public double Voti2 { get; set; }
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
-        
+        // AK (BPER)
+	    public int AK_PrevVote { get; set; }
+
+
         // dati del voto 
         public int IDVotaz { get; set; }
         // voti
@@ -52,6 +55,7 @@ namespace VotoTouch
         {
             HaVotato = TListaAzionisti.VOTATO_NO;
             VotiEspressi = new List<TVotoEspresso2>();
+            AK_PrevVote = 0;
         }
 
         public void CopyFrom(ref TAzionista cp)
@@ -59,6 +63,7 @@ namespace VotoTouch
             IDBadge = cp.IDBadge; CoAz = cp.CoAz; IDAzion = cp.IDAzion; ProgDeleg = cp.ProgDeleg;
             RaSo = cp.RaSo; NVoti = cp.NVoti; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
             IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2; CoFi = cp.CoFi;
+            AK_PrevVote = cp.AK_PrevVote;
         }
 	}
 
@@ -103,9 +108,7 @@ namespace VotoTouch
             // Distruttore
         }
 
-        // --------------------------------------------------------------------------
-        //  Ritorno Diritti di voto
-        // --------------------------------------------------------------------------
+        //  Ritorno Diritti di voto --------------------------------------------------------------------------
 
         #region Ritorno Diritti di voto 
 
@@ -195,9 +198,7 @@ namespace VotoTouch
 
         #endregion
 
-        // --------------------------------------------------------------------------
-        //  Ritorno Numero di Voti
-        // --------------------------------------------------------------------------
+        // Ritorno Numero di Voti --------------------------------------------------------------------------
 
         #region Ritorno Numero di Voti
 
@@ -254,6 +255,33 @@ namespace VotoTouch
         }
 
         #endregion
+
+        //  AK_DIRITTI di voto --------------------------------------------------------------------------
+
+        public int checkAKIsPresentDelegheDifformi(List<int> AKSkDisabilitate)
+        {
+            // ritorna true se almeno 1 delega ha come voto precedente quello inibito, indipendentemente dal
+            // n. o tipo di votazione, questo perchè in tal caso (almeno 1) non può votare in maniera uniforme 
+            // ma per forza differenziato
+            bool IsPresent = false;
+            int nskdiff = 0;
+
+            foreach (TAzionista azionista in _Azionisti)
+            {
+                if (AKSkDisabilitate.Any(x => x == azionista.AK_PrevVote) )
+                {
+                    IsPresent = true;
+                    nskdiff++;
+                }
+            }
+            // ok in funzione di cosa è successo ritorno
+            if (!IsPresent)
+            {
+                return VSDecl.AK_NO_SKDIFF_PRESENT;
+            }
+            // se ce ne sono bisogan vedere se sono solo qualcuna o tutte
+            return nskdiff >= _Azionisti.Count ? VSDecl.AK_SKDIFF_PRESENT_ALL : VSDecl.AK_SKDIFF_PRESENT_MIXED;
+        }
 
         // --------------------------------------------------------------------------
         //  Gestione della procedura di votazione

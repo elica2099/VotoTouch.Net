@@ -377,7 +377,7 @@ namespace VotoTouch
                     // AbilitaDifferenziatoSuRichiesta
                     VTConfig.AbilitaDifferenziatoSuRichiesta = Convert.ToBoolean(a["AbilitaDifferenziatoSuRichiesta"]);
                     // AKCheckSubVote
-                    VTConfig.AKCheckSubVote = Convert.ToBoolean(a["AKCheckSubVote"]);
+                    VTConfig.AKCheckVote = Convert.ToBoolean(a["AKCheckVote"]);
 
                     // qua dovrei in teoria controllare che vada bene
                     // prima faccio un piccolo controllo, se è un valore a c..., metto scheda bianca che c'è sempre
@@ -676,7 +676,7 @@ namespace VotoTouch
 	            foreach (TNewVotazione votaz in AVotazioni)
 	            {
 	                qryStd.Parameters.Clear();
-	                qryStd.CommandText = @"SELECT * from VS_AK_Parametri_SubVoto with (NOLOCK)
+	                qryStd.CommandText = @"SELECT * from VS_AK_Parametri_Voto with (NOLOCK)
 	                                        where NumVotaz = @IDVoto ";
 	                qryStd.Parameters.Add("@IDVoto", System.Data.SqlDbType.Int).Value = votaz.IDVoto;
 	                SqlDataReader a = qryStd.ExecuteReader();
@@ -684,12 +684,14 @@ namespace VotoTouch
 	                {
 	                    while (a.Read())
 	                    {
-	                        TAKCheckSubvote c = new TAKCheckSubvote();
-                            c.NumVotaz = Convert.ToInt32(a["NumVotaz"]);
-	                        c.NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]);
-	                        c.CheckAttivo = Convert.ToBoolean(a["CheckAttivo"]);
-	                        c.IDSchedaDisabilitaVoto = Convert.ToInt32(a["IDSchedaDisabilitaVoto"]);
-                            votaz.AKCheckSubvote.Add(c);
+	                        TAKCheckVote c = new TAKCheckVote
+                            {
+	                            NumVotaz = Convert.ToInt32(a["NumVotaz"]),
+	                            NumSubVotaz = Convert.ToInt32(a["NumSubVotaz"]),
+	                            CheckAttivo = Convert.ToBoolean(a["CheckAttivo"]),
+	                            IDSchedaDisabilitaVoto = Convert.ToInt32(a["IDSchedaDisabilitaVoto"])
+	                        };
+	                        votaz.AKCheckVote.Add(c);
                         }
                     }
 	                a.Close();
@@ -992,6 +994,7 @@ namespace VotoTouch
                         c.HaVotato = Convert.ToInt32(a["TitIDVotaz"]) >= 0
                                          ? TListaAzionisti.VOTATO_DBASE
                                          : TListaAzionisti.VOTATO_NO;
+                        c.AK_PrevVote = Convert.ToInt32(a["AK_PrevVote"]);
                         c.IDVotaz = IDVotazione;
 
                         // ok, ora se è titolare e ha azioni l'aggiungo alla lista
@@ -1045,6 +1048,7 @@ namespace VotoTouch
                                 }
                                 d.Sesso = "N"; // a.IsDBNull(a.GetOrdinal("Sesso")) ? "N" : a["Sesso"].ToString();
                                 d.HaVotato = Convert.ToInt32(a["ConIDVotaz"]) >= 0 ? TListaAzionisti.VOTATO_DBASE : TListaAzionisti.VOTATO_NO;
+                                d.AK_PrevVote = Convert.ToInt32(a["AK_PrevVote"]);
                                 d.IDVotaz = IDVotazione;
                                 // aggiungo
                                 AAzionisti.Add(d);

@@ -46,7 +46,7 @@ namespace VotoTouch
         public TTZone()
         {
             MultiNoPrint = false;
-            PaintMode = VSDecl.PM_NONE;
+            PaintMode = VSDecl.PM_NORMAL;
             Group = 0;
         }
     }
@@ -159,7 +159,8 @@ namespace VotoTouch
             Stream myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottonetrasp_ok.png");
             btnBmpCandSing = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
 
-		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo.png"); // "VotoTouch.Resources.btn_alternativo.png");
+		    //myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo.png");
+		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_cda.png");
             btnBmpCand = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCand = new Bitmap(myStream);
 
@@ -167,7 +168,8 @@ namespace VotoTouch
             btnBmpCandCda = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCandCda = new Bitmap(myStream);
 
-		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo_check.png"); //"VotoTouch.Resources.btn_alternativo_selez.png");
+		    //myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo_check.png");
+		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_selez.png");
             btnBmpCandSelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCandSelez = new Bitmap(myStream);
 
@@ -713,7 +715,7 @@ namespace VotoTouch
                                         a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
                                         e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),
                                                               //Brushes.DarkSlateGray,
-                                                              new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20 - 100, 20 ),
+                                                              new RectangleF(a.x, a.b , (a.r - a.x) - 20 , 20 ),
                                                               stringFormat);
                                         stringFormat.Alignment = StringAlignment.Center;
                                     }
@@ -726,7 +728,7 @@ namespace VotoTouch
                                     //    myFont = myFont22;
                                     e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),
                                                           //Brushes.DarkSlateGray,
-                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1 - 100, (a.b - a.y) - 4),
+                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1 , (a.b - a.y) - 4),
                                                           stringFormat);
                                 }
                             }  // if (a.pag == CurrPag || a.pag == 0)

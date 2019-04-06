@@ -19,14 +19,16 @@ namespace VotoTouch
 {
     public enum TTipoVoto:  int  {stvZero, stvLista, stvCandidato, stvCandidatoSing, stvMultiCandidato, stvGruppo};
 
-	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma,ssvVotoContinua, ssvSalvaVoto, 
+	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma, ssvVotoContinua, ssvSalvaVoto, 
                                 ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto};
 
 	public enum TStatoSemaforo: int {stsNulla, stsLibero, stsOccupato, stsErrore, stsFineoccupato, stsChiusoVoto};
 
 
+    public enum TStartVoteMode : int { vszNormal, vszMixedDiffer, vszOnlyDiffer }
+
     // configurazione del programma
-//    static public class TTotemConfig
+    //    static public class TTotemConfig
     public static class VTConfig
     {
         // CONFIGURAZIONE DINAMICA
@@ -50,7 +52,7 @@ namespace VotoTouch
         public static bool AttivaAutoRitornoVoto;
         public static int TimeAutoRitornoVoto;
         public static bool AbilitaDirittiNonVoglioVotare;
-        public static bool AKCheckSubVote;
+        public static bool AKCheckVote;
 
         // CONFIGURAZIONE LOCALE
         public static string Postazione;
@@ -92,7 +94,7 @@ namespace VotoTouch
             AbilitaDirittiNonVoglioVotare = false;
             IsDemoMode = false;
             NomeTotem = "";
-            AKCheckSubVote = false;
+            AKCheckVote = false;
             ContrarioATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKCONTRARIOTUTTI");
             AstenutoATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKASTENUTOTUTTI");
         }
@@ -163,7 +165,7 @@ namespace VotoTouch
         //public string StrUp_DescrLista;
     }
 
-    public struct TAKCheckSubvote
+    public struct TAKCheckVote
     {
         public int NumVotaz;
         public int NumSubVotaz;
@@ -211,6 +213,7 @@ namespace VotoTouch
         public const string IMG_type = ".png";
 
         public const string IMG_Badge = "badge";
+        public const string IMG_VotostartD_AK = "votostart_D_AK";
         public const string IMG_VotostartD = "votostart_D";
         public const string IMG_Votostart1 = "votostart_1";
         public const string IMG_fine = "fine";
@@ -292,6 +295,10 @@ namespace VotoTouch
         public const int TIM_CKVOTO_MIN = 15000;   // 15 secondi
         public const int TIM_CKVOTO_MAX = 40000;   // 50 secondi
         public const int TIME_AUTOCLOSEVOTO = 20;
+
+        public const int AK_NO_SKDIFF_PRESENT = 0;
+        public const int AK_SKDIFF_PRESENT_MIXED = 1;
+        public const int AK_SKDIFF_PRESENT_ALL = 2;
 
 
     }

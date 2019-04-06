@@ -942,6 +942,7 @@ namespace VotoTouch
             lbVersion.Items.Add("AbilitaDirittiNonVoglioVotare: " + VTConfig.AbilitaDirittiNonVoglioVotare.ToString());
             lbVersion.Items.Add("TimerAutoritorno: " + VTConfig.AttivaAutoRitornoVoto.ToString());
             lbVersion.Items.Add("Tempo TimerAutoritorno (ms): " + VTConfig.TimeAutoRitornoVoto.ToString());
+            lbVersion.Items.Add("AK_CheckVote: " + VTConfig.AKCheckVote.ToString());
             lbVersion.Items.Add("");
             // le votazioni
             foreach (TNewVotazione fVoto in Votazioni.Votazioni)
@@ -984,7 +985,7 @@ namespace VotoTouch
                 lbVersion.Items.Add("Badge: " + c.IDBadge.ToString() + " " + c.RaSo.Trim());
                 lbVersion.Items.Add("   IDazion:" + c.IDAzion.ToString() + " *** IDVotaz: " + c.IDVotaz.ToString());
                 lbVersion.Items.Add("   ProgDeleg:" + c.ProgDeleg.ToString() + " Coaz:" + c.CoAz +
-                            " AzOrd: " + c.NVoti.ToString());
+                            " AzOrd: " + c.NVoti.ToString() + " AKPV:" + c.AK_PrevVote.ToString());
 
             }
             Panel4.Visible = true;

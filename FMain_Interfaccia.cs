@@ -25,7 +25,7 @@ namespace VotoTouch
         // ----------------------------------------------------------------
         //******************************************************************************
 
-        private void MettiComponentiStartVoto()
+        private void MettiComponentiStartVoto(TStartVoteMode AModoStart)
         {
             string PrefNomeAz = "";
             // start del voto
@@ -53,27 +53,57 @@ namespace VotoTouch
             }
             // diritti di voto
             lbDirittiStart.Visible = true;
-            // in funzione del n. di deleghe metto
-            if (Azionisti.HaDirittiDiVotoMultipli())
+
+            switch (AModoStart)
             {
-                // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
-                if (VTConfig.AbilitaDifferenziatoSuRichiesta)
-                {
-                    oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
-                                            ? VSDecl.IMG_VotostartD
-                                            : VSDecl.IMG_Votostart1);
-                }
-                else
-                {
+                case TStartVoteMode.vszNormal:
+                    // immagine di 1 voto
+                    oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
+                    break;
+                case TStartVoteMode.vszMixedDiffer:
+                    // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
+                    if (VTConfig.AbilitaDifferenziatoSuRichiesta)
+                    {
+                        oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
+                            ? VSDecl.IMG_VotostartD
+                            : VSDecl.IMG_Votostart1);
+                        return;
+                    }
                     // si comporta normalmente
                     oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
-                }
+                    break;
+                case TStartVoteMode.vszOnlyDiffer:
+                    // solo il differenziato
+                    oVotoImg.LoadImages(VSDecl.IMG_VotostartD_AK);
+                    break;
             }
-            else
-            {
-                // immagine di 1 voto
-                oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
-            }
+
+            //// in funzione del n. di deleghe metto
+            //if (Azionisti.HaDirittiDiVotoMultipli())
+            //{
+            //    // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
+            //    if (VTConfig.AbilitaDifferenziatoSuRichiesta)
+            //    {
+            //        oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
+            //                                ? VSDecl.IMG_VotostartD
+            //                                : VSDecl.IMG_Votostart1);
+            //        return;
+            //    }
+            //    // verifico se è abilitato AK
+            //    if (VTConfig.AKCheckVote && 
+            //        (Azionisti.checkAKIsPresentDelegheDifformi(Votazioni.getAKSchedeDisabilitateInAllVote()) == VSDecl.AK_SKDIFF_PRESENT_MIXED ))
+            //    {
+            //        oVotoImg.LoadImages(VSDecl.IMG_VotostartD_AK);
+            //        return;
+            //    }
+            //    // si comporta normalmente
+            //    oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
+            //}
+            //else
+            //{
+            //    // immagine di 1 voto
+            //    oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
+            //}
         }
 
 

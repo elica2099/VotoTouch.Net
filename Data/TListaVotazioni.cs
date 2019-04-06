@@ -34,7 +34,7 @@ namespace VotoTouch
 
         public int NListe => (Liste == null) ? 0 : Liste.Count;
         public int NPresentatoCDA { get { return (Liste == null) ? 0 : Liste.Count(a => a.PresentatodaCDA == true); } }
-        public bool IsAKCheckSubvote => (AKCheckSubvote == null || AKCheckSubvote.Count == 0);
+        public bool IsAKCheckSubvote => (AKCheckVote == null || AKCheckVote.Count == 0);
 
         public int NMultiSelezioni
         {
@@ -48,14 +48,14 @@ namespace VotoTouch
         public TAreaVotazione AreaVoto;
 
         public List<TNewLista> Liste;            // collection di strutture Tliste
-        public List<TAKCheckSubvote> AKCheckSubvote;   // check del subvoto (vedi BPER)
+        public List<TAKCheckVote> AKCheckVote;   // check del subvoto (vedi BPER)
         public ArrayList Pagine;    // collection delle pagine (per le votazioni candidato)
 
         public TNewVotazione()
         {
             Liste = new List<TNewLista>();
             Pagine = new ArrayList();
-            AKCheckSubvote = new List<TAKCheckSubvote>();
+            AKCheckVote = new List<TAKCheckVote>();
             TouchZoneVoto = null;
             AbilitaBottoneUscita = false;
         }
@@ -128,6 +128,7 @@ namespace VotoTouch
         // oggetti conferma e inizio voto
         public CBaseTipoVoto ClasseTipoVotoStartNorm = null;
         public CBaseTipoVoto ClasseTipoVotoStartDiff = null;
+        public CBaseTipoVoto ClasseTipoVotoStartOnlyDiff = null;
         public CBaseTipoVoto ClasseTipoVotoConferma = null;
 
 
@@ -173,15 +174,17 @@ namespace VotoTouch
             //return _Votazioni.Count != 0;
         }
 
-        // --------------------------------------------------------------------------
-        //  Ritorno dati / Settaggio voto corrente
-        // --------------------------------------------------------------------------
+        //  AK_DIRITTI di voto --------------------------------------------------------------------------
 
-        //public string DammiListaElencoPerIDVotazione(int AIDVoto, int AIDLista)
-        //{
-        //    var rit = _Votazioni.FirstOrDefault((a => a.IDVoto == AIDVoto);
-        //    return rit != null ? rit.
-        //}
+        public List<int> getAKSchedeDisabilitateInAllVote()
+        {
+            List<int> skDisabil = new List<int>();
+            foreach (TNewVotazione item in _Votazioni)
+            {
+                skDisabil.AddRange(item.AKCheckVote.Select(akcheckVote => akcheckVote.IDSchedaDisabilitaVoto));
+            }
+            return skDisabil;
+        }
 
         // --------------------------------------------------------------------------
         //  Caricamento dati
@@ -210,7 +213,7 @@ namespace VotoTouch
                     result = true;
                 }
                 // carico anche gli eventuali check
-                if (VTConfig.AKCheckSubVote)
+                if (VTConfig.AKCheckVote)
                     DBDati.CaricaAKCheckSubVoteDaDatabase(ref _Votazioni);
             }
             // Calcolo l'area di voto per Candidati e multicandidati
@@ -331,21 +334,31 @@ namespace VotoTouch
                 ClasseTipoVotoStartNorm.FFormRect = AFormRect;
             else
                 ClasseTipoVotoStartNorm = new CTipoVoto_AStart(AFormRect);
-            ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart, false, false);
+            ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart,
+                TStartVoteMode.vszNormal, false);
 
             // start diff
             if (ClasseTipoVotoStartDiff != null)
                 ClasseTipoVotoStartDiff.FFormRect = AFormRect;
             else
                 ClasseTipoVotoStartDiff = new CTipoVoto_AStart(AFormRect);
-            ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true, false);
+            ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart,
+                TStartVoteMode.vszMixedDiffer, false);
+
+            // start onlydiff
+            if (ClasseTipoVotoStartOnlyDiff != null)
+                ClasseTipoVotoStartOnlyDiff.FFormRect = AFormRect;
+            else
+                ClasseTipoVotoStartOnlyDiff = new CTipoVoto_AStart(AFormRect);
+            ClasseTipoVotoStartOnlyDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart,
+                TStartVoteMode.vszOnlyDiffer, false);
 
             // start conferma
             if (ClasseTipoVotoConferma != null)
                 ClasseTipoVotoConferma.FFormRect = AFormRect;
             else
                 ClasseTipoVotoConferma = new CTipoVoto_AConferma(AFormRect);
-            ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, VTConfig.AbilitaBottoneUscita);
+            ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, 0, VTConfig.AbilitaBottoneUscita);
 
         }
 

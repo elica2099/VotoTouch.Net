@@ -82,12 +82,36 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvVotoStart:
-                    oVotoTouch.CalcolaTouchSpecial(Azionisti.HaDirittiDiVotoMultipli()
-                                                       ? Votazioni.ClasseTipoVotoStartDiff
-                                                       : Votazioni.ClasseTipoVotoStartNorm);
+                    // devo capire in che modo sono
+                    TStartVoteMode ModoStart = Azionisti.HaDirittiDiVotoMultipli()
+                        ? TStartVoteMode.vszMixedDiffer : TStartVoteMode.vszNormal;
+                    CBaseTipoVoto ModoVoto = Azionisti.HaDirittiDiVotoMultipli()
+                        ? Votazioni.ClasseTipoVotoStartDiff
+                        : Votazioni.ClasseTipoVotoStartNorm;
+
+                    // se è abilitato AKvote devo verificare il 3° caso
+                    if (VTConfig.AKCheckVote && Azionisti.HaDirittiDiVotoMultipli())
+                    {
+                        int AKMode = Azionisti.checkAKIsPresentDelegheDifformi(Votazioni.getAKSchedeDisabilitateInAllVote());
+                        switch (AKMode)
+                        {
+                            case VSDecl.AK_NO_SKDIFF_PRESENT:
+                            case VSDecl.AK_SKDIFF_PRESENT_ALL:
+                                ModoStart = TStartVoteMode.vszMixedDiffer;
+                                ModoVoto = Votazioni.ClasseTipoVotoStartDiff;
+                                break;
+                            case VSDecl.AK_SKDIFF_PRESENT_MIXED:
+                                ModoStart = TStartVoteMode.vszOnlyDiffer;
+                                ModoVoto = Votazioni.ClasseTipoVotoStartOnlyDiff;
+                                break;
+                        }
+                    }
+                    // ok ora che ho il tipo di modo, faccio
+                    oVotoTouch.CalcolaTouchSpecial(ModoVoto);
+                    // semaforo
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
-                    MettiComponentiStartVoto();
+                    MettiComponentiStartVoto(ModoStart);
                     break;
 
                 case TAppStato.ssvVoto:

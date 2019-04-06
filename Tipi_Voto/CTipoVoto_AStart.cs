@@ -19,16 +19,25 @@ namespace VotoTouch
 
         //override public void GetTouchVoteZone(TAppStato AStato, TNewVotazione AFVotaz, 
         //                                                bool ADiffer, ref ArrayList Tz )
-        override public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita)
+        public override void GetTouchSpecialZone(TAppStato AStato, TStartVoteMode AMode, bool ABtnUscita)
         {
             // DR12 OK
             TTZone a;
             Tz.Clear();
 
-            if (ADiffer)
-			{
-			        // differenziato tasto grande
-			        a = new TTZone();
+            switch (AMode)
+   			{
+                case TStartVoteMode.vszNormal:
+                    // normale, tutto lo schermo
+                    a = new TTZone();
+                    GetZone(ref a, 20, 20, 980, 980); a.expr = 0; a.pag = 0; a.Multi = 0;
+                    a.Text = ""; a.ev = TTEvento.steVotaNormale;
+                    Tz.Add(a);
+                    break;
+
+			    case TStartVoteMode.vszMixedDiffer:
+                    // differenziato tasto grande
+                    a = new TTZone();
                     switch (VTConfig.ModoPosizioneAreeTouch)
 			        {
                         case VSDecl.MODO_POS_TOUCH_NORMALE:
@@ -65,17 +74,18 @@ namespace VotoTouch
 			        a.Text = "";
 			        a.ev = TTEvento.steVotaDiffer;
 			        Tz.Add(a);
-			}
-			else
-			{
-				// normale, tutto lo schermo
-				a = new TTZone();
-				GetZone(ref a, 20, 20, 980, 980); a.expr = 0; a.pag = 0; a.Multi = 0;
-				a.Text = ""; a.ev = TTEvento.steVotaNormale;
-				Tz.Add(a);
+			        break;
+
+                case TStartVoteMode.vszOnlyDiffer:
+			           // normale, tutto lo schermo
+			           a = new TTZone();
+			           GetZone(ref a, 20, 20, 980, 980); a.expr = 0; a.pag = 0; a.Multi = 0;
+			           a.Text = ""; a.ev = TTEvento.steVotaDiffer;
+			           Tz.Add(a);
+			           break;
 			}
 
-            base.GetTouchSpecialZone(AStato, ADiffer, ABtnUscita);
+            base.GetTouchSpecialZone(AStato, AMode, ABtnUscita);
         }
 
     }
