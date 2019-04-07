@@ -186,6 +186,17 @@ namespace VotoTouch
             return skDisabil;
         }
 
+        public List<int> getAKSchedeDisabilitateInSingleVote(int AIDVote)
+        {
+            List<int> skDisabil = new List<int>();
+            foreach (TNewVotazione item in _Votazioni)
+            {
+                if (item.IDVoto == AIDVote)
+                    skDisabil.AddRange(item.AKCheckVote.Select(akcheckVote => akcheckVote.IDSchedaDisabilitaVoto));
+            }
+            return skDisabil;
+        }
+
         // --------------------------------------------------------------------------
         //  Caricamento dati
         // --------------------------------------------------------------------------

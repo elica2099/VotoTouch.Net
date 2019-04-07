@@ -83,7 +83,7 @@ namespace VotoTouch
 
                 case TAppStato.ssvVotoStart:
                     // devo capire in che modo sono
-                    TStartVoteMode ModoStart = Azionisti.HaDirittiDiVotoMultipli()
+                    ModoStart = Azionisti.HaDirittiDiVotoMultipli()
                         ? TStartVoteMode.vszMixedDiffer : TStartVoteMode.vszNormal;
                     CBaseTipoVoto ModoVoto = Azionisti.HaDirittiDiVotoMultipli()
                         ? Votazioni.ClasseTipoVotoStartDiff
@@ -134,14 +134,31 @@ namespace VotoTouch
                     if (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata) &&
                         Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente()))
                     {
-                        // calibro il touch sul voto
-                        oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
+                        // se ak è attivato devo controllare se lui è abilitato al voto
+                        if (VTConfig.AKCheckVote && 
+                            Azionisti.checkAKVotoAbilitatoInVotoCorrente(Votazioni.getAKSchedeDisabilitateInSingleVote(Votazioni.VotoCorrente.IDVoto)))
+                        {
+                            // la votazione è inibita
+                            //MessageBox.Show("non puo!!!");
+                            Rectangle FFormRect = new Rectangle(0, 0, Width, Height);
+                            oVotoTouch.CalcolaAKTouchVote(Votazioni.VotoCorrente, FFormRect);
+
+                            // ora metto in quadro l'immagine, che deve essere presa da un file composto da
+                            oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + "_no");
+                        }
+                        else
+                        {
+                            // la votazione è corretta
+                            // calibro il touch sul voto
+                            oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
+                            // ora metto in quadro l'immagine, che deve essere presa da un file composto da
+                            oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
+                        }
+
                         // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare da un'annulla
                         SettaComponenti(false);
                         // cancello i voti temporanei correnti 
                         CancellaTempVotiCorrenti();
-                        // ora metto in quadro l'immagine, che deve essere presa da un file composto da
-                        oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
                         // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
                         lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" +
                                                Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
@@ -169,6 +186,46 @@ namespace VotoTouch
                         CambiaStato();
                     }
                     break;
+
+                //case TAppStato.ssvVotoNonAbilitato:
+                //    // questo è uno stato che arriva da AKVote, mi comporto normalmente, salvo che non gli permetto di votare
+                //    if (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata) &&
+                //        Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente()))
+                //    {
+
+                //        // cancello i voti temporanei correnti 
+                //        CancellaTempVotiCorrenti();
+                //        // ora metto in quadro l'immagine, che deve essere presa da un file composto da
+                //        oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + "_no");
+                //        // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
+                //        lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" +
+                //                               Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(
+                //                                   IsVotazioneDifferenziata);
+                //        lbNomeDisgiunto.Visible = true;
+                //        //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
+                //        int dir_riman2 = IsVotazioneDifferenziata
+                //            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
+                //            : Azionisti.DammiCountAzioniVoto_VotoCorrente(); // DammiCountDirittiDiVoto_VotoCorrente();
+                //        int deleghe_riman2 = IsVotazioneDifferenziata
+                //            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
+                //            : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
+                //        if (!IsVotazioneDifferenziata && deleghe_riman2 > 1)
+                //            lbNomeDisgiunto.Text += " e altre " + (dir_riman2 - 1).ToString() + " deleghe";
+                //        lbDirittiDiVoto.Text = dir_riman2.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
+                //        if (IsVotazioneDifferenziata)
+                //            lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
+                //        lbDirittiDiVoto.Visible = true;
+                //    }
+                //    else
+                //    {
+                //        // si sono verificati dei problemi, lo segnalo
+                //        Logging.WriteToLog("Errore fn Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata), zero ");
+                //        MessageBox.Show("Si è verificato un errore **AK** (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata))" + "\n\n" +
+                //                        "Chiamare operatore esterno.\n\n ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //        Stato = TAppStato.ssvBadge;
+                //        CambiaStato();
+                //    }
+                //    break;
 
                 case TAppStato.ssvVotoConferma:
                     oVotoTouch.CalcolaTouchSpecial(Votazioni.ClasseTipoVotoConferma);

@@ -57,9 +57,11 @@ namespace VotoTouch
         public string Data_Path;                // path della cartella data
         public string   LogVotiNomeFile;        // nome file del log
         public bool CtrlPrimoAvvio;             // serve per chiudere la finestra in modo corretto
-        
+
+        // start del voto
+	    public TStartVoteMode ModoStart = TStartVoteMode.vszNormal;
         // Votazioni
-	    public TListaVotazioni Votazioni;
+        public TListaVotazioni Votazioni;
         // Dati dell'azionista e delle deleghe che si porta dietro
         public TListaAzionisti Azionisti;
         // variabili relative alla votazione
@@ -331,6 +333,7 @@ namespace VotoTouch
             oVotoTouch.PremutoContrarioTutti += new ehPremutoContrarioTutti(onPremutoContrarioTutti);
             oVotoTouch.PremutoAstenutoTutti += new ehPremutoAstenutoTutti(onPremutoAstenutoTutti);
 		    oVotoTouch.PremutoGruppiAvanti += new ehPremutoGruppiAvanti(onPremutoVotoValidoGruppo);
+		    oVotoTouch.Premuto_AK_Avanti += new ehPremuto_AK_Avanti(onPremuto_AK_Avanti);
 
             // classe del tema
             oVotoTheme = new CVotoTheme();
@@ -550,15 +553,28 @@ namespace VotoTouch
                 // se sono nello stato di votostart e il n. di voti è > 1
                 if (Stato == TAppStato.ssvVotoStart) // && Azionisti.HaDirittiDiVotoMultipli())
                 {
+
                     // faccio il paint del numero di diritti di voto nel bottone in basso a sx , 
                     // in questo caso uso un paint e non una label per un problema grafico di visibilità
                     int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
-                                   ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
-                                   : Azionisti.DammiMaxNumeroVotiTotali();
-                    string ss = string.Format("{0:N0}", VVoti.ToString());
-                    if (Azionisti.HaDirittiDiVotoMultipli()) ss += "(d)";
-                    oVotoTheme.PaintDirittiDiVoto(sender, e, ss);
-                    //oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
+                        ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
+                        : Azionisti.DammiMaxNumeroVotiTotali();
+                    string ssVoti = string.Format("{0:N0}", VVoti.ToString());
+
+                    switch (ModoStart)
+                    {
+                        case TStartVoteMode.vszNormal:
+                            // non stampo nessuna etichetta
+                            break;
+                        case TStartVoteMode.vszMixedDiffer:
+                            // stampo l'etichetta
+                            ssVoti += "(d)";
+                            oVotoTheme.PaintDirittiDiVoto(sender, e, ssVoti);
+                            break;
+                        case TStartVoteMode.vszOnlyDiffer:
+                            // non stampo nessuna etichetta
+                            break;
+                    }
                 }
             }
 

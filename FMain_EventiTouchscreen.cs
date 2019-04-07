@@ -321,6 +321,32 @@ namespace VotoTouch
             FMsgExit = null;
         }
 
+        public void onPremuto_AK_Avanti(object source, int VParam)
+        {
+            // ContrarioATutti
+            VotoEspresso = VSDecl.VOTO_AK;
+            VotoEspressoStr = "";
+            VotoEspressoStrUp = ""; 
+            VotoEspressoStrNote = "";
+            // nuova versione array
+            TVotoEspresso2 VExp = new TVotoEspresso2
+            {
+                NumVotaz = Votazioni.VotoCorrente.IDVoto,
+                NumSubVotaz = 0,
+                VotoExp_IDScheda = VSDecl.VOTO_AK,
+                TipoCarica = 0,
+            };
+            FVotiExpr.Add(VExp);
+            // confermo in automatico
+            // CHiamo la funzione di Conferma Voti di Azionisti con l'array di voti espressi
+            Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
+
+            // cambio stato
+            Stato = Azionisti.TuttiIDirittiSonoStatiEspressi() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
+            // cambio
+            CambiaStato();
+        }
+
         // ----------------------------------------------------------------
         //	 CONFERMA - ANNULLA VOTI
         //      versione con SalvaVotoNonConfermato

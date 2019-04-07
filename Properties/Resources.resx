@@ -268,4 +268,7 @@
   <data name="SAPP_SKCONTRARIO" xml:space="preserve">
     <value>Contrario</value>
   </data>
+  <data name="SAPP_VOTE_VOTIPER" xml:space="preserve">
+    <value> voti per</value>
+  </data>
 </root>

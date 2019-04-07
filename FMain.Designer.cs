@@ -161,7 +161,7 @@ namespace VotoTouch
             this.lbDisgiuntoRimangono.ForeColor = System.Drawing.Color.Black;
             this.lbDisgiuntoRimangono.Location = new System.Drawing.Point(206, 410);
             this.lbDisgiuntoRimangono.Name = "lbDisgiuntoRimangono";
-            this.lbDisgiuntoRimangono.Size = new System.Drawing.Size(176, 35);
+            this.lbDisgiuntoRimangono.Size = new System.Drawing.Size(142, 27);
             this.lbDisgiuntoRimangono.TabIndex = 108;
             this.lbDisgiuntoRimangono.Text = "Rimangono:";
             this.lbDisgiuntoRimangono.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -220,7 +220,7 @@ namespace VotoTouch
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 6);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(177, 17);
+            this.label1.Size = new System.Drawing.Size(131, 13);
             this.label1.TabIndex = 3;
             this.label1.Text = "Informazioni sulla Versione";
             // 
@@ -248,10 +248,9 @@ namespace VotoTouch
             // lbVersion
             // 
             this.lbVersion.FormattingEnabled = true;
-            this.lbVersion.ItemHeight = 17;
             this.lbVersion.Location = new System.Drawing.Point(1, 33);
             this.lbVersion.Name = "lbVersion";
-            this.lbVersion.Size = new System.Drawing.Size(294, 395);
+            this.lbVersion.Size = new System.Drawing.Size(294, 394);
             this.lbVersion.TabIndex = 0;
             // 
             // pnBadge
@@ -318,7 +317,7 @@ namespace VotoTouch
             this.edtBadge.Font = new System.Drawing.Font("Arial", 20F);
             this.edtBadge.Location = new System.Drawing.Point(6, 5);
             this.edtBadge.Name = "edtBadge";
-            this.edtBadge.Size = new System.Drawing.Size(136, 46);
+            this.edtBadge.Size = new System.Drawing.Size(136, 38);
             this.edtBadge.TabIndex = 50;
             this.edtBadge.KeyDown += new System.Windows.Forms.KeyEventHandler(this.edtBadge_KeyDown);
             this.edtBadge.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.edtBadge_KeyPress);
@@ -394,7 +393,7 @@ namespace VotoTouch
             this.labelMousee.AutoSize = true;
             this.labelMousee.Location = new System.Drawing.Point(7, 9);
             this.labelMousee.Name = "labelMousee";
-            this.labelMousee.Size = new System.Drawing.Size(46, 17);
+            this.labelMousee.Size = new System.Drawing.Size(35, 13);
             this.labelMousee.TabIndex = 131;
             this.labelMousee.Text = "label2";
             // 

@@ -16,7 +16,8 @@ namespace VotoTouch
     public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
         steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
         steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti,
-        steBottoneUscita, steSkContrarioTutti, steSkAstenutoTutti, steGruppoValido, steGruppoAvanti
+        steBottoneUscita, steSkContrarioTutti, steSkAstenutoTutti, steGruppoValido,
+        steGruppoAvanti, ste_AK_Avanti
     };
 
     // struttura zone dello schermo
@@ -74,6 +75,8 @@ namespace VotoTouch
     public delegate void ehPremutoAstenutoTutti(object source, int VParam);
     // gruppi
     public delegate void ehPremutoGruppiAvanti(object source, int VParam, ref List<int> voti);
+    // AK
+    public delegate void ehPremuto_AK_Avanti(object source, int VParam);
 
 
     public delegate void ehTouchWatchDog(object source, int VParam);
@@ -107,6 +110,8 @@ namespace VotoTouch
         public event ehPremutoAstenutoTutti PremutoAstenutoTutti;
         // gruppi
 	    public event ehPremutoGruppiAvanti PremutoGruppiAvanti;
+	    // gruppi
+	    public event ehPremuto_AK_Avanti Premuto_AK_Avanti;
 
         public event ehTouchWatchDog TouchWatchDog;
 
@@ -240,6 +245,17 @@ namespace VotoTouch
             }
             return 0;
         }
+
+	    public int CalcolaAKTouchVote(TNewVotazione FVotaz, Rectangle FFormRect)
+	    {
+	        Tz = null;
+
+	        CTipoVoto_AK_NoAbilitato akvoto = new CTipoVoto_AK_NoAbilitato(FFormRect);
+            akvoto.GetTouchSpecialZone(TAppStato.ssvVotoNonAbilitato, TStartVoteMode.vszNormal, true);
+	        Tz = akvoto.TouchZone;
+
+            return 0;
+	    }
 
         // --------------------------------------------------------------
         //  Touch
@@ -397,6 +413,11 @@ namespace VotoTouch
                             votis.Clear();
                             votis = null;
                         }
+                        break;
+
+                    case TTEvento.ste_AK_Avanti:
+                        // è il voto AK
+                        if (Premuto_AK_Avanti != null) { Premuto_AK_Avanti(this, a.expr); }
                         break;
 
                     case TTEvento.steSkBianca:

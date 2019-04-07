@@ -122,7 +122,7 @@ namespace VotoTouch
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
-            lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
+            lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma) + rm.GetString("SAPP_VOTE_VOTIPER");
 
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {

@@ -7,7 +7,7 @@
     <ProjectGuid>{D3BF99C7-CA07-4581-A6C7-A8FC69FFE6B4}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ApplicationIcon>vote.ico</ApplicationIcon>
+    <ApplicationIcon>icon-poll1.ico</ApplicationIcon>
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>VotoTouch</AssemblyName>
@@ -164,6 +164,7 @@
     <Compile Include="Test\TestVotoTouch.cs" />
     <Compile Include="Tipi_Voto\CBaseTipoVoto.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_AConferma.cs" />
+    <Compile Include="Tipi_Voto\CTipoVoto_AK_NoAbilitato.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_AStart.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoSmall.cs" />
     <Compile Include="Tipi_Voto\CTipoVoto_CandidatoOld.cs" />
@@ -252,6 +253,7 @@
     <EmbeddedResource Include="Data\Query\DammiVotazioniTotem.sql" />
     <EmbeddedResource Include="Data\Query\DammiBadgePresenteGeas.sql" />
     <EmbeddedResource Include="Data\Query\MettiBadgePresenteGeas.sql" />
+    <Content Include="icon-poll1.ico" />
     <Content Include="Resources\barcode_red.png" />
     <EmbeddedResource Include="Resources\check.png" />
     <EmbeddedResource Include="Resources\btn_tondo.png" />

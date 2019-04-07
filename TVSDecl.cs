@@ -20,7 +20,7 @@ namespace VotoTouch
     public enum TTipoVoto:  int  {stvZero, stvLista, stvCandidato, stvCandidatoSing, stvMultiCandidato, stvGruppo};
 
 	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma, ssvVotoContinua, ssvSalvaVoto, 
-                                ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto};
+                                ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto, ssvVotoNonAbilitato};
 
 	public enum TStatoSemaforo: int {stsNulla, stsLibero, stsOccupato, stsErrore, stsFineoccupato, stsChiusoVoto};
 
@@ -253,6 +253,7 @@ namespace VotoTouch
         public const int VOTO_ASTENUTO_TUTTI = 226;
         public const int VOTO_CONTRARIO_TUTTI = 227;
         public const int VOTO_BTN_USCITA = -3;
+        public const int VOTO_AK = -88;
 
         // n. di selezioni per pagina in caso di VOTO_CANDIDATO / alfabeto
         public const int CANDIDATI_PER_PAGINA = 10;

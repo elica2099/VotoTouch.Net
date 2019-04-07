@@ -233,7 +233,6 @@ namespace VotoTouch
             else
             {
                 // TODO: ATTENZIONEEEEEEEEEE SPA DammiMaxNumeroAzioniTotali NON è IMPLEMENTATO SE AbilitaDirittiNonVoglioVotare
-
                 var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
                 if (AzionNoVotato.Count() > 0)
                 {
@@ -254,9 +253,30 @@ namespace VotoTouch
             }
         }
 
-        #endregion
-
         //  AK_DIRITTI di voto --------------------------------------------------------------------------
+
+        public int DammiAKSoloVotiAbilitatiTotali()
+        {
+            var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+            if (AzionNoVotato.Count() > 0)
+            {
+                var maxDiritti = AzionNoVotato
+                    .GroupBy(n => n.IDVotaz)
+                    .Select(group =>
+                        new
+                        {
+                            IDVotaz = group.Key,
+                            //Diritti = group.ToList(),
+                            Count = group.Count()
+                        })
+                    .Max(n => n.Count);
+                return (int)maxDiritti;
+            }
+            else
+                return 0;
+        }
+
+        #endregion
 
         public int checkAKIsPresentDelegheDifformi(List<int> AKSkDisabilitate)
         {
@@ -282,6 +302,23 @@ namespace VotoTouch
             // se ce ne sono bisogan vedere se sono solo qualcuna o tutte
             return nskdiff >= _Azionisti.Count ? VSDecl.AK_SKDIFF_PRESENT_ALL : VSDecl.AK_SKDIFF_PRESENT_MIXED;
         }
+
+        public bool checkAKVotoAbilitatoInVotoCorrente(List<int> AKSkDisabilitate)
+        {
+            // questa funzione vede se nei diritti di voto correnti (ListaDiritti_VotoCorrente)
+            // ci sono schede disabilitate, se si disabilita il voto
+            bool IsPresent = false;
+
+            foreach (TAzionista azionista in ListaDiritti_VotoCorrente)
+            {
+                if (AKSkDisabilitate.Any(x => x == azionista.AK_PrevVote))
+                {
+                    IsPresent = true;
+                }
+            }
+            return IsPresent;
+        }
+
 
         // --------------------------------------------------------------------------
         //  Gestione della procedura di votazione
