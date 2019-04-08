@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace VotoTouch
 {
@@ -255,9 +256,17 @@ namespace VotoTouch
 
         //  AK_DIRITTI di voto --------------------------------------------------------------------------
 
-        public int DammiAKSoloVotiAbilitatiTotali()
+        public int DammiAKSoloVotiAbilitatiTotali(List<int> AKSkDisabilitate)
         {
-            var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+            var AzionNoVotato_ok = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
+            List<TAzionista> AzionNoVotato = new List<TAzionista>();
+            foreach (TAzionista itemAzionista in AzionNoVotato_ok)
+            {
+                if (!AKSkDisabilitate.Any(x => x == itemAzionista.AK_PrevVote))
+                    AzionNoVotato.Add(itemAzionista);
+            }
+            //List<TAzionista> AzionNoVotato = AzionNoVotato_ok.Where(itemAzionista => AKSkDisabilitate.Any(x => x == itemAzionista.AK_PrevVote)).ToList();
+
             if (AzionNoVotato.Count() > 0)
             {
                 var maxDiritti = AzionNoVotato
@@ -266,10 +275,10 @@ namespace VotoTouch
                         new
                         {
                             IDVotaz = group.Key,
-                            //Diritti = group.ToList(),
+                            Sum = group.Sum(x => x.NVoti),
                             Count = group.Count()
                         })
-                    .Max(n => n.Count);
+                    .Max(n => n.Sum);
                 return (int)maxDiritti;
             }
             else

@@ -171,7 +171,7 @@ namespace VotoTouch
                                             ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
                                             : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
                         if (!IsVotazioneDifferenziata && deleghe_riman > 1)
-                            lbNomeDisgiunto.Text += " e altre " + (dir_riman - 1).ToString() + " deleghe";
+                            lbNomeDisgiunto.Text += " e altre " + (deleghe_riman - 1).ToString() + " deleghe";
                         lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
                         if (IsVotazioneDifferenziata) lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
                         lbDirittiDiVoto.Visible = true;
@@ -187,45 +187,6 @@ namespace VotoTouch
                     }
                     break;
 
-                //case TAppStato.ssvVotoNonAbilitato:
-                //    // questo è uno stato che arriva da AKVote, mi comporto normalmente, salvo che non gli permetto di votare
-                //    if (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata) &&
-                //        Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente()))
-                //    {
-
-                //        // cancello i voti temporanei correnti 
-                //        CancellaTempVotiCorrenti();
-                //        // ora metto in quadro l'immagine, che deve essere presa da un file composto da
-                //        oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + "_no");
-                //        // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
-                //        lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" +
-                //                               Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(
-                //                                   IsVotazioneDifferenziata);
-                //        lbNomeDisgiunto.Visible = true;
-                //        //lbNomeDisgiunto.Visible = (IsVotazioneDifferenziata || Azionisti.DammiCountDirittiDiVoto_VotoCorrente() ==1);
-                //        int dir_riman2 = IsVotazioneDifferenziata
-                //            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
-                //            : Azionisti.DammiCountAzioniVoto_VotoCorrente(); // DammiCountDirittiDiVoto_VotoCorrente();
-                //        int deleghe_riman2 = IsVotazioneDifferenziata
-                //            ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
-                //            : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
-                //        if (!IsVotazioneDifferenziata && deleghe_riman2 > 1)
-                //            lbNomeDisgiunto.Text += " e altre " + (dir_riman2 - 1).ToString() + " deleghe";
-                //        lbDirittiDiVoto.Text = dir_riman2.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
-                //        if (IsVotazioneDifferenziata)
-                //            lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
-                //        lbDirittiDiVoto.Visible = true;
-                //    }
-                //    else
-                //    {
-                //        // si sono verificati dei problemi, lo segnalo
-                //        Logging.WriteToLog("Errore fn Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata), zero ");
-                //        MessageBox.Show("Si è verificato un errore **AK** (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata))" + "\n\n" +
-                //                        "Chiamare operatore esterno.\n\n ", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //        Stato = TAppStato.ssvBadge;
-                //        CambiaStato();
-                //    }
-                //    break;
 
                 case TAppStato.ssvVotoConferma:
                     oVotoTouch.CalcolaTouchSpecial(Votazioni.ClasseTipoVotoConferma);

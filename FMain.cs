@@ -559,7 +559,8 @@ namespace VotoTouch
                     int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
                         ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
                         : Azionisti.DammiMaxNumeroVotiTotali();
-                    string ssVoti = string.Format("{0:N0}", VVoti.ToString());
+                    string ssVoti = $"{VVoti:#,0}";
+                    //string ssVoti = string.Format("{0:#,0}", VVoti.ToString());
 
                     switch (ModoStart)
                     {
@@ -572,7 +573,10 @@ namespace VotoTouch
                             oVotoTheme.PaintDirittiDiVoto(sender, e, ssVoti);
                             break;
                         case TStartVoteMode.vszOnlyDiffer:
-                            // non stampo nessuna etichetta
+                            // stampo etichetta ak
+                            int AKVotiTotali = Azionisti.DammiAKSoloVotiAbilitatiTotali(Votazioni.getAKSchedeDisabilitateInSingleVote(Votazioni.VotoCorrente.IDVoto));
+                            string s_AKVotiTotali = $"{AKVotiTotali:#,0}";
+                            oVotoTheme.Paint_AK_DirittiDiVoto(sender, e, s_AKVotiTotali); // ssVoti);
                             break;
                     }
                 }

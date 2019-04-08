@@ -41,13 +41,13 @@ namespace VotoTouch
             // diritti di voto  
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {
-                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
+                string ss = $"{Azionisti.DammiMaxNumeroDirittiDiVotoTotali():#,0}"; // string.Format("{0:N0}", Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
                 lbDirittiDiVoto.Text = ss + rm.GetString("SAPP_VOTE_D_DIRITTI"); // " Diritti di voto";
                 lbDirittiStart.Text = ss;
             }
             else
             {
-                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroVotiTotali());
+                string ss = $"{Azionisti.DammiMaxNumeroVotiTotali():#,0}"; // string.Format("{0:N0}", Azionisti.DammiMaxNumeroVotiTotali());
                 lbDirittiDiVoto.Text = ss;
                 lbDirittiStart.Text = ss;
             }
@@ -122,7 +122,7 @@ namespace VotoTouch
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
-            lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma) + rm.GetString("SAPP_VOTE_VOTIPER");
+            lbConfermaNVoti.Text = $"{NDirittiAzioniConferma:#,0}" + rm.GetString("SAPP_VOTE_VOTIPER"); // string.Format("{0:N0}", NDirittiAzioniConferma) + rm.GetString("SAPP_VOTE_VOTIPER");
 
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {
