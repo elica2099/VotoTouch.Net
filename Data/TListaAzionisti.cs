@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace VotoTouch
 {
@@ -14,20 +13,16 @@ namespace VotoTouch
         public int IDAzion { get; set; }
         public int ProgDeleg { get; set; }
         public string RaSo { get; set; }
-	    public string CoFi { get; set; }
         public double NVoti { get; set; }
         public double Voti1 { get; set; }
         public double Voti2 { get; set; }
         public string Sesso { get; set; }
         public int HaVotato { get; set; }
-        // AK (BPER)
-	    public int AK_PrevVote { get; set; }
-
-
+        
         // dati del voto 
         public int IDVotaz { get; set; }
         // voti
-        public List<TVotoEspresso2> VotiEspressi;
+        public List<TVotoEspresso> VotiEspressi;
 
         // test se sk nonvoto
         public bool HaNonVotato { 
@@ -55,16 +50,14 @@ namespace VotoTouch
         public TAzionista()
         {
             HaVotato = TListaAzionisti.VOTATO_NO;
-            VotiEspressi = new List<TVotoEspresso2>();
-            AK_PrevVote = 0;
+            VotiEspressi = new List<TVotoEspresso>();
         }
 
         public void CopyFrom(ref TAzionista cp)
         {
             IDBadge = cp.IDBadge; CoAz = cp.CoAz; IDAzion = cp.IDAzion; ProgDeleg = cp.ProgDeleg;
             RaSo = cp.RaSo; NVoti = cp.NVoti; Sesso = cp.Sesso; HaVotato = cp.HaVotato;
-            IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2; CoFi = cp.CoFi;
-            AK_PrevVote = cp.AK_PrevVote;
+            IDVotaz = cp.IDVotaz; Voti1 = cp.Voti1; Voti2 = cp.Voti2;
         }
 	}
 
@@ -109,7 +102,9 @@ namespace VotoTouch
             // Distruttore
         }
 
-        //  Ritorno Diritti di voto --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
+        //  Ritorno Diritti di voto
+        // --------------------------------------------------------------------------
 
         #region Ritorno Diritti di voto 
 
@@ -199,7 +194,9 @@ namespace VotoTouch
 
         #endregion
 
-        // Ritorno Numero di Voti --------------------------------------------------------------------------
+        // --------------------------------------------------------------------------
+        //  Ritorno Numero di Voti
+        // --------------------------------------------------------------------------
 
         #region Ritorno Numero di Voti
 
@@ -234,6 +231,7 @@ namespace VotoTouch
             else
             {
                 // TODO: ATTENZIONEEEEEEEEEE SPA DammiMaxNumeroAzioniTotali NON è IMPLEMENTATO SE AbilitaDirittiNonVoglioVotare
+
                 var AzionNoVotato = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
                 if (AzionNoVotato.Count() > 0)
                 {
@@ -254,80 +252,7 @@ namespace VotoTouch
             }
         }
 
-        //  AK_DIRITTI di voto --------------------------------------------------------------------------
-
-        public int DammiAKSoloVotiAbilitatiTotali(List<int> AKSkDisabilitate)
-        {
-            var AzionNoVotato_ok = Azionisti.Where(n => n.HaVotato == VOTATO_NO);
-            List<TAzionista> AzionNoVotato = new List<TAzionista>();
-            foreach (TAzionista itemAzionista in AzionNoVotato_ok)
-            {
-                if (!AKSkDisabilitate.Any(x => x == itemAzionista.AK_PrevVote))
-                    AzionNoVotato.Add(itemAzionista);
-            }
-            //List<TAzionista> AzionNoVotato = AzionNoVotato_ok.Where(itemAzionista => AKSkDisabilitate.Any(x => x == itemAzionista.AK_PrevVote)).ToList();
-
-            if (AzionNoVotato.Count() > 0)
-            {
-                var maxDiritti = AzionNoVotato
-                    .GroupBy(n => n.IDVotaz)
-                    .Select(group =>
-                        new
-                        {
-                            IDVotaz = group.Key,
-                            Sum = group.Sum(x => x.NVoti),
-                            Count = group.Count()
-                        })
-                    .Max(n => n.Sum);
-                return (int)maxDiritti;
-            }
-            else
-                return 0;
-        }
-
         #endregion
-
-        public int checkAKIsPresentDelegheDifformi(List<int> AKSkDisabilitate)
-        {
-            // ritorna true se almeno 1 delega ha come voto precedente quello inibito, indipendentemente dal
-            // n. o tipo di votazione, questo perchè in tal caso (almeno 1) non può votare in maniera uniforme 
-            // ma per forza differenziato
-            bool IsPresent = false;
-            int nskdiff = 0;
-
-            foreach (TAzionista azionista in _Azionisti)
-            {
-                if (AKSkDisabilitate.Any(x => x == azionista.AK_PrevVote) )
-                {
-                    IsPresent = true;
-                    nskdiff++;
-                }
-            }
-            // ok in funzione di cosa è successo ritorno
-            if (!IsPresent)
-            {
-                return VSDecl.AK_NO_SKDIFF_PRESENT;
-            }
-            // se ce ne sono bisogan vedere se sono solo qualcuna o tutte
-            return nskdiff >= _Azionisti.Count ? VSDecl.AK_SKDIFF_PRESENT_ALL : VSDecl.AK_SKDIFF_PRESENT_MIXED;
-        }
-
-        public bool checkAKVotoAbilitatoInVotoCorrente(List<int> AKSkDisabilitate)
-        {
-            // questa funzione vede se nei diritti di voto correnti (ListaDiritti_VotoCorrente)
-            // ci sono schede disabilitate, se si disabilita il voto
-            bool IsPresent = false;
-
-            foreach (TAzionista azionista in ListaDiritti_VotoCorrente)
-            {
-                if (AKSkDisabilitate.Any(x => x == azionista.AK_PrevVote))
-                {
-                    IsPresent = true;
-                }
-            }
-            return IsPresent;
-        }
-
 
         // --------------------------------------------------------------------------
         //  Gestione della procedura di votazione
@@ -410,6 +335,7 @@ namespace VotoTouch
                 return 0;
         }
 
+
         public int DammiTotaleDirittiRimanenti_VotoCorrente()
         {
             if (ListaDiritti_VotoCorrente != null)
@@ -489,7 +415,7 @@ namespace VotoTouch
                 // resetto i voti, non si sa mai che possano essere doppi
                 a.VotiEspressi.Clear();
                 // carico i voti sull'array
-                foreach (TVotoEspresso2 v in AVotiDaSalvare)
+                foreach (TVotoEspresso v in AVotiDaSalvare)
                 {
                     a.VotiEspressi.Add(v);
                 }
@@ -499,7 +425,7 @@ namespace VotoTouch
             return true;
         }
 
-        public bool ConfermaVotiDaInterruzione(TVotoEspresso2 vz)
+        public bool ConfermaVotiDaInterruzione(TVotoEspresso vz)
         {
             foreach (TAzionista a in _Azionisti)
             {

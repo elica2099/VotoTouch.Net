@@ -17,19 +17,18 @@ using System;
 
 namespace VotoTouch
 {
-    public enum TTipoVoto:  int  {stvZero, stvLista, stvCandidato, stvCandidatoSing, stvMultiCandidato, stvGruppo};
+	
+	public enum TTipoVoto:  int  {stvNormale, stvLista, stvMulti};
 
-	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma, ssvVotoContinua, ssvSalvaVoto, 
-                                ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto, ssvVotoNonAbilitato};
+	public enum TAppStato: int {ssvBadge, ssvVotoStart, ssvVoto, ssvVotoConferma,ssvVotoContinua, ssvSalvaVoto, 
+                                ssvVotoFinito, ssvPreIntermezzo, ssvConfermaNonVoto};
 
 	public enum TStatoSemaforo: int {stsNulla, stsLibero, stsOccupato, stsErrore, stsFineoccupato, stsChiusoVoto};
 
 
-    public enum TStartVoteMode : int { vszNormal, vszMixedDiffer, vszOnlyDiffer }
-
     // configurazione del programma
-    //    static public class TTotemConfig
-    public static class VTConfig
+//    static public class TTotemConfig
+    static public class VTConfig
     {
         // CONFIGURAZIONE DINAMICA
         public static bool IsDemoMode;
@@ -38,47 +37,48 @@ namespace VotoTouch
         public static bool IsPaintTouch;
 
         // CONFIGURAZIONE GENERALE
-        public static int ModoAssemblea;
+        static public int ModoAssemblea;
         public static string ValAssemblea;
-        public static bool SalvaLinkVoto;
-        public static bool SalvaVotoNonConfermato;
-        public static bool SalvaVotoInGeas;
-        public static int MaxDeleghe;
-        public static bool AbilitaDifferenziatoSuRichiesta;
-        public static int IDSchedaUscitaForzata;
-        public static int ModoPosizioneAreeTouch;
-        public static int ControllaPresenze;
-        public static bool AbilitaBottoneUscita;
-        public static bool AttivaAutoRitornoVoto;
-        public static int TimeAutoRitornoVoto;
-        public static bool AbilitaDirittiNonVoglioVotare;
-        public static bool AKCheckVote;
-
+        static public bool SalvaLinkVoto;
+        static public bool SalvaVotoNonConfermato;
+        static public bool SalvaVotoInGeas;
+        static public int MaxDeleghe;
+        static public bool AbilitaDifferenziatoSuRichiesta;
+        static public int IDSchedaUscitaForzata;
+        static public int ModoPosizioneAreeTouch;
+        static public int ControllaPresenze;
+        static public bool AbilitaBottoneUscita;
+        static public bool AttivaAutoRitornoVoto;
+        static public int TimeAutoRitornoVoto;
+        static public bool AbilitaDirittiNonVoglioVotare;
+        
         // CONFIGURAZIONE LOCALE
-        public static string Postazione;
-        public static string Descrizione;
-        public static int IDSeggio;
-        public static bool Attivo;
-        public static bool VotoAperto;
-        public static int Sala;
+        static public string Postazione;
+        static public string Descrizione;
+        static public int IDSeggio;
+        static public bool Attivo;
+        static public bool VotoAperto;
+        static public int Sala;
         // Semaforo
-        public static bool UsaSemaforo;
-        public static string IP_Com_Semaforo;
-        public static int TipoSemaforo;
+        static public bool UsaSemaforo;
+        static public string IP_Com_Semaforo;
+        static public int TipoSemaforo;
         // Variabili di configurazione Lettore
-        public static bool UsaLettore;
-        public static int PortaLettore;
-        public static string CodiceUscita;
+        static public bool UsaLettore;
+        static public int PortaLettore;
+        static public string CodiceUscita;
         // codici impianto
-        public static int BadgeLen;
-        public static string CodImpianto;
+        static public int BadgeLen;
+        static public string CodImpianto;
 
         public static bool IsOrdinaria; // = ValAssemblea.Contains("O"); //CheckOrdinariaValAssem();
         public static bool IsStraordinaria; // = ValAssemblea.Contains("S"); //CheckStraordinariaValAssem();
 
         // Diciture Votazioni
-        public static string ContrarioATutti;
-        public static string AstenutoATutti;
+        static public string ContrarioATutti;
+        static public string AstenutoATutti;
+
+
 
         static VTConfig()
         {
@@ -94,7 +94,6 @@ namespace VotoTouch
             AbilitaDirittiNonVoglioVotare = false;
             IsDemoMode = false;
             NomeTotem = "";
-            AKCheckVote = false;
             ContrarioATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKCONTRARIOTUTTI");
             AstenutoATutti = Properties.Resources.ResourceManager.GetString("SAPP_SKASTENUTOTUTTI");
         }
@@ -155,29 +154,19 @@ namespace VotoTouch
         public int idx_end;
     }
 
-    public struct TVotoEspresso2
+    public struct TVotoEspresso
     {
         public int NumVotaz;
-        public int NumSubVotaz;
         public int TipoCarica;
         public int VotoExp_IDScheda;
         //public string Str_ListaElenco;
         //public string StrUp_DescrLista;
     }
 
-    public struct TAKCheckVote
-    {
-        public int NumVotaz;
-        public int NumSubVotaz;
-        public bool CheckAttivo;
-        public int IDSchedaDisabilitaVoto;
-
-    }
-
     public class VSDecl
     {
         // Classe che mantiene tutte le costanti
-        public const string VTS_VERSION = "4.3  30/03/2019 vs17 *";
+        public const string VTS_VERSION = "4.22  10/05/2018 vs17 **";
 
         public const string RIPETIZ_VOTO = "88889999";
         public const string ABILITA_DIFFERENZIATO = "88889900";
@@ -213,7 +202,6 @@ namespace VotoTouch
         public const string IMG_type = ".png";
 
         public const string IMG_Badge = "badge";
-        public const string IMG_VotostartD_AK = "votostart_D_AK";
         public const string IMG_VotostartD = "votostart_D";
         public const string IMG_Votostart1 = "votostart_1";
         public const string IMG_fine = "fine";
@@ -230,10 +218,10 @@ namespace VotoTouch
         public const int MODO_AGM_SPA = 1;            // spa
 
         // tipi di Votazione
-        //public const int VOTO_LISTA = 1;            // voto di lista
-        //public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
-        //public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
-        //public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
+        public const int VOTO_LISTA = 1;            // voto di lista
+        public const int VOTO_CANDIDATO = 2;        // voto per candidato a pagine
+        public const int VOTO_CANDIDATO_SING = 3;   // voto per candidato singola pagina (da cancellare)
+        public const int VOTO_MULTICANDIDATO = 4;   // voto multicandidato
 
         // tipo di sottovoto
         public const int SUBVOTO_NORMAL = 0;
@@ -253,7 +241,6 @@ namespace VotoTouch
         public const int VOTO_ASTENUTO_TUTTI = 226;
         public const int VOTO_CONTRARIO_TUTTI = 227;
         public const int VOTO_BTN_USCITA = -3;
-        public const int VOTO_AK = -88;
 
         // n. di selezioni per pagina in caso di VOTO_CANDIDATO / alfabeto
         public const int CANDIDATI_PER_PAGINA = 10;
@@ -296,10 +283,6 @@ namespace VotoTouch
         public const int TIM_CKVOTO_MIN = 15000;   // 15 secondi
         public const int TIM_CKVOTO_MAX = 40000;   // 50 secondi
         public const int TIME_AUTOCLOSEVOTO = 20;
-
-        public const int AK_NO_SKDIFF_PRESENT = 0;
-        public const int AK_SKDIFF_PRESENT_MIXED = 1;
-        public const int AK_SKDIFF_PRESENT_ALL = 2;
 
 
     }

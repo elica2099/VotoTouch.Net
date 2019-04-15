@@ -250,7 +250,7 @@ namespace VotoTouch
             this.lbVersion.FormattingEnabled = true;
             this.lbVersion.Location = new System.Drawing.Point(1, 33);
             this.lbVersion.Name = "lbVersion";
-            this.lbVersion.Size = new System.Drawing.Size(294, 394);
+            this.lbVersion.Size = new System.Drawing.Size(294, 407);
             this.lbVersion.TabIndex = 0;
             // 
             // pnBadge

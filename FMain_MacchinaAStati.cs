@@ -82,36 +82,12 @@ namespace VotoTouch
                     break;
 
                 case TAppStato.ssvVotoStart:
-                    // devo capire in che modo sono
-                    ModoStart = Azionisti.HaDirittiDiVotoMultipli()
-                        ? TStartVoteMode.vszMixedDiffer : TStartVoteMode.vszNormal;
-                    CBaseTipoVoto ModoVoto = Azionisti.HaDirittiDiVotoMultipli()
-                        ? Votazioni.ClasseTipoVotoStartDiff
-                        : Votazioni.ClasseTipoVotoStartNorm;
-
-                    // se è abilitato AKvote devo verificare il 3° caso
-                    if (VTConfig.AKCheckVote && Azionisti.HaDirittiDiVotoMultipli())
-                    {
-                        int AKMode = Azionisti.checkAKIsPresentDelegheDifformi(Votazioni.getAKSchedeDisabilitateInAllVote());
-                        switch (AKMode)
-                        {
-                            case VSDecl.AK_NO_SKDIFF_PRESENT:
-                            case VSDecl.AK_SKDIFF_PRESENT_ALL:
-                                ModoStart = TStartVoteMode.vszMixedDiffer;
-                                ModoVoto = Votazioni.ClasseTipoVotoStartDiff;
-                                break;
-                            case VSDecl.AK_SKDIFF_PRESENT_MIXED:
-                                ModoStart = TStartVoteMode.vszOnlyDiffer;
-                                ModoVoto = Votazioni.ClasseTipoVotoStartOnlyDiff;
-                                break;
-                        }
-                    }
-                    // ok ora che ho il tipo di modo, faccio
-                    oVotoTouch.CalcolaTouchSpecial(ModoVoto);
-                    // semaforo
+                    oVotoTouch.CalcolaTouchSpecial(Azionisti.HaDirittiDiVotoMultipli()
+                                                       ? Votazioni.ClasseTipoVotoStartDiff
+                                                       : Votazioni.ClasseTipoVotoStartNorm);
                     oSemaforo.SemaforoOccupato();
                     // quà metto il voto differenziato
-                    MettiComponentiStartVoto(ModoStart);
+                    MettiComponentiStartVoto();
                     break;
 
                 case TAppStato.ssvVoto:
@@ -134,31 +110,14 @@ namespace VotoTouch
                     if (Azionisti.EstraiAzionisti_VotoCorrente(IsVotazioneDifferenziata) &&
                         Votazioni.SetVotoCorrente(Azionisti.DammiIDVotazione_VotoCorrente()))
                     {
-                        // se ak è attivato devo controllare se lui è abilitato al voto
-                        if (VTConfig.AKCheckVote && 
-                            Azionisti.checkAKVotoAbilitatoInVotoCorrente(Votazioni.getAKSchedeDisabilitateInSingleVote(Votazioni.VotoCorrente.IDVoto)))
-                        {
-                            // la votazione è inibita
-                            //MessageBox.Show("non puo!!!");
-                            Rectangle FFormRect = new Rectangle(0, 0, Width, Height);
-                            oVotoTouch.CalcolaAKTouchVote(Votazioni.VotoCorrente, FFormRect);
-
-                            // ora metto in quadro l'immagine, che deve essere presa da un file composto da
-                            oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString() + "_no");
-                        }
-                        else
-                        {
-                            // la votazione è corretta
-                            // calibro il touch sul voto
-                            oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
-                            // ora metto in quadro l'immagine, che deve essere presa da un file composto da
-                            oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
-                        }
-
+                        // calibro il touch sul voto
+                        oVotoTouch.CalcolaTouchVote(Votazioni.VotoCorrente);
                         // ora devo capire che votazione è e mettere i componenti, attenzione che posso tornare da un'annulla
                         SettaComponenti(false);
                         // cancello i voti temporanei correnti 
                         CancellaTempVotiCorrenti();
+                        // ora metto in quadro l'immagine, che deve essere presa da un file composto da
+                        oVotoImg.LoadImages(VSDecl.IMG_voto + Votazioni.VotoCorrente.IDVoto.ToString());
                         // mostro comunque i diritti di voto in lbDirittiDiVoto e il nome di quello corrente
                         lbNomeDisgiunto.Text = rm.GetString("SAPP_VOTE_D_RASO") + "\n" +
                                                Azionisti.DammiNomeAzionistaInVoto_VotoCorrente(IsVotazioneDifferenziata);
@@ -171,7 +130,7 @@ namespace VotoTouch
                                             ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
                                             : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
                         if (!IsVotazioneDifferenziata && deleghe_riman > 1)
-                            lbNomeDisgiunto.Text += " e altre " + (deleghe_riman - 1).ToString() + " deleghe";
+                            lbNomeDisgiunto.Text += " e altre " + (dir_riman - 1).ToString() + " deleghe";
                         lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
                         if (IsVotazioneDifferenziata) lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
                         lbDirittiDiVoto.Visible = true;
@@ -186,7 +145,6 @@ namespace VotoTouch
                         CambiaStato();
                     }
                     break;
-
 
                 case TAppStato.ssvVotoConferma:
                     oVotoTouch.CalcolaTouchSpecial(Votazioni.ClasseTipoVotoConferma);

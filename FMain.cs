@@ -57,11 +57,9 @@ namespace VotoTouch
         public string Data_Path;                // path della cartella data
         public string   LogVotiNomeFile;        // nome file del log
         public bool CtrlPrimoAvvio;             // serve per chiudere la finestra in modo corretto
-
-        // start del voto
-	    public TStartVoteMode ModoStart = TStartVoteMode.vszNormal;
+        
         // Votazioni
-        public TListaVotazioni Votazioni;
+	    public TListaVotazioni Votazioni;
         // Dati dell'azionista e delle deleghe che si porta dietro
         public TListaAzionisti Azionisti;
         // variabili relative alla votazione
@@ -332,8 +330,6 @@ namespace VotoTouch
             oVotoTouch.PremutoBottoneUscita += new ehPremutoBottoneUscita(onPremutoBottoneUscita);
             oVotoTouch.PremutoContrarioTutti += new ehPremutoContrarioTutti(onPremutoContrarioTutti);
             oVotoTouch.PremutoAstenutoTutti += new ehPremutoAstenutoTutti(onPremutoAstenutoTutti);
-		    oVotoTouch.PremutoGruppiAvanti += new ehPremutoGruppiAvanti(onPremutoVotoValidoGruppo);
-		    oVotoTouch.Premuto_AK_Avanti += new ehPremuto_AK_Avanti(onPremuto_AK_Avanti);
 
             // classe del tema
             oVotoTheme = new CVotoTheme();
@@ -519,11 +515,9 @@ namespace VotoTouch
                 oVotoTouch.PaintTouch(sender, e);
 
                 // se la votazione corrente è di candidato su più pagine disegno i rettangoli
-                if (Stato == TAppStato.ssvVoto &&
-                    (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvCandidato ||
-                     Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvCandidatoSing))
-                    //(Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
-                    //    Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
+                if (Stato == TAppStato.ssvVoto && 
+                    (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO ||
+                        Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_CANDIDATO_SING))
                 {
                     // paint delle label Aggiuntive
                     //oVotoTheme.PaintlabelProposteCdaAlt(sender, e, ref Votazioni.VotoCorrente, true);
@@ -533,9 +527,7 @@ namespace VotoTouch
                         oVotoTheme.BaseFontCandidatoBold, oVotoTheme.BaseColorCandidato);
                 }
                 // se la votazione corrente è di MULTIcandidato su più pagine disegno i rettangoli
-                if (Stato == TAppStato.ssvVoto && 
-                    (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato || 
-                        Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvGruppo)) // VSDecl.VOTO_MULTICANDIDATO)
+                if (Stato == TAppStato.ssvVoto && Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
                 {
                     // paint delle label Aggiuntive
                     oVotoTheme.PaintlabelProposteCdaAlt(sender, e, Votazioni.VotoCorrente, false);
@@ -553,32 +545,15 @@ namespace VotoTouch
                 // se sono nello stato di votostart e il n. di voti è > 1
                 if (Stato == TAppStato.ssvVotoStart) // && Azionisti.HaDirittiDiVotoMultipli())
                 {
-
                     // faccio il paint del numero di diritti di voto nel bottone in basso a sx , 
                     // in questo caso uso un paint e non una label per un problema grafico di visibilità
                     int VVoti = VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP
-                        ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
-                        : Azionisti.DammiMaxNumeroVotiTotali();
-                    string ssVoti = $"{VVoti:#,0}";
-                    //string ssVoti = string.Format("{0:#,0}", VVoti.ToString());
-
-                    switch (ModoStart)
-                    {
-                        case TStartVoteMode.vszNormal:
-                            // non stampo nessuna etichetta
-                            break;
-                        case TStartVoteMode.vszMixedDiffer:
-                            // stampo l'etichetta
-                            ssVoti += "(d)";
-                            oVotoTheme.PaintDirittiDiVoto(sender, e, ssVoti);
-                            break;
-                        case TStartVoteMode.vszOnlyDiffer:
-                            // stampo etichetta ak
-                            int AKVotiTotali = Azionisti.DammiAKSoloVotiAbilitatiTotali(Votazioni.getAKSchedeDisabilitateInSingleVote(Votazioni.VotoCorrente.IDVoto));
-                            string s_AKVotiTotali = $"{AKVotiTotali:#,0}";
-                            oVotoTheme.Paint_AK_DirittiDiVoto(sender, e, s_AKVotiTotali); // ssVoti);
-                            break;
-                    }
+                                   ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
+                                   : Azionisti.DammiMaxNumeroVotiTotali();
+                    string ss = string.Format("{0:N0}", VVoti.ToString());
+                    if (Azionisti.HaDirittiDiVotoMultipli()) ss += "(d)";
+                    oVotoTheme.PaintDirittiDiVoto(sender, e, ss);
+                    //oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
                 }
             }
 
@@ -686,10 +661,9 @@ namespace VotoTouch
 
             if (!VTConfig.AbilitaDirittiNonVoglioVotare)
             {
-                TVotoEspresso2 vz = new TVotoEspresso2
+                TVotoEspresso vz = new TVotoEspresso
                     {
                         NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                        NumSubVotaz = 0,
                         VotoExp_IDScheda = VTConfig.IDSchedaUscitaForzata,
                         TipoCarica = 0,
                         //Str_ListaElenco = "",
@@ -962,13 +936,11 @@ namespace VotoTouch
             lbVersion.Items.Add("AbilitaDirittiNonVoglioVotare: " + VTConfig.AbilitaDirittiNonVoglioVotare.ToString());
             lbVersion.Items.Add("TimerAutoritorno: " + VTConfig.AttivaAutoRitornoVoto.ToString());
             lbVersion.Items.Add("Tempo TimerAutoritorno (ms): " + VTConfig.TimeAutoRitornoVoto.ToString());
-            lbVersion.Items.Add("AK_CheckVote: " + VTConfig.AKCheckVote.ToString());
             lbVersion.Items.Add("");
             // le votazioni
             foreach (TNewVotazione fVoto in Votazioni.Votazioni)
             {
-                lbVersion.Items.Add("Voto: " + fVoto.IDVoto.ToString() +
-                    ", Tipo: " +
+                lbVersion.Items.Add("Voto: " + fVoto.IDVoto.ToString() + ", Tipo: " +
                     fVoto.TipoVoto.ToString() + ", " + fVoto.Descrizione);
                 lbVersion.Items.Add("   NListe: " + fVoto.NListe + ", MaxScelte: " +
                     fVoto.MaxScelte);
@@ -978,9 +950,7 @@ namespace VotoTouch
                 for (z = 0; z < fVoto.NListe; z++)
                 {
                     a = (TNewLista)fVoto.Liste[z];
-                    lbVersion.Items.Add("    Lista:" + a.IDLista.ToString() + 
-                        ", idSubV: " + a.NumSubVotaz + 
-                        ", IdSk:" +
+                    lbVersion.Items.Add("    Lista:" + a.IDLista.ToString() + ", IdSk:" +
                         a.IDScheda.ToString() + ", " + a.DescrLista + ", p" +
                         a.Pag.ToString() + " " + a.PagInd + "  cda: " + a.PresentatodaCDA.ToString());
                 }
@@ -1005,7 +975,7 @@ namespace VotoTouch
                 lbVersion.Items.Add("Badge: " + c.IDBadge.ToString() + " " + c.RaSo.Trim());
                 lbVersion.Items.Add("   IDazion:" + c.IDAzion.ToString() + " *** IDVotaz: " + c.IDVotaz.ToString());
                 lbVersion.Items.Add("   ProgDeleg:" + c.ProgDeleg.ToString() + " Coaz:" + c.CoAz +
-                            " AzOrd: " + c.NVoti.ToString() + " AKPV:" + c.AK_PrevVote.ToString());
+                            " AzOrd: " + c.NVoti.ToString());
 
             }
             Panel4.Visible = true;

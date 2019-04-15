@@ -49,27 +49,27 @@ namespace VotoTouch
         //  LETTURA CONFIGURAZIONE NEL DATABASE
         // --------------------------------------------------------------------------
 
-        public virtual int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
+        virtual public int CaricaConfigDB(ref int ABadgeLen, ref string ACodImpianto)
         {
             return 0;
         }
 
-        public virtual int DammiConfigTotem() //, ref TTotemConfig TotCfg)
+        virtual public int DammiConfigTotem() //, ref TTotemConfig TotCfg)
         {
             return 0;
         }
 
-        public virtual int DammiConfigDatabase() //ref TTotemConfig TotCfg)
+        virtual public int DammiConfigDatabase() //ref TTotemConfig TotCfg)
         {
             return 0;
         }
         
-        public virtual int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
+        virtual public int SalvaConfigurazione() //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
 
-        public virtual int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
+        virtual public int SalvaConfigurazionePistolaBarcode() //, ref TTotemConfig ATotCfg)
         {
             return 0;
         }
@@ -78,18 +78,13 @@ namespace VotoTouch
         //  CARICAMENTO DATI VOTAZIONI
         // --------------------------------------------------------------------------
 
-        public virtual bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
+        virtual public bool CaricaVotazioniDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
             return true;
         }
 
-        public virtual bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
-        {
-            return true;
-        }
+        virtual public bool CaricaListeDaDatabase(ref List<TNewVotazione> AVotazioni)
 
-
-        public virtual bool CaricaAKCheckSubVoteDaDatabase(ref List<TNewVotazione> AVotazioni)
         {
             return true;
         }
@@ -98,28 +93,28 @@ namespace VotoTouch
         //  METODI SUI BADGE
         // --------------------------------------------------------------------------
 
-        //        virtual public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
-        public virtual bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
+//        virtual public bool ControllaBadge(int AIDBadge, TTotemConfig TotCfg, ref int AReturnFlags)
+        virtual public bool ControllaBadge(int AIDBadge, ref int AReturnFlags)
         {
             return true;
         }
 
-        public virtual bool BadgeAnnullato(int AIDBadge)
+        virtual public bool BadgeAnnullato(int AIDBadge)
         {
             return false;
         }
 
-        public virtual bool BadgePresente(int AIDBadge, bool ForzaTimbr)
+        virtual public bool BadgePresente(int AIDBadge, bool ForzaTimbr)
         {
             return false;
         }
 
-        public virtual bool BadgeHaGiaVotato(int AIDBadge)
+        virtual public bool BadgeHaGiaVotato(int AIDBadge)
         {
             return false;
         }
 
-        public virtual bool HaVotato(int ANVotaz, int AIDBadge, int ProgDelega)
+        virtual public bool HaVotato(int ANVotaz, int AIDBadge, int ProgDelega)
         {
             return false;
         }

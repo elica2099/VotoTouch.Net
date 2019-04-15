@@ -338,7 +338,7 @@ namespace VotoTouch
         {
             //string ss = string.Format("{0:N0}", Diritti.ToString());
 
-            string ss = $"{Diritti:#,0}"; // Diritti.ToString("###,###,###,##0");
+            string ss = Diritti.ToString("###,###,###,##0");
             
             TTheme th =  new TTheme();
             StringFormat stringFormat = new StringFormat();
@@ -368,7 +368,8 @@ namespace VotoTouch
         public void PaintDirittiDiVoto(object sender, PaintEventArgs e, string Diritti)
         {
             //string ss = string.Format("{0:N0}", Diritti.ToString());
-            //string ss = $"{Diritti:#,0}";
+
+            string ss = Diritti;
 
             TTheme th = new TTheme();
             StringFormat stringFormat = new StringFormat();
@@ -382,41 +383,17 @@ namespace VotoTouch
                 th.AColor = Color.Firebrick;
             }
             e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            SizeF sf = e.Graphics.MeasureString(Diritti, th.AFont);
+            SizeF sf = e.Graphics.MeasureString(ss, th.AFont);
             float fx = th.a.Left + ((th.a.Width - sf.Width) / 2);
             float fy = th.a.Top + ((th.a.Height - sf.Height) / 2);
             if (th.Shadow)
             {
                 Brush myBrush1 = new System.Drawing.SolidBrush(Color.Gray); //E3E3E3
-                e.Graphics.DrawString(Diritti, th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
+                e.Graphics.DrawString(ss, th.AFont, myBrush1, fx + 1, fy + 1); //rr, stringFormat);
             }
             Brush myBrush = new System.Drawing.SolidBrush(th.AColor);
-            e.Graphics.DrawString(Diritti, th.AFont, myBrush, fx, fy); //th.a, stringFormat);
+            e.Graphics.DrawString(ss, th.AFont, myBrush, fx, fy); //th.a, stringFormat);
             th.AFont.Dispose();
-        }
-
-        public void Paint_AK_DirittiDiVoto(object sender, PaintEventArgs e, string Diritti)
-        {
-            Rectangle rect = new Rectangle();
-            StringFormat stringFormat = new StringFormat
-            {
-                Alignment = StringAlignment.Far,
-                LineAlignment = StringAlignment.Far
-            };
-            GetZone(ref rect, 80, 40, 89, 44);
-
-            FontStyle fs = FontStyle.Regular;
-            //if (Convert.ToBoolean(r["Bold"])) 
-            fs = FontStyle.Bold;
-            Font AFont = new Font("Tahoma", 16, fs);
-            Color AColor = ColorTranslator.FromHtml("#0EA56B");
-            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-            SizeF sf = e.Graphics.MeasureString(Diritti, AFont);
-            float fx = rect.Left + ((rect.Width - sf.Width) / 2);
-            float fy = rect.Top + ((rect.Height - sf.Height) / 2);
-            Brush myBrush = new System.Drawing.SolidBrush(AColor);
-            e.Graphics.DrawString(Diritti, AFont, myBrush, fx, fy); //th.a, stringFormat);
-            AFont.Dispose();
         }
 
         //-----------------------------------------------------------------------------
@@ -425,7 +402,6 @@ namespace VotoTouch
 
         public void PaintlabelNSelezioni(object sender, PaintEventArgs e, TNewVotazione vt, bool Candidato)
         {
-            return;
             int nsel = vt.NMultiSelezioni;
             Brush myBrush1;
             Font myFont2 = new System.Drawing.Font("Arial", 50, FontStyle.Bold);

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using System.Media;
 
@@ -62,7 +61,7 @@ namespace VotoTouch
             // ok, questo evento arriva quando, nella selezione del voto, è stata
             // premuta una zona valida devo veder in funzione della lista selezionata
             TNewLista a;
-            //TVotoEspresso2 VExp;
+            TVotoEspresso VExp;
             // verifico se è null
             if (Votazioni.VotoCorrente.Liste == null) return;
 
@@ -77,10 +76,9 @@ namespace VotoTouch
                 VotoEspressoStrUp = a.DescrLista;
                 VotoEspressoStrNote = a.Presentatore;
                 // da aggiungere successivamente:
-                TVotoEspresso2 VExp = new TVotoEspresso2
+                VExp = new TVotoEspresso
                     {
                         NumVotaz = a.NumVotaz,
-                        NumSubVotaz = a.NumSubVotaz,
                         VotoExp_IDScheda = a.IDScheda,
                         TipoCarica = a.TipoCarica,
                     };
@@ -94,10 +92,9 @@ namespace VotoTouch
                 VotoEspressoStr = "";
                 VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
                 VotoEspressoStrNote = "";
-                TVotoEspresso2 VExp = new TVotoEspresso2
+                VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
                 };
@@ -114,7 +111,7 @@ namespace VotoTouch
             // in realtà corrisponde all'AVANTI
             if (voti == null) return;  // in teoria non serve
             TNewLista a;
-            //TVotoEspresso vt;
+            TVotoEspresso vt;
             int ct = Votazioni.VotoCorrente.Liste.Count;
             VotoEspressoStr = "";
             VotoEspressoStrUp = "";      // "Scheda Bianca";
@@ -124,10 +121,9 @@ namespace VotoTouch
                 if (voti[i] >= 0 && voti[i] < ct)
                 {
                     a = Votazioni.VotoCorrente.Liste[voti[i]];
-                    TVotoEspresso2 vt = new TVotoEspresso2
+                    vt = new TVotoEspresso
                         {
                             NumVotaz = a.NumVotaz,
-                            NumSubVotaz = a.NumSubVotaz,
                             TipoCarica = a.TipoCarica,
                             VotoExp_IDScheda = a.IDScheda,
                         };
@@ -141,76 +137,6 @@ namespace VotoTouch
             // a questo punto vado in conferma con la stessa CurrVote
             Stato = TAppStato.ssvVotoConferma;
             CambiaStato();
-        }
-
-        public void onPremutoVotoValidoGruppo(object source, int VParam, ref List<int> voti)
-        {
-            // in realtà corrisponde all'AVANTI dei gruppi
-            if (voti == null) return;  // in teoria non serve
-            // devo aggiungere ai voti espressi, ma uso il valore dell'idscheda invece che l'indice della lista
-            int vt1 = 0, vt2 = 0;
-            VotoEspressoStr = "";
-            VotoEspressoStrUp = "";      // "Scheda Bianca";
-            foreach (int voto in voti)
-            {
-                // cerco quale lista è
-                TNewLista li = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == voto);
-                if (li != null)
-                {
-                    if (li.NumSubVotaz == 1) vt1++;
-                    if (li.NumSubVotaz == 2) vt2++;
-                    FVotiExpr.Add(getVoto(li));
-                    //TVotoEspresso2 vt = new TVotoEspresso2
-                    //{
-                    //    NumVotaz = li.NumVotaz,
-                    //    NumSubVotaz = li.NumSubVotaz,
-                    //    TipoCarica = li.TipoCarica,
-                    //    VotoExp_IDScheda = li.IDScheda,
-                    //};
-                    //FVotiExpr.Add(vt);
-                    //// ora aggiungo il candidato
-                    VotoEspressoStr += li.ListaElenco + ";";
-                    VotoEspressoStrUp += li.DescrLista + ";";
-                    VotoEspressoStrNote = "";
-                }
-            }
-            // se però non ci sono voti o ce ne è solo uno devo mettere il non voglio votare
-            if (vt1 == 0)
-            {
-                TNewLista li1 = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == 100);
-                if (li1 != null)
-                {
-                    FVotiExpr.Add(getVoto(li1));
-                    VotoEspressoStr += li1.ListaElenco + ";";
-                    VotoEspressoStrUp += li1.DescrLista + ";";
-                }
-            }
-            // anche il secondo
-            if (vt2 == 0)
-            {
-                TNewLista li2 = Votazioni.VotoCorrente.Liste.FirstOrDefault(o => o.IDScheda == 200);
-                if (li2 != null)
-                {
-                    FVotiExpr.Add(getVoto(li2));
-                    VotoEspressoStr += li2.ListaElenco + ";";
-                    VotoEspressoStrUp += li2.DescrLista + ";";
-                }
-            }
-            // a questo punto vado in conferma con la stessa CurrVote
-            Stato = TAppStato.ssvVotoConferma;
-            CambiaStato();
-        }
-
-        private TVotoEspresso2 getVoto(TNewLista li)
-        {
-            TVotoEspresso2 vt = new TVotoEspresso2
-            {
-                NumVotaz = li.NumVotaz,
-                NumSubVotaz = li.NumSubVotaz,
-                TipoCarica = li.TipoCarica,
-                VotoExp_IDScheda = li.IDScheda,
-            };
-            return vt;
         }
 
         public void onPremutoVotoMulti(object source, int VParam)
@@ -227,10 +153,9 @@ namespace VotoTouch
             VotoEspressoStrUp = rm.GetString("SAPP_SKBIANCA");      // "Scheda Bianca";
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso2 VExp = new TVotoEspresso2
+            TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_SCHEDABIANCA,
                     TipoCarica = 0,
                 };
@@ -248,10 +173,9 @@ namespace VotoTouch
             VotoEspressoStrUp = VTConfig.ContrarioATutti; // rm.GetString("SAPP_SKCONTRARIOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso2 VExp = new TVotoEspresso2
+            TVotoEspresso VExp = new TVotoEspresso
             {
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                NumSubVotaz = 0,
                 VotoExp_IDScheda = VSDecl.VOTO_CONTRARIO_TUTTI,
                 TipoCarica = 0,
             };
@@ -269,10 +193,9 @@ namespace VotoTouch
             VotoEspressoStrUp = VTConfig.AstenutoATutti; // rm.GetString("SAPP_SKASTENUTOTUTTI");
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso2 VExp = new TVotoEspresso2
+            TVotoEspresso VExp = new TVotoEspresso
             {
                 NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                NumSubVotaz = 0,
                 VotoExp_IDScheda = VSDecl.VOTO_ASTENUTO_TUTTI,
                 TipoCarica = 0,
             };
@@ -290,10 +213,9 @@ namespace VotoTouch
             VotoEspressoStrUp = rm.GetString("SAPP_NOVOTO");      // "Non Voglio Votare";
             VotoEspressoStrNote = "";
             // nuova versione array
-            TVotoEspresso2 VExp = new TVotoEspresso2
+            TVotoEspresso VExp = new TVotoEspresso
                 {
                     NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                    NumSubVotaz = 0,
                     VotoExp_IDScheda = VSDecl.VOTO_NONVOTO,
                     TipoCarica = 0,
                 };
@@ -319,32 +241,6 @@ namespace VotoTouch
                 CodiceUscitaInVotazione();
             }
             FMsgExit = null;
-        }
-
-        public void onPremuto_AK_Avanti(object source, int VParam)
-        {
-            // ContrarioATutti
-            VotoEspresso = VSDecl.VOTO_AK;
-            VotoEspressoStr = "";
-            VotoEspressoStrUp = ""; 
-            VotoEspressoStrNote = "";
-            // nuova versione array
-            TVotoEspresso2 VExp = new TVotoEspresso2
-            {
-                NumVotaz = Votazioni.VotoCorrente.IDVoto,
-                NumSubVotaz = 0,
-                VotoExp_IDScheda = VSDecl.VOTO_AK,
-                TipoCarica = 0,
-            };
-            FVotiExpr.Add(VExp);
-            // confermo in automatico
-            // CHiamo la funzione di Conferma Voti di Azionisti con l'array di voti espressi
-            Azionisti.ConfermaVoti_VotoCorrente(ref FVotiExpr);
-
-            // cambio stato
-            Stato = Azionisti.TuttiIDirittiSonoStatiEspressi() ? TAppStato.ssvSalvaVoto : TAppStato.ssvVoto;
-            // cambio
-            CambiaStato();
         }
 
         // ----------------------------------------------------------------

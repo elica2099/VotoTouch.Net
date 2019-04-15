@@ -16,8 +16,7 @@ namespace VotoTouch
     public enum TTEvento : int { steVotaNormale, steVotaDiffer, steConferma, 
         steAnnulla, steVotoValido, steInvalido, steTabs, steSkBianca, steSkNonVoto,
         steMultiValido, steMultiAvanti, steMultiSelezTuttiCDA, steSelezTuttiCDAAvanti,
-        steBottoneUscita, steSkContrarioTutti, steSkAstenutoTutti, steGruppoValido,
-        steGruppoAvanti, ste_AK_Avanti
+        steBottoneUscita, steSkContrarioTutti, steSkAstenutoTutti
     };
 
     // struttura zone dello schermo
@@ -41,14 +40,11 @@ namespace VotoTouch
         public bool MultiNoPrint;
         public int Multi;
         public Rectangle CKRect;
-        // PER IL GRUPPO
-        public int Group;
 
         public TTZone()
         {
             MultiNoPrint = false;
-            PaintMode = VSDecl.PM_NORMAL;
-            Group = 0;
+            PaintMode = VSDecl.PM_NONE;
         }
     }
 
@@ -73,11 +69,6 @@ namespace VotoTouch
     public delegate void ehPremutoBottoneUscita(object source, int VParam);
     public delegate void ehPremutoContrarioTutti(object source, int VParam);
     public delegate void ehPremutoAstenutoTutti(object source, int VParam);
-    // gruppi
-    public delegate void ehPremutoGruppiAvanti(object source, int VParam, ref List<int> voti);
-    // AK
-    public delegate void ehPremuto_AK_Avanti(object source, int VParam);
-
 
     public delegate void ehTouchWatchDog(object source, int VParam);
 
@@ -108,10 +99,6 @@ namespace VotoTouch
         public event ehPremutoBottoneUscita PremutoBottoneUscita;
         public event ehPremutoContrarioTutti PremutoContrarioTutti;
         public event ehPremutoAstenutoTutti PremutoAstenutoTutti;
-        // gruppi
-	    public event ehPremutoGruppiAvanti PremutoGruppiAvanti;
-	    // gruppi
-	    public event ehPremuto_AK_Avanti Premuto_AK_Avanti;
 
         public event ehTouchWatchDog TouchWatchDog;
 
@@ -164,8 +151,7 @@ namespace VotoTouch
             Stream myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.bottonetrasp_ok.png");
             btnBmpCandSing = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
 
-		    //myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo.png");
-		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_cda.png");
+            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo.png");
             btnBmpCand = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCand = new Bitmap(myStream);
 
@@ -173,8 +159,7 @@ namespace VotoTouch
             btnBmpCandCda = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCandCda = new Bitmap(myStream);
 
-		    //myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_tondo_check.png");
-		    myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_selez.png");
+            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.btn_alternativo_selez.png");
             btnBmpCandSelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCandSelez = new Bitmap(myStream);
 
@@ -194,7 +179,7 @@ namespace VotoTouch
             btnBmpCDASelez = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
             //btnBmpCDASelez = new Bitmap(myStream);
 
-            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.check_tondo.png");
+            myStream = myAssembly.GetManifestResourceStream("VotoTouch.Resources.check.png");
             btnBmpCheck = myStream != null ? new Bitmap(myStream) : new Bitmap(1, 1);
 
             //ClasseTipoVotoStartNorm = new CTipoVoto_AStart(FFormRect);
@@ -222,6 +207,67 @@ namespace VotoTouch
         //  CALCOLO DEL RESIZE
         // --------------------------------------------------------------
 
+        /*
+        public void CalcolaVotoTouch(Rectangle AFormRect)
+        {
+            // viene richiamata ad ogni resize della finestra
+            FFormRect = AFormRect;
+
+            if (ClasseTipoVotoStartNorm != null)
+            {
+                ClasseTipoVotoStartNorm.FFormRect = AFormRect;
+                ClasseTipoVotoStartNorm.GetTouchSpecialZone(TAppStato.ssvVotoStart, false, false);
+            }
+
+            if (ClasseTipoVotoStartDiff != null)
+            {
+                ClasseTipoVotoStartDiff.FFormRect = AFormRect;
+                ClasseTipoVotoStartDiff.GetTouchSpecialZone(TAppStato.ssvVotoStart, true, false);
+            }
+
+            if (ClasseTipoVotoConferma != null)
+            {
+                ClasseTipoVotoConferma.FFormRect = AFormRect;
+                ClasseTipoVotoConferma.GetTouchSpecialZone(TAppStato.ssvVotoConferma, false, VTConfig.AbilitaBottoneUscita);
+                //ClasseTipoVotoConferma.GetTouchSpecialZone(Stato, Differ);
+            }
+        }
+
+        public int CalcolaTouchSpecial(TNewVotazione FVotaz, TAppStato Stato, bool AIsVotazioneDifferenziata)
+        {
+            Tz = null;
+            // switcho in funzione dello stato
+            switch (Stato)
+            {
+                case TAppStato.ssvVotoStart:
+                    // chiamo la classe apposita
+                    if (AIsVotazioneDifferenziata)
+                        Tz = FVotaz.ClasseTipoVotoStartDiff.TouchZone;
+                    else
+                        Tz = FVotaz.ClasseTipoVotoStartNorm.TouchZone;
+                    break;
+
+                // conferma del voto
+                case TAppStato.ssvVotoConferma:
+                    // chiamo la classe apposita
+                    Tz = FVotaz.ClasseTipoVotoConferma.TouchZone;
+                    break;
+
+                // salvataggio/fine del voto
+                case TAppStato.ssvVotoFinito:
+                case TAppStato.ssvSalvaVoto:
+                    // non fare nulla
+                    break;
+
+                default:
+                    // non fare nulla
+                    break;
+            }
+
+            return 0;
+        }
+
+*/
         public int CalcolaTouchSpecial(CBaseTipoVoto ASpecial)
         {
             Tz = null;
@@ -246,17 +292,103 @@ namespace VotoTouch
             return 0;
         }
 
-	    public int CalcolaAKTouchVote(TNewVotazione FVotaz, Rectangle FFormRect)
-	    {
-	        Tz = null;
+        /*
+        public int old_CalcolaTouch(object sender, TAppStato Stato, TNewVotazione FVotaz, bool Differ)
+        {
+            // DR12 OK
+            // in funzione del tipo di stato della macchina a stati, del tipo di votazione
+            // creo le aree sensibili dello schermo
+            
+            //TTZone a;  // da togliere, non servirà
+            CBaseTipoVoto ClasseTipoVoto = null;
 
-	        CTipoVoto_AK_NoAbilitato akvoto = new CTipoVoto_AK_NoAbilitato(FFormRect);
-            akvoto.GetTouchSpecialZone(TAppStato.ssvVotoNonAbilitato, TStartVoteMode.vszNormal, true);
-	        Tz = akvoto.TouchZone;
+            // cancello comunque la collection
+            //Tz.Clear();
+            // setto la variabile multi
+            NumMulti = 0;
+
+            // switcho in funzione dello stato
+            switch (Stato)
+            {
+                case TAppStato.ssvBadge:
+                    // non fare nulla
+                    break;
+
+                case TAppStato.ssvVotoStart:
+                    // chiamo la classe apposita
+                    ClasseTipoVoto = new CTipoVoto_AStart(FFormRect);
+                    ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    break;
+
+                case TAppStato.ssvVoto:
+                    // In funzione del tipo di votazione metto i componenti
+                    // VOTAZIONE DI LISTA
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_LISTA)
+                    {
+                        // chiamo la classe del voto apposito
+                        ClasseTipoVoto = new CTipoVoto_Lista(FFormRect);
+                        ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    }   // VOTO_LISTA
+
+                    // VOTAZIONE DI CANDIDATO SINGOLO  ** SINGOLA PAGINA ** 
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_CANDIDATO)
+                    {
+                        // chiamo la classe del voto apposito, se sono meno di 6 candidati
+                        // uso una classe più definita graficamente
+                        if (FVotaz.NListe <= 6)
+                            ClasseTipoVoto = new CTipoVoto_CandidatoSmall(FFormRect);
+                        else
+                            ClasseTipoVoto = new CTipoVoto_CandidatoOriginal(FFormRect);
+                        ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    }
+
+                    #region VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                    // VOTAZIONE DI CANDIDATO SINGOLO ** MULTI PAGINA ** (era VECCHIO, OBSOLETO)
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_CANDIDATO_SING)
+                    {
+                        // chiamo la classe del voto apposito
+                        ClasseTipoVoto = new CTipoVoto_CandidatoOriginal(FFormRect);
+                        ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    }
+                    #endregion      
+
+                    // VOTAZIONE DI MULTICANDIDATO (1 O MULTI PAGINA)
+                    if (FVotaz.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
+                    {
+                        // setto la variabile multi
+                        NumMulti = FVotaz.MaxScelte;
+
+                        // chiamo la classe del voto apposito
+                        if (FVotaz.TipoSubVoto == 1)
+                            ClasseTipoVoto = new CTipoVoto_MultiCandidatoOriginal(FFormRect);
+                        else
+                            ClasseTipoVoto = new CTipoVoto_MultiCandidatoNew(FFormRect);
+                        ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    }
+
+                    break;
+
+                // conferma del voto
+                case TAppStato.ssvVotoConferma:
+                    // chiamo la classe apposita
+                    ClasseTipoVoto = new CTipoVoto_AConferma(FFormRect);
+                    ClasseTipoVoto.GetTouchVoteZone(Stato, ref FVotaz, Differ, ref Tz);
+                    break;
+                
+                // salvataggio/fine del voto
+                case TAppStato.ssvVotoFinito:
+                case TAppStato.ssvSalvaVoto:
+                     // non fare nulla
+                     break;
+
+                default:
+                    // non fare nulla
+                    break;
+            }
 
             return 0;
-	    }
-
+        }
+        */
         // --------------------------------------------------------------
         //  Touch
         // --------------------------------------------------------------
@@ -346,13 +478,6 @@ namespace VotoTouch
                         if (PremutoMulti != null) { PremutoMulti(this, a.expr); }
                         break;
 
-                    case TTEvento.steGruppoValido:
-                        // manda l'evento in locale per settare il flag del multicandidato premuto sulla collection
-                        ElementoGruppo(Trovato);
-                        // manda l'evento di Paint alla finestra principale
-                        if (PremutoMulti != null) { PremutoMulti(this, a.expr); }
-                        break;
-
                     case TTEvento.steMultiSelezTuttiCDA:
                         // in questo evento si selezionano tutti i cda, deselezionando il resto
                         SelezionaTuttiCDA();
@@ -360,23 +485,6 @@ namespace VotoTouch
                         if (PremutoMulti != null) { PremutoMulti(this, a.expr); }
                         break;
 
-                    case TTEvento.steGruppoAvanti:
-                        // ricostruisco chi è stato votato, per trasmetterlo alla routine sopra
-                        List<int> votisg = new List<int>();
-                        int nvtg = 0;
-                        foreach (TTZone b in Tz)
-                        {
-                            if ((b.ev == TTEvento.steGruppoValido) && b.Multi > 0)
-                            {
-                                votisg.Add(b.expr);
-                                nvtg++;
-                            }
-                        }
-                        // manda l'evento di Avanti nel caso di Gruppo
-                        if (PremutoGruppiAvanti != null) { PremutoGruppiAvanti(this, a.expr, ref votisg); }
-                        votisg.Clear();
-                        votisg = null;
-                        break;
 
                     case TTEvento.steMultiAvanti:
                         // ricostruisco chi è stato votato, per trasmetterlo alla routine sopra
@@ -384,7 +492,7 @@ namespace VotoTouch
                         int nvt = 0;
                         foreach (TTZone b in Tz)
                         {
-                            if ((b.ev == TTEvento.steMultiValido ) && b.Multi > 0)
+                            if (b.ev == TTEvento.steMultiValido && b.Multi > 0)
                             {
                                 votis.Add(b.expr);
                                 nvt++;
@@ -415,10 +523,34 @@ namespace VotoTouch
                         }
                         break;
 
-                    case TTEvento.ste_AK_Avanti:
-                        // è il voto AK
-                        if (Premuto_AK_Avanti != null) { Premuto_AK_Avanti(this, a.expr); }
-                        break;
+                    //case TTEvento.steSelezTuttiCDAAvanti:
+                    //    // in questo evento votano autpmaticamente tutti i cda
+                    //    List<int> votiCDA = new List<int>();
+                    //    TTZone bz;
+                    //    int nvtz = 0;
+                    //    for (int i = 0; i < Tz.Count; i++)
+                    //    {
+                    //        bz = (TTZone)Tz[i];
+                    //        if (bz.cda)
+                    //        {
+                    //            votiCDA.Add(bz.expr);
+                    //            nvtz++;
+                    //        }
+                    //    }
+                    //    // attenzione, se non ho voti, cioè nvt = 0 devo considerare sk bianca
+                    //    if (nvtz > 0)
+                    //    {
+                    //        // manda l'evento di Avanti nel caso di Multivotazioni
+                    //        if (PremutoMultiAvanti != null) { PremutoMultiAvanti(this, a.expr, ref votiCDA); }
+                    //    }
+                    //    else
+                    //    {
+                    //        // manda l'evento di SkBianca
+                    //        if (PremutoSchedaBianca != null) { PremutoSchedaBianca(this, VSDecl.VOTO_SCHEDABIANCA); }
+                    //    }
+                    //    votiCDA.Clear();
+                    //    votiCDA = null;
+                    //    break;
 
                     case TTEvento.steSkBianca:
                         // manda l'evento di scheda bianca
@@ -468,39 +600,6 @@ namespace VotoTouch
 
 
             return 0;
-        }
-
-        // ACCESSORIE MULTI GRUPPO --------------------------------------------------------------
-
-	    private void ElementoGruppo(int Trovato)
-	    {
-	        if (Tz == null) return;
-	        if (Trovato >= Tz.Count) return;
-	        TTZone a = (TTZone)Tz[Trovato];
-	        // se è maggiore di 0 faccio che metterlo a 0
-	        if (a.Multi > 0)
-	        {
-	            a.Multi = 0;
-	        }
-	        else
-	        {
-	            int fount = 0;
-                // devo contare quante sono selezionate
-                int group = a.Group;
-	            foreach (TTZone b in Tz)
-	            {
-	                if (b.ev == TTEvento.steGruppoValido && b.Group == group)
-	                    if (b.Multi > 0) fount++;
-	            }
-                // se l'ha trovato mette a zero tutti e seleziona solo il Trovato
-	            foreach (TTZone b in Tz)
-	            {
-	                if (b.ev == TTEvento.steGruppoValido && b.Group == group)
-	                    if (b.Multi > 0) b.Multi = 0;
-	            }
-	            a.Multi = 1;
-            }
-
         }
 
         private void ElementoMulti(int Trovato)
@@ -567,7 +666,9 @@ namespace VotoTouch
             }
         }
 
-        // timer del touch --------------------------------------------------------------
+        // --------------------------------------------------------------
+        //  timer del touch
+        // --------------------------------------------------------------
 
         private void timTouch_Tick(object sender, EventArgs e)
         {
@@ -589,10 +690,12 @@ namespace VotoTouch
                 if (TouchWatchDog != null) { TouchWatchDog(this, 1); }
             }
         }
-
+        
         #endregion
 
-        // PAINTING DELLE ZONE TOUCH --------------------------------------------------------------
+        // --------------------------------------------------------------
+        //  PAINTING DELLE ZONE TOUCH
+        // --------------------------------------------------------------
 
         #region  PAINTING DELLE ZONE TOUCH
 
@@ -606,7 +709,7 @@ namespace VotoTouch
             {
                 //TTZone a;
                 Graphics g = e.Graphics;
-                Pen p = new Pen(Color.Black) {DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot};
+                Pen p = new Pen(Color.DarkGray) {DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot};
 
                 //for (int i = 0; i < Tz.Count; i++)
                 foreach (TTZone a in Tz)
@@ -639,7 +742,7 @@ namespace VotoTouch
             Font myFont2 = new System.Drawing.Font("Arial", 20, FontStyle.Regular);
             Font myFont3 = new System.Drawing.Font("Arial", 10, FontStyle.Italic | FontStyle.Bold);
             StringFormat stringFormat = new StringFormat();
-            stringFormat.Alignment = StringAlignment.Center ;
+            stringFormat.Alignment = StringAlignment.Center;
             stringFormat.LineAlignment = StringAlignment.Center;
             //stringFormat.Trimming = StringTrimming.EllipsisCharacter;
             stringFormat.Trimming = StringTrimming.None;
@@ -667,7 +770,7 @@ namespace VotoTouch
                             {
                                 e.Graphics.DrawImage(btnBmpTabSelez, r);
                                 e.Graphics.DrawString(a.Text, myFont2, Brushes.White,
-                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1 ), stringFormat);
+                                        new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 1), stringFormat);
                             }
                             else
                             {
@@ -736,7 +839,7 @@ namespace VotoTouch
                                         a.Text = a.Text.Substring(0, a.Text.IndexOf('(') - 1);
                                         e.Graphics.DrawString(ss, myFont3, new SolidBrush(BaseColorCandidato),
                                                               //Brushes.DarkSlateGray,
-                                                              new RectangleF(a.x, a.b , (a.r - a.x) - 20 , 20 ),
+                                                              new RectangleF(a.x, a.b - 20, (a.r - a.x) - 20, 20),
                                                               stringFormat);
                                         stringFormat.Alignment = StringAlignment.Center;
                                     }
@@ -749,7 +852,7 @@ namespace VotoTouch
                                     //    myFont = myFont22;
                                     e.Graphics.DrawString(a.Text, myFont, new SolidBrush(BaseColorCandidato),
                                                           //Brushes.DarkSlateGray,
-                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1 , (a.b - a.y) - 4),
+                                                          new RectangleF(a.x, a.y, (a.r - a.x) - 1, (a.b - a.y) - 4),
                                                           stringFormat);
                                 }
                             }  // if (a.pag == CurrPag || a.pag == 0)

@@ -41,7 +41,7 @@ namespace VotoTouch
         //  FUNZIONI VIRTUALI
         // --------------------------------------------------------------------------
 
-        public virtual void GetTouchVoteZone(TNewVotazione AVotazione) //ref ArrayList Tz)
+        virtual public void GetTouchVoteZone(TNewVotazione AVotazione) //ref ArrayList Tz)
         {
             // l'implementazione è nelle varie classi
 
@@ -57,7 +57,7 @@ namespace VotoTouch
             }
         }
 
-        public virtual void GetTouchSpecialZone(TAppStato AStato, TStartVoteMode AMode, bool ABtnUscita) //, ref ArrayList Tz
+        virtual public void GetTouchSpecialZone(TAppStato AStato, bool ADiffer, bool ABtnUscita) //, ref ArrayList Tz
         {
             // l'implementazione è nelle varie classi
 
@@ -74,7 +74,7 @@ namespace VotoTouch
         }
 
 
-        public virtual void CallbackPaintTouch(object sender, PaintEventArgs e)
+        virtual public void CallbackPaintTouch(object sender, PaintEventArgs e)
         {
             // ok questo metodo viene chiamato da paint della finestra principale 
             // nel caso in cui debba fare dei disegni speciali
@@ -211,20 +211,6 @@ namespace VotoTouch
 
         #endregion
 
-
-        protected bool checkEven(int AN)
-        {
-            if (AN % 2 == 0)
-            {
-                //Console.WriteLine("Number is even")
-                return true;
-            }
-            else
-            {
-                //Console.WriteLine("Number is odd")
-                return false;
-            }
-        }
 
     }
 }

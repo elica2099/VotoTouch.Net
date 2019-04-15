@@ -167,7 +167,7 @@ namespace VotoTouch
 
                 v.IDVoto = Convert.ToInt32(a["NumVotaz"]);
                 v.IDGruppoVoto = Convert.ToInt32(a["GruppoVotaz"]);
-                v.TipoVoto = (TTipoVoto)Convert.ToInt32(a["TipoVotaz"]);
+                v.TipoVoto = Convert.ToInt32(a["TipoVotaz"]);
                 v.TipoSubVoto = 0;
                 v.Descrizione = a["Argomento"].ToString();
                 v.SkBianca = Convert.ToBoolean(a["SchedaBianca"]);
@@ -201,13 +201,13 @@ namespace VotoTouch
                 switch (votaz.TipoVoto)
                 {
                     // se è lista ordino per l'id
-                    case TTipoVoto.stvLista: // VSDecl.VOTO_LISTA:
+                    case VSDecl.VOTO_LISTA:
                         ASort = "idlista asc";
                         break;
                     // se è candidato ordino in modo alfabetico
-                    case TTipoVoto.stvCandidato: // VSDecl.VOTO_CANDIDATO:
-                    case TTipoVoto.stvCandidatoSing: // VSDecl.VOTO_CANDIDATO_SING:
-                    case TTipoVoto.stvMultiCandidato: // VSDecl.VOTO_MULTICANDIDATO:
+                    case VSDecl.VOTO_CANDIDATO:
+                    case VSDecl.VOTO_CANDIDATO_SING:
+                    case VSDecl.VOTO_MULTICANDIDATO:
                         ASort = "PresentatoDaCdA desc, OrdineCarica, DescrLista asc";
                         break;
                 }
@@ -218,7 +218,6 @@ namespace VotoTouch
                     Lista = new TNewLista
                     {
                         NumVotaz = Convert.ToInt32(riga["NumVotaz"]),
-                        NumSubVotaz = Convert.ToInt32(riga["NumSubVotaz"]),
                         IDLista = Convert.ToInt32(riga["idLista"]),
                         IDScheda = Convert.ToInt32(riga["idScheda"]),
                         DescrLista = riga["DescrLista"].ToString(),

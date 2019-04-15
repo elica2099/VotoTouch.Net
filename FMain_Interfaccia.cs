@@ -25,7 +25,7 @@ namespace VotoTouch
         // ----------------------------------------------------------------
         //******************************************************************************
 
-        private void MettiComponentiStartVoto(TStartVoteMode AModoStart)
+        private void MettiComponentiStartVoto()
         {
             string PrefNomeAz = "";
             // start del voto
@@ -41,69 +41,39 @@ namespace VotoTouch
             // diritti di voto  
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {
-                string ss = $"{Azionisti.DammiMaxNumeroDirittiDiVotoTotali():#,0}"; // string.Format("{0:N0}", Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
+                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroDirittiDiVotoTotali());
                 lbDirittiDiVoto.Text = ss + rm.GetString("SAPP_VOTE_D_DIRITTI"); // " Diritti di voto";
                 lbDirittiStart.Text = ss;
             }
             else
             {
-                string ss = $"{Azionisti.DammiMaxNumeroVotiTotali():#,0}"; // string.Format("{0:N0}", Azionisti.DammiMaxNumeroVotiTotali());
+                string ss = string.Format("{0:N0}", Azionisti.DammiMaxNumeroVotiTotali());
                 lbDirittiDiVoto.Text = ss;
                 lbDirittiStart.Text = ss;
             }
             // diritti di voto
             lbDirittiStart.Visible = true;
-
-            switch (AModoStart)
+            // in funzione del n. di deleghe metto
+            if (Azionisti.HaDirittiDiVotoMultipli())
             {
-                case TStartVoteMode.vszNormal:
-                    // immagine di 1 voto
-                    oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
-                    break;
-                case TStartVoteMode.vszMixedDiffer:
-                    // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
-                    if (VTConfig.AbilitaDifferenziatoSuRichiesta)
-                    {
-                        oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
-                            ? VSDecl.IMG_VotostartD
-                            : VSDecl.IMG_Votostart1);
-                        return;
-                    }
+                // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
+                if (VTConfig.AbilitaDifferenziatoSuRichiesta)
+                {
+                    oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
+                                            ? VSDecl.IMG_VotostartD
+                                            : VSDecl.IMG_Votostart1);
+                }
+                else
+                {
                     // si comporta normalmente
                     oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
-                    break;
-                case TStartVoteMode.vszOnlyDiffer:
-                    // solo il differenziato
-                    oVotoImg.LoadImages(VSDecl.IMG_VotostartD_AK);
-                    break;
+                }
             }
-
-            //// in funzione del n. di deleghe metto
-            //if (Azionisti.HaDirittiDiVotoMultipli())
-            //{
-            //    // verifico se ho AbilitaDifferenziatoSuRichiesta Attivato
-            //    if (VTConfig.AbilitaDifferenziatoSuRichiesta)
-            //    {
-            //        oVotoImg.LoadImages(LocalAbilitaVotazDifferenziataSuRichiesta
-            //                                ? VSDecl.IMG_VotostartD
-            //                                : VSDecl.IMG_Votostart1);
-            //        return;
-            //    }
-            //    // verifico se è abilitato AK
-            //    if (VTConfig.AKCheckVote && 
-            //        (Azionisti.checkAKIsPresentDelegheDifformi(Votazioni.getAKSchedeDisabilitateInAllVote()) == VSDecl.AK_SKDIFF_PRESENT_MIXED ))
-            //    {
-            //        oVotoImg.LoadImages(VSDecl.IMG_VotostartD_AK);
-            //        return;
-            //    }
-            //    // si comporta normalmente
-            //    oVotoImg.LoadImages(VSDecl.IMG_VotostartD);
-            //}
-            //else
-            //{
-            //    // immagine di 1 voto
-            //    oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
-            //}
+            else
+            {
+                // immagine di 1 voto
+                oVotoImg.LoadImages(VSDecl.IMG_Votostart1);
+            }
         }
 
 
@@ -122,7 +92,7 @@ namespace VotoTouch
             lbDirittiDiVoto.Visible = true;
             // Sistemo la label dei diritti di voto
             int NDirittiAzioniConferma = Azionisti.DammiDirittiAzioniDiVotoConferma(IsVotazioneDifferenziata);
-            lbConfermaNVoti.Text = $"{NDirittiAzioniConferma:#,0}" + rm.GetString("SAPP_VOTE_VOTIPER"); // string.Format("{0:N0}", NDirittiAzioniConferma) + rm.GetString("SAPP_VOTE_VOTIPER");
+            lbConfermaNVoti.Text = string.Format("{0:N0}", NDirittiAzioniConferma); // +rm.GetString("SAPP_VOTE_DIRITTIPER");
 
             if (VTConfig.ModoAssemblea == VSDecl.MODO_AGM_POP)
             {
@@ -145,7 +115,7 @@ namespace VotoTouch
             // ok, per ora distinguiamo tra i due metodi di voto, quello normale e quello multicandidato
             // che ha i voti salvati in una collection
             // in un secondo tempo dovrà essere unificato
-            if (Votazioni.VotoCorrente.TipoVoto == TTipoVoto.stvMultiCandidato) // VSDecl.VOTO_MULTICANDIDATO)
+            if (Votazioni.VotoCorrente.TipoVoto == VSDecl.VOTO_MULTICANDIDATO)
             {
                 /*
                 // ciclo e metto i candidati
