@@ -44,7 +44,7 @@ namespace VotoTouch
         public TTZone()
         {
             MultiNoPrint = false;
-            PaintMode = VSDecl.PM_NONE;
+            PaintMode = VSDecl.PM_NORMAL;
         }
     }
 

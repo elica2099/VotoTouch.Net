@@ -130,7 +130,7 @@ namespace VotoTouch
                                             ? Azionisti.DammiTotaleDirittiRimanenti_VotoCorrente()
                                             : Azionisti.DammiCountDirittiDiVoto_VotoCorrente();
                         if (!IsVotazioneDifferenziata && deleghe_riman > 1)
-                            lbNomeDisgiunto.Text += " e altre " + (dir_riman - 1).ToString() + " deleghe";
+                            lbNomeDisgiunto.Text += " e altre " + (deleghe_riman - 1).ToString() + " deleghe";
                         lbDirittiDiVoto.Text = dir_riman.ToString() + rm.GetString("SAPP_VOTE_D_DIRITTI");
                         if (IsVotazioneDifferenziata) lbDirittiDiVoto.Text = "Voto Differenziato \n " + lbDirittiDiVoto.Text + " rimanenti";
                         lbDirittiDiVoto.Visible = true;

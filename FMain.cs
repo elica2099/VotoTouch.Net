@@ -551,8 +551,11 @@ namespace VotoTouch
                                    ? Azionisti.DammiMaxNumeroDirittiDiVotoTotali()
                                    : Azionisti.DammiMaxNumeroVotiTotali();
                     string ss = string.Format("{0:N0}", VVoti.ToString());
-                    if (Azionisti.HaDirittiDiVotoMultipli()) ss += "(d)";
-                    oVotoTheme.PaintDirittiDiVoto(sender, e, ss);
+                    if (Azionisti.HaDirittiDiVotoMultipli())
+                    {
+                        ss += "(d)";
+                        oVotoTheme.PaintDirittiDiVoto(sender, e, ss);
+                    }
                     //oVotoTheme.PaintDirittiDiVoto(sender, e, VVoti);
                 }
             }
