@@ -103,7 +103,7 @@ namespace VotoTouch
         public event ehTouchWatchDog TouchWatchDog;
 
         public bool PaintTouchOnScreen;
-        public Rectangle FFormRect;         
+        //public Rectangle FFormRect;         
         private ArrayList Tz;
 
         //// oggetti conferma e inizio voto
@@ -139,7 +139,7 @@ namespace VotoTouch
         public CVotoTouchScreen() //ref TTotemConfig ATotCfg)
 		{
             // inizializzo
-            FFormRect = new Rectangle();       
+            //FFormRect = new Rectangle();       
     
             //Tz = new ArrayList();
             //TotCfg = ATotCfg;
